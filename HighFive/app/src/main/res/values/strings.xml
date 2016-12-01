@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">HighFive</string>
+    <string name="navigation_drawer_open">opened</string>
+    <string name="navigation_drawer_close">closed</string>
+    <string name="my_profile">Мой профиль</string>
+    <string name="order_list">Список заказов</string>
+    <string name="help">Помощь</string>
+    <string name="exit">Выход</string>
+    <string name="name">name</string>
+    <string name="surname">surname</string>
+
 </resources>
