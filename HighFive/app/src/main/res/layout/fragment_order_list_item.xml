@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/order_list_item_theme"
+                android:text="Тема: "
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/order_list_item_discription"
+                android:text="Описание: "
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:maxLines="2"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/order_list_item_date"
+                android:text="Дата: "
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
+
+
+
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
