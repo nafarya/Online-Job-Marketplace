@@ -8,5 +8,7 @@
     <string name="exit">Выход</string>
     <string name="name">name</string>
     <string name="surname">surname</string>
+    <string name="chat">Чат</string>
+    <string name="exit_title">Выход</string>
 
 </resources>
