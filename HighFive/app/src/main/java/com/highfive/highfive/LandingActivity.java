@@ -57,7 +57,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
