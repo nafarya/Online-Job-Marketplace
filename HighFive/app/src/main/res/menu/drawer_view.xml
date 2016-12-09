@@ -13,7 +13,10 @@
             android:title="@string/help" />
         <item
             android:id="@+id/nav_to_exit"
-            android:title="Выход" />
+            android:title="@string/exit_title" />
+        <item
+            android:id="@+id/nav_chat"
+            android:title="@string/chat" />
     </group>
 
 
