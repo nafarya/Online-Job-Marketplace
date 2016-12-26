@@ -12,15 +12,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
 import com.highfive.highfive.util.HighFiveHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cz.msebera.android.httpclient.Header;
 
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
     private static final String TAG = "LandingActivity";
@@ -34,6 +39,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
         ButterKnife.inject(this);
+        HighFiveHttpClient.initCookieStore(this);
 
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -66,10 +72,20 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 fragment = new ChatFragment();
                 break;
             case R.id.nav_to_exit:
-                HighFiveHttpClient.clearCookies();
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        HighFiveHttpClient.clearCookies();
+                        Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Toast.makeText(getBaseContext(), "Ошибка выхода", Toast.LENGTH_LONG).show();
+                    }
+                });
                 return true;
             default:
                 return true;

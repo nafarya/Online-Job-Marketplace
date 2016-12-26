@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
@@ -87,10 +86,8 @@ public class SignupActivity extends AppCompatActivity {
                     JSONObject contents = response.getJSONObject("response");
                     String id = contents.getString("id");
                     String token = contents.getString("token");
-                    BasicClientCookie idCookie = new BasicClientCookie("id", id);
-                    BasicClientCookie tokenCookie = new BasicClientCookie("token", token);
-                    HighFiveHttpClient.addCookie(idCookie);
-                    HighFiveHttpClient.addCookie(tokenCookie);
+                    HighFiveHttpClient.addUidCookie(id);
+                    HighFiveHttpClient.addTokenCookie(token);
 
                     progressDialog.dismiss();
                     SignupActivity.this.onSignupSuccess();

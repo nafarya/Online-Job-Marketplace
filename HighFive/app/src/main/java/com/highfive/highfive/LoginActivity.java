@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
 
 /**
  * Created by heat_wave on 25.12.16.
@@ -45,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         HighFiveHttpClient.initCookieStore(this);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 login();
@@ -53,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         signupLink.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
@@ -62,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        if (HighFiveHttpClient.getCookie("token") != null) {
+        if (HighFiveHttpClient.getTokenCookie() != null) {
             onLoginSuccess();
         }
     }
@@ -78,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.AppTheme);
+                R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Проверяем данные...");
         progressDialog.show();
@@ -97,10 +94,8 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject contents = response.getJSONObject("response");
                     String id = contents.getString("id");
                     String token = contents.getString("token");
-                    BasicClientCookie idCookie = new BasicClientCookie("id", id);
-                    BasicClientCookie tokenCookie = new BasicClientCookie("token", token);
-                    HighFiveHttpClient.addCookie(idCookie);
-                    HighFiveHttpClient.addCookie(tokenCookie);
+                    HighFiveHttpClient.addUidCookie(id);
+                    HighFiveHttpClient.addTokenCookie(token);
 
                     progressDialog.dismiss();
                     LoginActivity.this.onLoginSuccess();
