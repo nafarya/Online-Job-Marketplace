@@ -1,5 +1,6 @@
 package com.highfive.highfive;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,48 +12,42 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
-import com.highfive.highfive.services.auth.Authenticator;
+import com.highfive.highfive.util.HighFiveHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import cz.msebera.android.httpclient.Header;
 
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+    private static final String TAG = "LandingActivity";
 
-    private static final String TAG = "Landing";
-    public static final int LOGIN_SCREEN_REQUEST_CODE = 11;
-
-
+    @InjectView(R.id.toolbar) Toolbar toolbar;
+    @InjectView(R.id.drawer_layout) DrawerLayout drawer;
+    @InjectView(R.id.nvView) NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
+        ButterKnife.inject(this);
+        HighFiveHttpClient.initCookieStore(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-
-        if (Authenticator.isLoginNeeded()) {
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setProviders(
-                                    AuthUI.EMAIL_PROVIDER,
-                                    AuthUI.GOOGLE_PROVIDER)
-                            .build(), LOGIN_SCREEN_REQUEST_CODE);
-        }
 
         Fragment fragment = new OrderListFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
@@ -76,13 +71,25 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             case R.id.nav_chat:
                 fragment = new ChatFragment();
                 break;
+            case R.id.nav_to_exit:
+                HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        HighFiveHttpClient.clearCookies();
+                        Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Toast.makeText(getBaseContext(), "Ошибка выхода", Toast.LENGTH_LONG).show();
+                    }
+                });
+                return true;
             default:
-                //System.exit(0);
-                Authenticator.logout(LandingActivity.this);
                 return true;
         }
-
-
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();

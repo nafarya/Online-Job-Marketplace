@@ -10,5 +10,12 @@
     <string name="surname">surname</string>
     <string name="chat">Чат</string>
     <string name="exit_title">Выход</string>
+    <string name="login">Войти</string>
+    <string name="register">Регистрация</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="login_name">Имя пользователя</string>
+    <string name="create_account">Зарегистрироваться</string>
+    <string name="existing_login">Уже с нами? Войдите</string>
 
 </resources>
