@@ -34,7 +34,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:design:24.1.1'
     compile 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
-
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.jakewharton:butterknife:6.1.0'
 }
 
 repositories {
