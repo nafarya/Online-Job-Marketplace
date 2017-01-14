@@ -10,7 +10,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="4"
-        android:id="@+id/chat">
+        android:id="@+id/chat"
+        android:layout_above="@+id/relativeLayout">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -19,15 +20,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/relativeLayout">
 
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/grey"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/send_button"
-            android:scaleX="0.5"
+            android:scaleX="0.25"
+            android:scaleY="0.5"
             android:layout_alignParentRight="true"
             android:background="@drawable/ic_send_black_24dp"/>
 
@@ -35,6 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/message_text"
+            android:padding="5dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="12dp"
             android:layout_toLeftOf="@id/send_button"
             android:background="@android:color/background_light"
