@@ -17,7 +17,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="124dp"
+                android:layout_height="96dp"
                 android:id="@+id/fragment_add_order_name_layout"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical">
