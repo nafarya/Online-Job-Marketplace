@@ -12,8 +12,15 @@ import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListAdapter;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.HighFiveHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
-import java.util.Date;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by dan on 26.11.16.
@@ -28,6 +35,43 @@ public class OrderListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_list, container, false);
         orderList = (RecyclerView) v.findViewById(R.id.order_list_rv_id);
+
+        HighFiveHttpClient.initCookieStore(getContext());
+
+        RequestParams params = new RequestParams();
+        params.put("offset", 0);
+        params.put("limit", 20);
+
+        HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    String id = contents.getString("id");
+                    String token = contents.getString("token");
+                    HighFiveHttpClient.addUidCookie(id);
+                    HighFiveHttpClient.addTokenCookie(token);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
+
         profile = new Profile("Koko", "Kokoko");
         Order order = new Order("Mathematics", "HELP ME in Mathematics");
         profile.addOrder(order);
