@@ -83,19 +83,7 @@ public class SignupActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
         params.put("username", name);
-        switch (mode) {
-            case 0:
-                params.put("type", "student");
-                break;
-            case 1:
-                params.put("type", "student");
-                break;
-            case 2 :
-                params.put("type", "teacher");
-                break;
-        }
-
-        HighFiveHttpClient.post("users", params, new JsonHttpResponseHandler() {
+        HighFiveHttpClient.post("users?type=" + (mode == 2 ? "teacher" : "student"), params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
