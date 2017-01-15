@@ -1,6 +1,7 @@
 package com.highfive.highfive;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,6 +24,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
+    private int mode;
 
     @InjectView(R.id.input_name)        EditText nameText;
     @InjectView(R.id.input_email)       EditText emailText;
@@ -34,6 +36,9 @@ public class SignupActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        Intent intent = getIntent();
+        mode = intent.getIntExtra("mode", 0);
+
         ButterKnife.inject(this);
 
         signupButton.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +83,17 @@ public class SignupActivity extends AppCompatActivity {
         params.put("email", email);
         params.put("password", password);
         params.put("username", name);
+        switch (mode) {
+            case 0:
+                params.put("type", "student");
+                break;
+            case 1:
+                params.put("type", "student");
+                break;
+            case 2 :
+                params.put("type", "teacher");
+                break;
+        }
 
         HighFiveHttpClient.post("users", params, new JsonHttpResponseHandler() {
             @Override

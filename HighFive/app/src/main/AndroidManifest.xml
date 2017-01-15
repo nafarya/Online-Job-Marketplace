@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".LandingActivity" />
         <activity android:name=".SignupActivity" />
+        <activity android:name=".SignupModeChoiceActivity" />
     </application>
 
 </manifest>
