@@ -28,12 +28,17 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
         profile = new Profile("Lev", "Prosorov");
-        profile.addComment("comment1");
-        profile.addComment("comment2");
-        profile.addComment("comment3");
-        profile.addComment("comment4");
+
+        createComments();
+
         adapter = new ProfileCommentsAdapter(profile.getAllComments());
         rv.setAdapter(adapter);
         return v;
+    }
+
+    void createComments() {
+        for (int i = 0; i < 10; i++) {
+            profile.addComment("Comment" + i + " bla bla bla");
+        }
     }
 }

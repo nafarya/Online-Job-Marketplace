@@ -36,7 +36,6 @@ public class ProfileCommentsAdapter extends RecyclerView.Adapter<ProfileComments
 
     @Override
     public int getItemCount() {
-        Log.i("asdasdasd", comments.size() + "");
         return comments.size();
     }
 

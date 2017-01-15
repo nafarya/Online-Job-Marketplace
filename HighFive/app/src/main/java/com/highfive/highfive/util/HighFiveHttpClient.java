@@ -15,6 +15,7 @@ import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
  */
 
 public class HighFiveHttpClient {
+
     private static final String BASE_URL = "http://95.213.191.61/api/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
