@@ -27,6 +27,9 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:padding="0dp"
+                    android:id="@+id/avatar"
+                    android:clickable="true"
+                    android:onClick="uploadAvatar"
                     android:src="@drawable/com_facebook_profile_picture_blank_square"/>
 
             </android.support.v7.widget.CardView>
