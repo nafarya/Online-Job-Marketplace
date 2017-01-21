@@ -88,12 +88,25 @@ public class OrderListFragment extends Fragment {
         });
 
         profile = new Profile("Koko", "Kokoko");
-        Order order = new Order("Mathematics", "HELP ME in Mathematics");
-        profile.addOrder(order);
+        addOrders();
 
         OrderListAdapter adapter = new OrderListAdapter(profile.getAllOrders());
         orderList.setAdapter(adapter);
         return v;
+    }
+
+    void addOrders() {
+        Order order = new Order("Математика", "Завтра будет кр, 8 класс");
+        Order order1 = new Order("Русский язык", "Подстраховать на диктанте");
+        Order order2 = new Order("География", "проверочная работа");
+        Order order3 = new Order("Геометрия", "Контрльная работа, подстраховать");
+        Order order4 = new Order("Английский", "Помочь с домашкой");
+        profile.addOrder(order);
+        profile.addOrder(order1);
+        profile.addOrder(order2);
+        profile.addOrder(order3);
+        profile.addOrder(order4);
+
     }
 
 }
