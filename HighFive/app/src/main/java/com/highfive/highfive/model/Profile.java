@@ -10,8 +10,13 @@ import java.util.List;
 public class Profile {
     private String name;
     private String surname;
+    private String uid;
+    private String email;
+    private String username;
+    private double balance;
     private int rate;
     private boolean statusVIP;
+    //private enum type;
     private List<String> comments;
     private List<Order> orderList;
 
@@ -22,6 +27,31 @@ public class Profile {
         comments = new LinkedList<>();
         orderList = new LinkedList<>();
         statusVIP = false;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public Profile(String email, String uid, String username, String balance, int negativeRating, int positiveRating,
+                   String firstName, String secondName, String type) {
+        this.email = email;
+        this.uid = uid;
+
+        this.username = username;
+        this.name = firstName;
+        this.surname = secondName;
+        this.rate = positiveRating - negativeRating;
+        this.balance = Double.parseDouble(balance);
+        //this.type = type; TODO: parse type and do something about it
     }
 
     public void addOrder(Order order) {
