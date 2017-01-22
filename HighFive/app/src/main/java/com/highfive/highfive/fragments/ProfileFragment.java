@@ -87,9 +87,7 @@ public class ProfileFragment extends Fragment {
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
         ButterKnife.inject(this, v);
 
-
         profile = new Profile("Lev", "Prosorov");
-
         createComments();
 
         adapter = new ProfileCommentsAdapter(profile.getAllComments());
