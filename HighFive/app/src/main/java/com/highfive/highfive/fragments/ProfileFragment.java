@@ -1,8 +1,11 @@
 package com.highfive.highfive.fragments;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,6 +111,11 @@ public class ProfileFragment extends Fragment {
         createComments();
         adapter = new ProfileCommentsAdapter(profile.getAllComments());
         rv.setAdapter(adapter);
+
+
+        Drawable progress = profileRating.getProgressDrawable();
+        DrawableCompat.setTint(progress, Color.rgb(255,215,0));
+
         return v;
     }
 

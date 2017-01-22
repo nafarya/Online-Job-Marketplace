@@ -18,7 +18,7 @@ import com.highfive.highfive.model.Profile;
  * Created by dan on 22.01.17.
  */
 
-public class OrderTeacherListFragment extends Fragment {
+public class OrderTeacherListFragment extends Fragment implements OrderTeacherListAdapter.OnItemClickListener {
 
     private Profile profile;
 
@@ -29,7 +29,7 @@ public class OrderTeacherListFragment extends Fragment {
         RecyclerView orderList = (RecyclerView) v.findViewById(R.id.order_teacher_list_rv_id);
 
         addOrders();
-        OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders());
+        OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders(), this);
         orderList.setAdapter(adapter);
         return v;
     }
@@ -48,6 +48,11 @@ public class OrderTeacherListFragment extends Fragment {
         profile.addOrder(order2);
         profile.addOrder(order3);
         profile.addOrder(order4);
+
+    }
+
+    @Override
+    public void onItemClick(int item) {
 
     }
 }

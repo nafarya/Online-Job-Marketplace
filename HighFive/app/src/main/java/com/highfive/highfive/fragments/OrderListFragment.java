@@ -29,7 +29,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by dan on 26.11.16.
  */
 
-public class OrderListFragment extends Fragment {
+public class OrderListFragment extends Fragment implements OrderListAdapter.OnItemClickListener{
     private RecyclerView orderList;
     private Profile profile;
     private FloatingActionButton fab;
@@ -89,7 +89,7 @@ public class OrderListFragment extends Fragment {
 
 
         addOrders();
-        OrderListAdapter adapter = new OrderListAdapter(profile.getAllOrders());
+        OrderListAdapter adapter = new OrderListAdapter(profile.getAllOrders(), this);
         orderList.setAdapter(adapter);
         return v;
     }
@@ -111,4 +111,8 @@ public class OrderListFragment extends Fragment {
 
     }
 
+    @Override
+    public void onItemClick(int item) {
+
+    }
 }

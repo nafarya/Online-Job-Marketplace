@@ -17,16 +17,22 @@ import java.util.List;
 
 public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.ViewHolder> {
 
-    List<Order> orderList;
+    public interface OnItemClickListener {
+        void onItemClick(int item);
+    }
 
-    public OrderListAdapter(List<Order> list) {
+    private List<Order> orderList;
+    private OnItemClickListener listener;
+
+    public OrderListAdapter(List<Order> list, OnItemClickListener listener) {
         this.orderList = list;
+        this.listener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_order_list_item, parent, false);
-        return new ViewHolder(v);
+        return new ViewHolder(v, listener);
     }
 
     @Override
@@ -42,16 +48,24 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         return orderList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView theme;
         TextView description;
         TextView date;
+        OnItemClickListener listener;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView,  OnItemClickListener listener) {
             super(itemView);
+            this.listener = listener;
             theme = (TextView) itemView.findViewById(R.id.order_list_item_theme);
             description = (TextView) itemView.findViewById(R.id.order_list_item_discription);
             date = (TextView) itemView.findViewById(R.id.order_list_item_date);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+
         }
     }
 }
