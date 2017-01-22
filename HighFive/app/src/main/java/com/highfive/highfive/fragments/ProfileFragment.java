@@ -14,7 +14,6 @@ import com.highfive.highfive.adapters.ProfileCommentsAdapter;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
-import com.iainconnor.objectcache.CacheManager;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -38,46 +37,54 @@ public class ProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (HighFiveHttpClient.getUidCookie() != null) {
-            final CacheManager cacheManager = Cache.getCacheManager();
             Type profileType = new TypeToken<Profile>(){}.getType();
-            Profile myProfile = (Profile) cacheManager.get("profile", Profile.class, profileType);
+            Profile myProfile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
             if (myProfile != null && myProfile.getUid().equals(HighFiveHttpClient.getUidCookie().getValue())) {
                 profile = myProfile;
             } else {
-                HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
-                        new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                super.onSuccess(statusCode, headers, response);
-                                try {
-                                    JSONObject contents = (JSONObject) response.get("response");
-                                    profile = new Profile(contents.getString("email"),
-                                            contents.getString("id"),
-                                            contents.getString("username"),
-                                            contents.getString("balance"),
-                                            contents.getJSONObject("rating").getInt("negative"),
-                                            contents.getJSONObject("rating").getInt("positive"),
-                                            contents.getString("firstName"),
-                                            contents.getString("secondName"),
-                                            contents.getString("type"));
-                                    cacheManager.put("profile", profile);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                super.onFailure(statusCode, headers, throwable, errorResponse);
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                super.onFailure(statusCode, headers, responseString, throwable);
-                            }
-                        });
+                //regenerateProfile();
+                //show a profile stub maybe?
             }
         }
+    }
+
+    private void regenerateProfile() {
+        HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+                        try {
+                            JSONObject contents = (JSONObject) response.get("response");
+                            profile = new Profile(contents.getString("email"),
+                                    contents.getString("id"),
+                                    contents.getString("username"),
+                                    contents.getString("balance"),
+                                    contents.getJSONObject("rating").getInt("negative"),
+                                    contents.getJSONObject("rating").getInt("positive"),
+                                    contents.getString("firstName"),
+                                    contents.getString("secondName"),
+                                    contents.getString("type"));
+                            Cache.getCacheManager().put("profile", profile);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                    }
+                });
+    }
+
+    private void fillProfileData() {
+
     }
 
     @Nullable
@@ -87,11 +94,9 @@ public class ProfileFragment extends Fragment {
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
         ButterKnife.inject(this, v);
 
-
-        profile = new Profile("Lev", "Prosorov");
+        fillProfileData();
 
         createComments();
-
         adapter = new ProfileCommentsAdapter(profile.getAllComments());
         rv.setAdapter(adapter);
         return v;
