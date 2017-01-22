@@ -16,6 +16,7 @@ public class Profile {
     private double balance;
     private int rate;
     private boolean statusVIP;
+
     private String type;
     private List<String> comments;
     private List<Order> orderList;
@@ -55,7 +56,8 @@ public class Profile {
         this.surname = secondName;
         this.rate = positiveRating - negativeRating;
         this.balance = Double.parseDouble(balance);
-        this.type = type; //TODO: parse type and do something about it
+
+        this.type = type;
         comments = new LinkedList<>();
         orderList = new LinkedList<>();
     }

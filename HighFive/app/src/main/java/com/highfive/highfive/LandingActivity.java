@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
+import com.highfive.highfive.fragments.OrderTeacherListFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
@@ -84,10 +85,10 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 fragment = new ProfileFragment();
                 break;
             case R.id.nav_order_list_fragment:
-                if (profile == null || profile.getType().equals("student") || profile.getType().equals("shkololo")) {
+                if (profile == null || profile.getType().equals("Student") || profile.getType().equals("shkololo")) {
                     fragment = new OrderListFragment();
                 } else {
-
+                    fragment = new OrderTeacherListFragment();
                 }
                 break;
             case R.id.nav_help_fragment:

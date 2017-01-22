@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
@@ -22,6 +24,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -32,6 +35,11 @@ public class ProfileFragment extends Fragment {
     private RecyclerView rv;
     private ProfileCommentsAdapter adapter;
     private Profile profile;
+
+    @InjectView(R.id.fragment_profile_balance)          TextView profileBalance;
+    @InjectView(R.id.fragment_profile_rating_bar)       RatingBar profileRating;
+    @InjectView(R.id.fragment_profile_tasks_sent)       TextView profileTasksSent;
+    @InjectView(R.id.fragment_profile_tasks_solved)     TextView profileTasksSolved;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +102,7 @@ public class ProfileFragment extends Fragment {
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
         ButterKnife.inject(this, v);
 
+
         fillProfileData();
 
         createComments();
@@ -102,8 +111,17 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        createComments();
+    }
+
     void createComments() {
-        for (int i = 0; i < 10; i++) {
+        if (profile == null) {
+            profile = new Profile("test", "test");
+        }
+        for (int i = 0; i < 5; i++) {
             profile.addComment("Comment" + i + " bla bla bla");
         }
     }
