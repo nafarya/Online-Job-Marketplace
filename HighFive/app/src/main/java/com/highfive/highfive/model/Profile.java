@@ -16,7 +16,8 @@ public class Profile {
     private double balance;
     private int rate;
     private boolean statusVIP;
-    private String userType;
+
+    private String type;
     private List<String> comments;
     private List<Order> orderList;
 
@@ -41,6 +42,10 @@ public class Profile {
         return username;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public Profile(String email, String uid, String username, String balance, int negativeRating, int positiveRating,
                    String firstName, String secondName, String type) {
         this.email = email;
@@ -51,7 +56,10 @@ public class Profile {
         this.surname = secondName;
         this.rate = positiveRating - negativeRating;
         this.balance = Double.parseDouble(balance);
-        this.userType = type; //TODO: parse type and do something about it
+
+        this.type = type;
+        comments = new LinkedList<>();
+        orderList = new LinkedList<>();
     }
 
     public void addOrder(Order order) {

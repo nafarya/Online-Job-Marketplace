@@ -21,10 +21,14 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
+import com.highfive.highfive.fragments.OrderTeacherListFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
+import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -34,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Type;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -42,6 +47,7 @@ import cz.msebera.android.httpclient.Header;
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
+    private Profile profile;
 
     @InjectView(R.id.toolbar) Toolbar toolbar;
     @InjectView(R.id.drawer_layout) DrawerLayout drawer;
@@ -60,6 +66,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment fragment = new OrderListFragment();
@@ -76,7 +85,11 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 fragment = new ProfileFragment();
                 break;
             case R.id.nav_order_list_fragment:
-                fragment = new OrderListFragment();
+                if (profile == null || profile.getType().equals("Student") || profile.getType().equals("shkololo")) {
+                    fragment = new OrderListFragment();
+                } else {
+                    fragment = new OrderTeacherListFragment();
+                }
                 break;
             case R.id.nav_help_fragment:
                 fragment = new HelpFragment();

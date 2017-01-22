@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="176dp"
+        android:layout_height="160dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -43,21 +43,26 @@
                 <RatingBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_rating_bar"
                     android:layout_marginTop="24dp"
                     android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
                     android:max="4"
                     android:numStars="4"
                     android:stepSize="0.5"
                     style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
                     android:rating="2.5"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/fragment_profile_name"
-                    android:text="login"
-                    android:textSize="20sp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/fragment_profile_balance"
+                        android:text="@string/Balance"
+                        android:textSize="20sp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"/>
+
 
             </LinearLayout>
 
@@ -66,27 +71,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Balance"
-                android:textSize="20sp"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="16dp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="24dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/fragment_profile_tasks_sent"
                 android:text="задач отправлено: 42"
                 android:layout_marginLeft="16dp"
                 />
@@ -95,6 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="задач решено: 27"
+                android:id="@+id/fragment_profile_tasks_solved"
                 android:layout_marginLeft="16dp"/>
 
         </LinearLayout>

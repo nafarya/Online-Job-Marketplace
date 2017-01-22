@@ -87,15 +87,17 @@ public class OrderListFragment extends Fragment {
             }
         });
 
-        profile = new Profile("Koko", "Kokoko");
-        addOrders();
 
+        addOrders();
         OrderListAdapter adapter = new OrderListAdapter(profile.getAllOrders());
         orderList.setAdapter(adapter);
         return v;
     }
 
     void addOrders() {
+        if (profile == null) {
+            profile = new Profile("test", "test");
+        }
         Order order = new Order("Математика", "Завтра будет кр, 8 класс");
         Order order1 = new Order("Русский язык", "Подстраховать на диктанте");
         Order order2 = new Order("География", "проверочная работа");
