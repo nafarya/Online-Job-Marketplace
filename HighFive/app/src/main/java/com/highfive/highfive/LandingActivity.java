@@ -47,7 +47,6 @@ import cz.msebera.android.httpclient.Header;
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
-    private Profile profile;
 
     @InjectView(R.id.toolbar) Toolbar toolbar;
     @InjectView(R.id.drawer_layout) DrawerLayout drawer;
@@ -66,12 +65,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = new OrderListFragment();
+        Fragment fragment = chooseOrdersFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
@@ -85,11 +81,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 fragment = new ProfileFragment();
                 break;
             case R.id.nav_order_list_fragment:
-                if (profile == null || profile.getType().equals("Student") || profile.getType().equals("shkololo")) {
-                    fragment = new OrderListFragment();
-                } else {
-                    fragment = new OrderTeacherListFragment();
-                }
+                fragment = chooseOrdersFragment();
                 break;
             case R.id.nav_help_fragment:
                 fragment = new HelpFragment();
@@ -131,6 +123,19 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @NonNull
+    private Fragment chooseOrdersFragment() {
+        Fragment fragment;
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
+            fragment = new OrderListFragment();
+        } else {
+            fragment = new OrderTeacherListFragment();
+        }
+        return fragment;
     }
 
     public void uploadAvatar(View view) {
