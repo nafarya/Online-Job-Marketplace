@@ -72,7 +72,7 @@ public class ProfileFragment extends Fragment {
                                     contents.getJSONObject("rating").getInt("positive"),
                                     contents.getString("firstName"),
                                     contents.getString("secondName"),
-                                    contents.getString("type"));
+                                    contents.getString("type").toLowerCase());
                             Cache.getCacheManager().put("profile", profile);
                         } catch (JSONException e) {
                             e.printStackTrace();

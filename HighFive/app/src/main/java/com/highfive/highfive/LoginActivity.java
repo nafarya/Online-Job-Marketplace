@@ -136,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        final Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
         HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
                 new JsonHttpResponseHandler() {
                     @Override
@@ -151,8 +152,11 @@ public class LoginActivity extends AppCompatActivity {
                                     contents.getJSONObject("rating").getInt("positive"),
                                     contents.getString("firstName"),
                                     contents.getString("secondName"),
-                                    contents.getString("type"));
+                                    contents.getString("type").toLowerCase());
                             Cache.getCacheManager().put("profile", profile);
+
+                            startActivity(intent);
+                            finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -161,16 +165,17 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
+                        startActivity(intent);
+                        finish();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
+                        startActivity(intent);
+                        finish();
                     }
                 });
-        Intent intent = new Intent(this, LandingActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     public void onLoginFailed() {
