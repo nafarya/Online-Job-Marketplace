@@ -52,6 +52,8 @@ public class Profile {
         this.rate = positiveRating - negativeRating;
         this.balance = Double.parseDouble(balance);
         //this.type = type; TODO: parse type and do something about it
+        comments = new LinkedList<>();
+        orderList = new LinkedList<>();
     }
 
     public void addOrder(Order order) {

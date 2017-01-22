@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -134,6 +136,38 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
+                new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+                        try {
+                            JSONObject contents = (JSONObject) response.get("response");
+                            Profile profile = new Profile(contents.getString("email"),
+                                    contents.getString("id"),
+                                    contents.getString("username"),
+                                    contents.getString("balance"),
+                                    contents.getJSONObject("rating").getInt("negative"),
+                                    contents.getJSONObject("rating").getInt("positive"),
+                                    contents.getString("firstName"),
+                                    contents.getString("secondName"),
+                                    contents.getString("type"));
+                            Cache.getCacheManager().put("profile", profile);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                    }
+                });
         Intent intent = new Intent(this, LandingActivity.class);
         startActivity(intent);
         finish();
