@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderTeacherListAdapter;
 import com.highfive.highfive.model.Order;
@@ -34,12 +36,19 @@ import cz.msebera.android.httpclient.Header;
  * Created by dan on 22.01.17.
  */
 
-public class OrderTeacherListFragment extends Fragment {
+public class OrderTeacherListFragment extends Fragment implements OrderTeacherListAdapter.OnItemClickListener {
 
     @InjectView(R.id.order_teacher_list_rv_id)      RecyclerView orderList;
 
     private Profile profile;
     private ArrayList<Order> orders = new ArrayList<>();
+    private Navigator navigator;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        navigator = (Navigator) getActivity();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,12 +69,12 @@ public class OrderTeacherListFragment extends Fragment {
                     JSONArray subjArray = contents.getJSONArray("items");
                     for (int i = 0; i < contents.getInt("count"); i++) {
                         JSONObject current = (JSONObject) subjArray.get(i);
-                        profile.addOrder(new Order(current.getString("title"), current.getString("description")));
+                        profile.addOrder(new Order(i, current.getString("title"), current.getString("description")));
                     }
-                    OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders());
-                    if (orderList != null) {
-                        orderList.setAdapter(adapter);
-                    }
+//                    OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders());
+//                    if (orderList != null) {
+//                        orderList.setAdapter(adapter);
+//                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -87,12 +96,17 @@ public class OrderTeacherListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_teacher_list, container, false);
+        orderList = (RecyclerView) v.findViewById(R.id.order_teacher_list_rv_id);
+
+        Log.i("orderList", "teacher");
+
+        addOrders();
+        OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders(), this);
+        orderList.setAdapter(adapter);
 
         ButterKnife.inject(this, v);
 
         HighFiveHttpClient.initCookieStore(getContext());
-
-        //addOrders();
 
         return v;
     }
@@ -101,16 +115,21 @@ public class OrderTeacherListFragment extends Fragment {
         if (profile == null) {
             profile = new Profile("test", "test");
         }
-        Order order = new Order("Инфа для препода", "Завтра будет кр, 8 класс");
-        Order order1 = new Order("Русский язык", "Подстраховать на диктанте");
-        Order order2 = new Order("География", "проверочная работа");
-        Order order3 = new Order("Геометрия", "Контрльная работа, подстраховать");
-        Order order4 = new Order("Английский", "Помочь с домашкой");
+        Order order = new Order(0, "Инфа для препода", "Завтра будет кр, 8 класс");
+        Order order1 = new Order(1, "Русский язык", "Подстраховать на диктанте");
+        Order order2 = new Order(2,"География", "проверочная работа");
+        Order order3 = new Order(3, "Геометрия", "Контрльная работа, подстраховать");
+        Order order4 = new Order(4, "Английский", "Помочь с домашкой");
         profile.addOrder(order);
         profile.addOrder(order1);
         profile.addOrder(order2);
         profile.addOrder(order3);
         profile.addOrder(order4);
 
+    }
+
+    @Override
+    public void onItemClick(int item) {
+        navigator.navigateToOrderDetail(profile.getAllOrders().get(item));
     }
 }

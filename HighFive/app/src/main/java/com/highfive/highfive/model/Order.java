@@ -12,7 +12,8 @@ public class Order {
     private String description;
     private Date date;
 
-    public Order(String themeId, String description) {
+    public Order(int orderId, String themeId, String description) {
+        this.orderdId = orderId;
         this.theme = themeId;
         this.description = description;
     }

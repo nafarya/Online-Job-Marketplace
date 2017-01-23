@@ -4,6 +4,7 @@ package com.highfive.highfive.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.highfive.highfive.R;
+import com.highfive.highfive.model.Order;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -28,11 +30,12 @@ import cz.msebera.android.httpclient.Header;
 public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.order_title)           TextView orderTitle;
     @InjectView(R.id.order_description)     TextView orderDescription;
-    @InjectView(R.id.order_details)         TextView orderSubject;
+    @InjectView(R.id.order_subject)         TextView orderSubject;
     @InjectView(R.id.order_type)            TextView orderType;
     @InjectView(R.id.order_deadline)        TextView orderDeadline;
-    @InjectView(R.id.bids_list)             ListView bidsList;
+    @InjectView(R.id.bids_list)             RecyclerView bidsList;
 
+    private Order order;
 
     @Nullable
     @Override
@@ -40,6 +43,7 @@ public class OrderDetailsFragment extends Fragment {
         HighFiveHttpClient.initCookieStore(getContext());
         View v = inflater.inflate(R.layout.fragment_order_details, container, false);
         ButterKnife.inject(this, v);
+
         return v;
     }
 
@@ -47,7 +51,12 @@ public class OrderDetailsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle args = this.getArguments();
-        int orderId = args.getInt("orderId");
+        order = new Order(args.getInt("orderId"), args.getString("theme"), args.getString("description"));
+
+        orderTitle.setText(order.getTheme());
+        orderDescription.setText(order.getDescription());
+
+        /*int orderId = args.getInt("orderId");
         HighFiveHttpClient.get("orders/" + orderId, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -94,6 +103,6 @@ public class OrderDetailsFragment extends Fragment {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
-        });
+        });*/
     }
 }

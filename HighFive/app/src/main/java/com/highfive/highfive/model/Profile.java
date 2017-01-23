@@ -70,6 +70,10 @@ public class Profile {
         return orderList;
     }
 
+    public Order getOrderByInd(int ind) {
+        return orderList.get(ind);
+    }
+
     public String getName() {
         return name;
     }

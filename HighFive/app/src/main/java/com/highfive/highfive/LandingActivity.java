@@ -24,9 +24,11 @@ import android.widget.Toast;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
+import com.highfive.highfive.fragments.OrderDetailsFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.OrderTeacherListFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
+import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
@@ -44,7 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 
-public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Navigator {
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
 
@@ -204,5 +206,24 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                     fileExtension.toLowerCase());
         }
         return mimeType;
+    }
+
+
+
+
+    @Override
+    public void navigateToProfile() {
+
+    }
+
+    @Override
+    public void navigateToOrderDetail(Order order) {
+        OrderDetailsFragment fragment = new OrderDetailsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("orderId", order.getOrderdId());
+        bundle.putString("theme", order.getTheme());
+        bundle.putString("description", order.getDescription());
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 }
