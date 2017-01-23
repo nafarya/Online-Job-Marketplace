@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
+import com.highfive.highfive.fragments.OrderDetailsFragment;
 import com.highfive.highfive.model.Order;
 
 import java.util.List;
@@ -70,6 +72,8 @@ public class OrderTeacherListAdapter extends RecyclerView.Adapter<OrderTeacherLi
 
         @Override
         public void onClick(View view) {
+            listener.onItemClick(getAdapterPosition());
+
             Log.i("sadasd", "asdsad");
         }
     }

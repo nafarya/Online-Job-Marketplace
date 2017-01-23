@@ -98,11 +98,11 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         if (profile == null) {
             profile = new Profile("test", "test");
         }
-        Order order = new Order("Математика", "Завтра будет кр, 8 класс");
-        Order order1 = new Order("Русский язык", "Подстраховать на диктанте");
-        Order order2 = new Order("География", "проверочная работа");
-        Order order3 = new Order("Геометрия", "Контрльная работа, подстраховать");
-        Order order4 = new Order("Английский", "Помочь с домашкой");
+        Order order = new Order(0, "Математика", "Завтра будет кр, 8 класс");
+        Order order1 = new Order(1, "Русский язык", "Подстраховать на диктанте");
+        Order order2 = new Order(2, "География", "проверочная работа");
+        Order order3 = new Order(3, "Геометрия", "Контрльная работа, подстраховать");
+        Order order4 = new Order(4, "Английский", "Помочь с домашкой");
         profile.addOrder(order);
         profile.addOrder(order1);
         profile.addOrder(order2);
