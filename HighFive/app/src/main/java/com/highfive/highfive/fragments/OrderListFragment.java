@@ -6,11 +6,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListAdapter;
 import com.highfive.highfive.model.Order;
@@ -33,12 +35,15 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     private RecyclerView orderList;
     private Profile profile;
     private FloatingActionButton fab;
+    private Navigator navigator;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_list, container, false);
         orderList = (RecyclerView) v.findViewById(R.id.order_list_rv_id);
+
+        Log.i("orderList", "student");
 
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +117,13 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     }
 
     @Override
-    public void onItemClick(int item) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        navigator = (Navigator) getActivity();
+    }
 
+    @Override
+    public void onItemClick(int item) {
+        navigator.navigateToOrderDetail(profile.getAllOrders().get(item));
     }
 }

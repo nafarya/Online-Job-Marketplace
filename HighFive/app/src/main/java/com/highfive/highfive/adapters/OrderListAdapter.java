@@ -65,7 +65,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
 
         @Override
         public void onClick(View view) {
-
+            listener.onItemClick(getAdapterPosition());
         }
     }
 }
