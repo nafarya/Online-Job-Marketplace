@@ -208,9 +208,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         return mimeType;
     }
 
-
-
-
     @Override
     public void navigateToProfile() {
 
@@ -220,7 +217,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public void navigateToOrderDetail(Order order) {
         OrderDetailsFragment fragment = new OrderDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("orderId", order.getOrderdId());
+        bundle.putString("orderId", order.getOrderdId());
         bundle.putString("theme", order.getTheme());
         bundle.putString("description", order.getDescription());
         fragment.setArguments(bundle);

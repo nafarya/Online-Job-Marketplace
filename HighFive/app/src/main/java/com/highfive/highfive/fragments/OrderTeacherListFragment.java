@@ -69,12 +69,12 @@ public class OrderTeacherListFragment extends Fragment implements OrderTeacherLi
                     JSONArray subjArray = contents.getJSONArray("items");
                     for (int i = 0; i < contents.getInt("count"); i++) {
                         JSONObject current = (JSONObject) subjArray.get(i);
-                        profile.addOrder(new Order(i, current.getString("title"), current.getString("description")));
+                        profile.addOrder(new Order(current.getString("id"), current.getString("title"), current.getString("description")));
                     }
-//                    OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders());
-//                    if (orderList != null) {
-//                        orderList.setAdapter(adapter);
-//                    }
+                    OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders(), OrderTeacherListFragment.this);
+                    if (orderList != null) {
+                        orderList.setAdapter(adapter);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -100,7 +100,7 @@ public class OrderTeacherListFragment extends Fragment implements OrderTeacherLi
 
         Log.i("orderList", "teacher");
 
-        addOrders();
+        //addOrders();
         OrderTeacherListAdapter adapter = new OrderTeacherListAdapter(profile.getAllOrders(), this);
         orderList.setAdapter(adapter);
 
@@ -111,22 +111,22 @@ public class OrderTeacherListFragment extends Fragment implements OrderTeacherLi
         return v;
     }
 
-    void addOrders() {
-        if (profile == null) {
-            profile = new Profile("test", "test");
-        }
-        Order order = new Order(0, "Инфа для препода", "Завтра будет кр, 8 класс");
-        Order order1 = new Order(1, "Русский язык", "Подстраховать на диктанте");
-        Order order2 = new Order(2,"География", "проверочная работа");
-        Order order3 = new Order(3, "Геометрия", "Контрльная работа, подстраховать");
-        Order order4 = new Order(4, "Английский", "Помочь с домашкой");
-        profile.addOrder(order);
-        profile.addOrder(order1);
-        profile.addOrder(order2);
-        profile.addOrder(order3);
-        profile.addOrder(order4);
-
-    }
+//    void addOrders() {
+//        if (profile == null) {
+//            profile = new Profile("test", "test");
+//        }
+//        Order order = new Order(0, "Инфа для препода", "Завтра будет кр, 8 класс");
+//        Order order1 = new Order(1, "Русский язык", "Подстраховать на диктанте");
+//        Order order2 = new Order(2,"География", "проверочная работа");
+//        Order order3 = new Order(3, "Геометрия", "Контрльная работа, подстраховать");
+//        Order order4 = new Order(4, "Английский", "Помочь с домашкой");
+//        profile.addOrder(order);
+//        profile.addOrder(order1);
+//        profile.addOrder(order2);
+//        profile.addOrder(order3);
+//        profile.addOrder(order4);
+//
+//    }
 
     @Override
     public void onItemClick(int item) {
