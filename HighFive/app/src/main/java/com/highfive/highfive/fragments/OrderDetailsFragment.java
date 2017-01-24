@@ -4,6 +4,7 @@ package com.highfive.highfive.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
+import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -21,6 +25,8 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,7 +45,7 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.bids_list)             RecyclerView bidsList;
     @InjectView(R.id.button_add_bid)        Button addBid;
     @InjectView(R.id.bid_amount)            EditText bidAmount;
-
+    @InjectView(R.id.bid_card)              CardView bidCard;
 
     private String orderId;
 
@@ -49,6 +55,12 @@ public class OrderDetailsFragment extends Fragment {
         HighFiveHttpClient.initCookieStore(getContext());
         View v = inflater.inflate(R.layout.fragment_order_details, container, false);
         ButterKnife.inject(this, v);
+
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        if (!profile.getType().equals("teacher")) {
+            bidCard.setVisibility(View.GONE);
+        }
 
         addBid.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +99,7 @@ public class OrderDetailsFragment extends Fragment {
         RequestParams params = new RequestParams();
         orderId = args.getString("orderId");
         params.add("id", orderId);
+
         HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
