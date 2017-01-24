@@ -7,12 +7,12 @@ import java.util.Date;
  */
 
 public class Order {
-    private int orderdId;
+    private String orderdId;
     private String theme;
     private String description;
     private Date date;
 
-    public Order(int orderId, String themeId, String description) {
+    public Order(String orderId, String themeId, String description) {
         this.orderdId = orderId;
         this.theme = themeId;
         this.description = description;
@@ -42,11 +42,11 @@ public class Order {
         this.date = date;
     }
 
-    public int getOrderdId() {
+    public String getOrderdId() {
         return orderdId;
     }
 
-    public void setOrderdId(int orderdId) {
+    public void setOrderdId(String orderdId) {
         this.orderdId = orderdId;
     }
 }

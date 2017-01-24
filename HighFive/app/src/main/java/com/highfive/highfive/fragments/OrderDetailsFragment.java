@@ -8,14 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.highfive.highfive.R;
-import com.highfive.highfive.model.Order;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,8 +37,11 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.order_type)            TextView orderType;
     @InjectView(R.id.order_deadline)        TextView orderDeadline;
     @InjectView(R.id.bids_list)             RecyclerView bidsList;
+    @InjectView(R.id.button_add_bid)        Button addBid;
+    @InjectView(R.id.bid_amount)            EditText bidAmount;
 
-    private Order order;
+
+    private String orderId;
 
     @Nullable
     @Override
@@ -44,20 +50,44 @@ public class OrderDetailsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_order_details, container, false);
         ButterKnife.inject(this, v);
 
+        addBid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestParams params = new RequestParams();
+                params.add("id", orderId);
+                params.add("offer", bidAmount.getText().toString());
+                HighFiveHttpClient.post("orders/" + orderId + "/bids", params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+                        Toast.makeText(getContext(), "Ставка отправлена", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                    }
+                });
+            }
+        });
+
         return v;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Bundle args = this.getArguments();
-        order = new Order(args.getInt("orderId"), args.getString("theme"), args.getString("description"));
 
-        orderTitle.setText(order.getTheme());
-        orderDescription.setText(order.getDescription());
-
-        /*int orderId = args.getInt("orderId");
-        HighFiveHttpClient.get("orders/" + orderId, null, new JsonHttpResponseHandler() {
+        RequestParams params = new RequestParams();
+        orderId = args.getString("orderId");
+        params.add("id", orderId);
+        HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -88,7 +118,12 @@ public class OrderDetailsFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     JSONObject contents = response.getJSONObject("response");
-                    //handle all bids here
+                    int count = contents.getInt("count");
+                    JSONArray items = contents.getJSONArray("items");
+                    for (int i = 0; i < count; i++) {
+                        JSONObject current = items.getJSONObject(i);
+                        //make a list item here
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -103,6 +138,6 @@ public class OrderDetailsFragment extends Fragment {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
-        });*/
+        });
     }
 }

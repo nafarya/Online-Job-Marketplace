@@ -11,21 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
+import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListAdapter;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import cz.msebera.android.httpclient.Header;
+import java.lang.reflect.Type;
 
 /**
  * Created by dan on 26.11.16.
@@ -58,40 +53,8 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
         HighFiveHttpClient.initCookieStore(getContext());
 
-        RequestParams params = new RequestParams();
-        params.put("offset", 0);
-        params.put("limit", 20);
-
-        HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    String id = contents.getString("id");
-                    String token = contents.getString("token");
-                    HighFiveHttpClient.addUidCookie(id);
-                    HighFiveHttpClient.addTokenCookie(token);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
-
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
 
         addOrders();
         OrderListAdapter adapter = new OrderListAdapter(profile.getAllOrders(), this);
@@ -103,11 +66,11 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         if (profile == null) {
             profile = new Profile("test", "test");
         }
-        Order order = new Order(0, "Математика", "Завтра будет кр, 8 класс");
-        Order order1 = new Order(1, "Русский язык", "Подстраховать на диктанте");
-        Order order2 = new Order(2, "География", "проверочная работа");
-        Order order3 = new Order(3, "Геометрия", "Контрльная работа, подстраховать");
-        Order order4 = new Order(4, "Английский", "Помочь с домашкой");
+        Order order = new Order("0", "Математика", "Завтра будет кр, 8 класс");
+        Order order1 = new Order("1", "Русский язык", "Подстраховать на диктанте");
+        Order order2 = new Order("2", "География", "проверочная работа");
+        Order order3 = new Order("3", "Геометрия", "Контрльная работа, подстраховать");
+        Order order4 = new Order("4", "Английский", "Помочь с домашкой");
         profile.addOrder(order);
         profile.addOrder(order1);
         profile.addOrder(order2);

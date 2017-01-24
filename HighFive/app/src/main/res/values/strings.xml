@@ -22,5 +22,6 @@
     <string name="budget">Бюджет</string>
     <string name="comment">comment bla bla bla</string>
     <string name="Balance">Баланс: 4243 рубля</string>
+    <string name="add_bid">Сделать ставку</string>
 
 </resources>
