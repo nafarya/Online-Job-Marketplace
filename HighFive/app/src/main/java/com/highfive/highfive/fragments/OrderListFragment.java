@@ -49,8 +49,6 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
                                    }});
 
-
-
         HighFiveHttpClient.initCookieStore(getContext());
 
         Type profileType = new TypeToken<Profile>(){}.getType();
