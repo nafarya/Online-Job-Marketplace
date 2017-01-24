@@ -23,5 +23,8 @@
     <string name="comment">comment bla bla bla</string>
     <string name="Balance">Баланс: 4243 рубля</string>
     <string name="add_bid">Сделать ставку</string>
+    <string name="Subject">Предмет:</string>
+    <string name="job_description">Работа состоит в том, что надо сделать все быстро и качественно.</string>
+    <string name="deadline">Сроки:</string>
 
 </resources>

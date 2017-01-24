@@ -3,6 +3,7 @@ package com.highfive.highfive.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,15 +39,15 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class OrderDetailsFragment extends Fragment {
-    @InjectView(R.id.order_title)           TextView orderTitle;
-    @InjectView(R.id.order_description)     TextView orderDescription;
-    @InjectView(R.id.order_subject)         TextView orderSubject;
-    @InjectView(R.id.order_type)            TextView orderType;
-    @InjectView(R.id.order_deadline)        TextView orderDeadline;
-    @InjectView(R.id.bids_list)             RecyclerView bidsList;
-    @InjectView(R.id.button_add_bid)        Button addBid;
-    @InjectView(R.id.bid_amount)            EditText bidAmount;
-    @InjectView(R.id.bid_card)              CardView bidCard;
+    @InjectView(R.id.order_title)               TextView orderTitle;
+    @InjectView(R.id.order_description)         TextView orderDescription;
+    @InjectView(R.id.order_subject)             TextView orderSubject;
+    @InjectView(R.id.order_type)                TextView orderType;
+    @InjectView(R.id.order_deadline)            TextView orderDeadline;
+    @InjectView(R.id.bids_list)                 RecyclerView bidsList;
+    @InjectView(R.id.button_add_bid)            Button addBid;
+    @InjectView(R.id.bid_amount)                EditText bidAmount;
+    @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
 
     private String orderId;
 
@@ -53,8 +55,9 @@ public class OrderDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HighFiveHttpClient.initCookieStore(getContext());
-        View v = inflater.inflate(R.layout.fragment_order_details, container, false);
+        View v = inflater.inflate(R.layout.fragment_order_details_teacher, container, false);
         ButterKnife.inject(this, v);
+        bidsList.setNestedScrollingEnabled(false);
 
         Type profileType = new TypeToken<Profile>(){}.getType();
         Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
