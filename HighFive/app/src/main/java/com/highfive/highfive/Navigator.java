@@ -7,7 +7,17 @@ import com.highfive.highfive.model.Order;
  */
 
 public interface Navigator {
+    void navigateToTeacherProfile();
+
+    void navigateToStudentProfile();
+
     void navigateToProfile();
+
+    void navigateToChat();
+
+    void navigateToHelp();
+
+    void navigateToChooseOrder();
 
     void navigateToOrderDetail(Order order);
 

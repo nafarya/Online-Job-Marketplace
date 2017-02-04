@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#1d2836">
+
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_teacher_completed_orders"
+                    android:textColor="@color/tw__solid_white"
+                    android:layout_toLeftOf="@id/avatar"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="32dp"
+                    android:textSize="20sp"
+                    android:text="6790"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/avatar"
+                    android:gravity="right"
+                    android:layout_below="@id/fragment_profile_teacher_completed_orders"
+                    android:textColor="@color/tw__solid_white"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:textSize="16sp"
+                    android:lines="2"
+                    android:text="Заказов выполнено"/>
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="32dp"
+                    android:padding="0dp"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/avatar"
+                    android:clickable="true"
+                    android:onClick="uploadAvatar"
+                    android:src="@drawable/com_facebook_profile_picture_blank_square"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_teacher_inprogress_orders"
+                    android:textColor="@color/tw__solid_white"
+                    android:layout_toRightOf="@id/avatar"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="32dp"
+                    android:textSize="20sp"
+                    android:text="24"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/avatar"
+                    android:gravity="left"
+                    android:layout_below="@id/fragment_profile_teacher_inprogress_orders"
+                    android:textColor="@color/tw__solid_white"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:textSize="16sp"
+                    android:lines="2"
+                    android:text="@string/in_progress"/>
+
+
+
+            </RelativeLayout>
+
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/fragment_profile_rating_bar"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:max="5"
+                android:numStars="5"
+                android:stepSize="0.01"
+                style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
+                android:rating="2.5"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fragment_profile_teacher_login"
+                android:layout_gravity="center"
+                android:textSize="20sp"
+                android:textColor="@color/tw__solid_white"
+                android:text="login"
+                android:layout_marginTop="16dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_negative_rating"
+                    android:textColor="#f6665c"
+                    android:text="13"
+                    android:textSize="20sp"
+                    android:layout_marginLeft="64dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_positive_rating"
+                    android:textColor="#92d152"
+                    android:text="95"
+                    android:textSize="20sp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="64dp"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_thumb_down_black_36dp"
+                    android:layout_marginLeft="56dp"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_thumb_up_black_36dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="56dp"/>
+
+            </RelativeLayout>
+
+
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Последние отзывы"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:textSize="18sp"
+                android:gravity="center"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/tw__solid_white"
+                app:layoutManager="LinearLayoutManager"
+                android:id="@+id/profile_comments_rv">
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</LinearLayout>

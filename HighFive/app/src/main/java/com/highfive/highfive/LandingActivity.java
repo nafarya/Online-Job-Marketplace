@@ -27,7 +27,8 @@ import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
 import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.OrderTeacherListFragment;
-import com.highfive.highfive.fragments.ProfileFragment;
+import com.highfive.highfive.fragments.ProfileStudentFragment;
+import com.highfive.highfive.fragments.ProfileTeacherFragment;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
@@ -77,19 +78,23 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        Fragment fragment = null;
+//        Fragment fragment = null;
         switch (id) {
             case R.id.nav_profile_fragment:
-                fragment = new ProfileFragment();
+                navigateToProfile();
+//                fragment = new ProfileTeacherFragment();
                 break;
             case R.id.nav_order_list_fragment:
-                fragment = chooseOrdersFragment();
+                navigateToChooseOrder();
+//                fragment = chooseOrdersFragment();
                 break;
             case R.id.nav_help_fragment:
-                fragment = new HelpFragment();
+                navigateToHelp();
+//                fragment = new HelpFragment();
                 break;
             case R.id.nav_chat:
-                fragment = new ChatFragment();
+                navigateToChat();
+//                fragment = new ChatFragment();
                 break;
             case R.id.nav_to_exit:
                 HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
@@ -116,8 +121,8 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 return true;
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
 
         item.setChecked(true);
         setTitle(item.getTitle());
@@ -209,8 +214,53 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToProfile() {
+    public void navigateToTeacherProfile() {
+        ProfileTeacherFragment fragment = new ProfileTeacherFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
 
+    @Override
+    public void navigateToStudentProfile() {
+        ProfileStudentFragment fragment= new ProfileStudentFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
+
+    @Override
+    public void navigateToProfile() {
+        Fragment fragment;
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
+            fragment = new ProfileStudentFragment();
+        } else {
+            fragment = new ProfileTeacherFragment();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
+
+    @Override
+    public void navigateToChat() {
+        ChatFragment fragment = new ChatFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
+
+    @Override
+    public void navigateToHelp() {
+        HelpFragment fragment = new HelpFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+    }
+
+    @Override
+    public void navigateToChooseOrder() {
+        Fragment fragment;
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
+            fragment = new OrderListFragment();
+        } else {
+            fragment = new OrderTeacherListFragment();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
     @Override

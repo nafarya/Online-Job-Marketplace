@@ -25,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -34,15 +36,18 @@ import cz.msebera.android.httpclient.Header;
  * Created by dan on 26.11.16.
  */
 
-public class ProfileFragment extends Fragment {
+public class ProfileTeacherFragment extends Fragment {
     private RecyclerView rv;
     private ProfileCommentsAdapter adapter;
     private Profile profile;
+    private List<String> comments;
 
-    @InjectView(R.id.fragment_profile_balance)          TextView profileBalance;
     @InjectView(R.id.fragment_profile_rating_bar)       RatingBar profileRating;
-    @InjectView(R.id.fragment_profile_tasks_sent)       TextView profileTasksSent;
-    @InjectView(R.id.fragment_profile_tasks_solved)     TextView profileTasksSolved;
+    @InjectView(R.id.fragment_profile_negative_rating)  TextView profileNegativeRating;
+    @InjectView(R.id.fragment_profile_positive_rating)  TextView profilePositiveRating;
+    @InjectView(R.id.fragment_profile_teacher_login)    TextView profileLogin;
+//    @InjectView(R.id.fragment_profile_tasks_sent)       TextView profileTasksSent;
+//    @InjectView(R.id.fragment_profile_tasks_solved)     TextView profileTasksSolved;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,26 +100,39 @@ public class ProfileFragment extends Fragment {
     }
 
     private void fillProfileData() {
+        comments = profile.getAllComments();
+        if (comments == null || comments.size() < 3) {
+            createComments();
+            comments = profile.getAllComments();
+        }
 
+        List<String> topThreeComment = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            topThreeComment.add(comments.get(i));
+        }
+        adapter = new ProfileCommentsAdapter(topThreeComment);
+        rv.setAdapter(adapter);
+
+
+        profilePositiveRating.setText(String.valueOf(profile.getPositiveRating()));
+        profileNegativeRating.setText(String.valueOf(profile.getNegativeRating()));
+        profileRating.setRating(profile.getRate());
+        profileLogin.setText(profile.getUsername());
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        View v = inflater.inflate(R.layout.fragment_profile_teacher, container, false);
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
+        rv.setNestedScrollingEnabled(false);
         ButterKnife.inject(this, v);
-
 
         fillProfileData();
 
-        createComments();
-        adapter = new ProfileCommentsAdapter(profile.getAllComments());
-        rv.setAdapter(adapter);
-
 
         Drawable progress = profileRating.getProgressDrawable();
-        DrawableCompat.setTint(progress, Color.rgb(255,215,0));
+        DrawableCompat.setTint(progress, Color.rgb(255,215,79));
 
         return v;
     }
@@ -129,8 +147,8 @@ public class ProfileFragment extends Fragment {
         if (profile == null) {
             profile = new Profile("test", "test");
         }
-        for (int i = 0; i < 5; i++) {
-            profile.addComment("Comment" + i + " bla bla bla");
-        }
+
+        profile.addComment(getString(R.string.comment));
+
     }
 }

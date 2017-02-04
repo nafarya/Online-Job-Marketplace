@@ -14,7 +14,9 @@ public class Profile {
     private String email;
     private String username;
     private double balance;
-    private int rate;
+    private int positiveRating;
+    private int negativeRating;
+    private float rate;
     private boolean statusVIP;
 
     private String type;
@@ -54,7 +56,13 @@ public class Profile {
         this.username = username;
         this.name = firstName;
         this.surname = secondName;
-        this.rate = positiveRating - negativeRating;
+        this.positiveRating = positiveRating;
+        this.negativeRating = negativeRating;
+        if (positiveRating != 0) {
+            this.rate = (1 - (negativeRating / positiveRating)) * 100;
+        } else {
+            this.rate = 0;
+        }
         this.balance = Double.parseDouble(balance);
 
         this.type = type;
@@ -90,11 +98,11 @@ public class Profile {
         this.surname = surname;
     }
 
-    public int getRate() {
+    public float getRate() {
         return rate;
     }
 
-    public void setRate(int rate) {
+    public void setRate(float rate) {
         this.rate = rate;
     }
 
@@ -112,5 +120,29 @@ public class Profile {
 
     public List<String> getAllComments() {
         return comments;
+    }
+
+    public int getPositiveRating() {
+        return positiveRating;
+    }
+
+    public void setPositiveRating(int positiveRating) {
+        this.positiveRating = positiveRating;
+    }
+
+    public int getNegativeRating() {
+        return negativeRating;
+    }
+
+    public void setNegativeRating(int negativeRating) {
+        this.negativeRating = negativeRating;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 }

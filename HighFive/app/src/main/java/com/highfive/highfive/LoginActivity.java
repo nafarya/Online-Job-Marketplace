@@ -186,6 +186,8 @@ public class LoginActivity extends AppCompatActivity {
     public boolean validate() {
         boolean valid = true;
 
+        emailText.setText(emailText.getText().toString().replace(" ", ""));
+
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 

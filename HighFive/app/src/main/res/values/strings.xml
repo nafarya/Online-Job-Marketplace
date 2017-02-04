@@ -20,11 +20,12 @@
     <string name="common_info">Общая информация</string>
     <string name="choose_subject">Выберите предмет</string>
     <string name="budget">Бюджет</string>
-    <string name="comment">comment bla bla bla</string>
-    <string name="Balance">Баланс: 4243 рубля</string>
+    <string name="comment">Отличный автор! сделал все быстро и качественно. Был очень внимателен к требованиям и моим пожеланиям. Сделал работу к сроку! Спасибо.</string>
+    <string name="Balance">Ваш баланс: 500 руб.</string>
     <string name="add_bid">Сделать ставку</string>
     <string name="Subject">Предмет:</string>
     <string name="job_description">Работа состоит в том, что надо сделать все быстро и качественно.</string>
     <string name="deadline">Сроки:</string>
+    <string name="in_progress">Сейчас\nв работе</string>
 
 </resources>
