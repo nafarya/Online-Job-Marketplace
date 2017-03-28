@@ -4,117 +4,167 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey">
-
+    android:background="@color/tw__solid_white">
+    
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1d2836">
+                android:layout_height="160dp"
+                android:src="@mipmap/banner"
+                android:scaleType="centerCrop"/>
 
-
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/fragment_profile_teacher_completed_orders"
-                    android:textColor="@color/tw__solid_white"
-                    android:layout_toLeftOf="@id/avatar"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="32dp"
-                    android:textSize="20sp"
-                    android:text="6790"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/avatar"
-                    android:gravity="right"
-                    android:layout_below="@id/fragment_profile_teacher_completed_orders"
-                    android:textColor="@color/tw__solid_white"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:textSize="16sp"
-                    android:lines="2"
-                    android:text="Заказов выполнено"/>
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginTop="32dp"
-                    android:padding="0dp"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/avatar"
-                    android:clickable="true"
-                    android:onClick="uploadAvatar"
-                    android:src="@drawable/com_facebook_profile_picture_blank_square"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/fragment_profile_teacher_inprogress_orders"
-                    android:textColor="@color/tw__solid_white"
-                    android:layout_toRightOf="@id/avatar"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="32dp"
-                    android:textSize="20sp"
-                    android:text="24"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/avatar"
-                    android:gravity="left"
-                    android:layout_below="@id/fragment_profile_teacher_inprogress_orders"
-                    android:textColor="@color/tw__solid_white"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:textSize="16sp"
-                    android:lines="2"
-                    android:text="@string/in_progress"/>
-
-
-
-            </RelativeLayout>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="-40dp"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/avatar"
+                android:clickable="true"
+                android:onClick="uploadAvatar"
+                android:src="@drawable/com_facebook_profile_picture_blank_square"
+                />
 
             <RatingBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:id="@+id/fragment_profile_rating_bar"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"
                 android:max="5"
                 android:numStars="5"
                 android:stepSize="0.01"
-                style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
+                style="@android:style/Widget.Holo.Light.RatingBar.Small"
                 android:rating="2.5"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/fragment_profile_teacher_login"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                android:textColor="@color/tw__solid_white"
+                android:textStyle="bold"
+                android:layout_marginLeft="16dp"
+                android:textSize="24sp"
+                android:textColor="@color/black"
                 android:text="login"
                 android:layout_marginTop="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_marginLeft="16dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:text="@string/about"
+                android:layout_marginTop="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:id="@+id/fragment_profile_about"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:maxLines="2"
+                android:lines="2" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/darkGrey"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_profile_teacher_completed_orders"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    android:text="14"
+                    android:layout_weight="1"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/fragment_profile_teacher_inprogress_orders"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    android:text="14"
+                    android:layout_weight="1"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    android:text="14"
+                    android:layout_weight="1"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="8sp"
+                    android:text="Заказов\nвыполнено"
+                    android:maxLines="2"
+                    android:layout_weight="1"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="8sp"
+                    android:text="Заказов\nв работе"
+                    android:layout_weight="1"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="8sp"
+                    android:text="Заказов\nвыполнено"
+                    android:layout_weight="1"
+                    />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:src="@color/darkGrey"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -144,8 +194,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -162,30 +211,28 @@
 
             </RelativeLayout>
 
-
-
-
             </LinearLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:text="Последние отзывы"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Последние отзывы"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:textSize="18sp"
-                android:gravity="center"/>
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/tw__solid_white"
+                    app:layoutManager="LinearLayoutManager"
+                    android:id="@+id/profile_comments_rv">
+                </android.support.v7.widget.RecyclerView>
 
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/tw__solid_white"
-                app:layoutManager="LinearLayoutManager"
-                android:id="@+id/profile_comments_rv">
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
+            </LinearLayout>
 
 
     </ScrollView>

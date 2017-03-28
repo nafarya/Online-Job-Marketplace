@@ -38,7 +38,7 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
-        message = (EditText) v.findViewById(R.id.message_text);
+        /*message = (EditText) v.findViewById(R.id.message_text);
         v.findViewById(R.id.send_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +75,7 @@ public class ChatFragment extends Fragment {
             }
         };
         chatView.setAdapter(chatAdapter);
-
+*/
         return v;
     }
 

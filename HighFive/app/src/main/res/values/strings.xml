@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HighFive</string>
+    <string name="app_name">ЯРЕШУ</string>
     <string name="navigation_drawer_open">opened</string>
     <string name="navigation_drawer_close">closed</string>
     <string name="my_profile">Мой профиль</string>
@@ -27,5 +27,6 @@
     <string name="job_description">Работа состоит в том, что надо сделать все быстро и качественно.</string>
     <string name="deadline">Сроки:</string>
     <string name="in_progress">Сейчас\nв работе</string>
+    <string name="about">О себе</string>
 
 </resources>

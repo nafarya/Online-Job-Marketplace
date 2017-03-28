@@ -3,9 +3,7 @@ package com.highfive.highfive.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,11 @@ import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
+import com.highfive.highfive.adapters.BidListAdapter;
+import com.highfive.highfive.model.Bid;
+import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -29,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -50,6 +54,9 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
 
     private String orderId;
+    private List<Bid> bidlist = new ArrayList<>();
+    private List<Subject> subjectList = new ArrayList<>();
+    private List<OrderType> orderTypeList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -77,6 +84,7 @@ public class OrderDetailsFragment extends Fragment {
                         super.onSuccess(statusCode, headers, response);
                         Toast.makeText(getContext(), "Ставка отправлена", Toast.LENGTH_SHORT).show();
                         bidAmount.setText("");
+
                     }
 
                     @Override
@@ -95,12 +103,97 @@ public class OrderDetailsFragment extends Fragment {
         return v;
     }
 
+    String getSubjectNameById(String id) {
+        for (int i = 0; i < subjectList.size(); i++) {
+            if (subjectList.get(i).getId().equals(id)) {
+                return subjectList.get(i).getName();
+            }
+        }
+        return "Error, subject name with id " + id + "does not exist";
+    }
+
+    String getOrderTypeById(String id) {
+        for (int i = 0; i < orderTypeList.size(); i++) {
+            if (orderTypeList.get(i).getId().equals(id)) {
+                return orderTypeList.get(i).getName();
+            }
+        }
+        return "Error, ordertype with id " + id + "does not exist";
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        RequestParams params = new RequestParams();
+        params.add("type", "all");
+
+        HighFiveHttpClient.get("subjects", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        subjectList.add(new Subject(current.getString("name"), current.getString("science"),
+                                current.getString("id")));
+
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+
+        params.remove("type");
+        params.add("type", "all");
+        HighFiveHttpClient.get("ordertypes", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        orderTypeList.add(new OrderType(current.getString("name"),
+                                current.getString("difficultyLevel"),
+                                current.getString("id")));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+
         Bundle args = this.getArguments();
 
-        RequestParams params = new RequestParams();
+        params = new RequestParams();
         orderId = args.getString("orderId");
         params.add("id", orderId);
 
@@ -112,8 +205,9 @@ public class OrderDetailsFragment extends Fragment {
                     orderTitle.setText(contents.get("title").toString());
                     orderDescription.setText(contents.get("description").toString());
                     orderDeadline.setText(contents.get("deadline").toString());
-                    orderSubject.setText(contents.get("subjects").toString());
-                    orderType.setText(contents.get("type").toString());
+                    orderSubject.setText(getSubjectNameById(contents.get("subject").toString()));
+                    orderType.setText(getOrderTypeById(contents.get("type").toString()));
+                    JSONObject bidObject = contents.getJSONObject("bids");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -136,11 +230,15 @@ public class OrderDetailsFragment extends Fragment {
                 try {
                     JSONObject contents = response.getJSONObject("response");
                     int count = contents.getInt("count");
+
                     JSONArray items = contents.getJSONArray("items");
                     for (int i = 0; i < count; i++) {
                         JSONObject current = items.getJSONObject(i);
-                        //make a list item here
+                        bidlist.add(new Bid(current.getInt("offer"), current.getString("id")));
                     }
+                    BidListAdapter adapter = new BidListAdapter(bidlist);
+                    bidsList.setAdapter(adapter);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -156,5 +254,7 @@ public class OrderDetailsFragment extends Fragment {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+
+
     }
 }

@@ -96,7 +96,9 @@ public class SignupActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     SignupActivity.this.onSignupSuccess();
                 } catch (JSONException e) {
+
                     e.printStackTrace();
+
                 }
             }
 
@@ -117,7 +119,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Ошибка регистрации", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Ошибка регистрации, ", Toast.LENGTH_LONG).show();
         signupButton.setEnabled(true);
     }
 

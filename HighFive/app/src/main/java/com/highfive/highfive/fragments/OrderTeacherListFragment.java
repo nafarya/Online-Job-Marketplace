@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
@@ -15,6 +17,7 @@ import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderTeacherListAdapter;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -39,9 +42,11 @@ import cz.msebera.android.httpclient.Header;
 public class OrderTeacherListFragment extends Fragment implements OrderTeacherListAdapter.OnItemClickListener {
 
     @InjectView(R.id.order_teacher_list_rv_id)      RecyclerView orderList;
+    @InjectView(R.id.subject_spinner)               Spinner spinner;
 
     private Profile profile;
     private ArrayList<Order> orders = new ArrayList<>();
+    private ArrayList<String> subjectList = new ArrayList<>();
     private Navigator navigator;
 
     @Override
@@ -90,6 +95,41 @@ public class OrderTeacherListFragment extends Fragment implements OrderTeacherLi
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+
+        String userType = profile != null ? profile.getType().toLowerCase() : "student";
+        params = new RequestParams();
+        params.add("type", userType);
+
+        HighFiveHttpClient.get("subjects", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        subjectList.add(current.getString("name"));
+                    }
+                    ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
+                            (getActivity(), android.R.layout.simple_spinner_item, subjectList);
+                    if (spinner != null) {
+                        spinner.setAdapter(subjectAdapter);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 
     @Nullable
@@ -106,6 +146,11 @@ public class OrderTeacherListFragment extends Fragment implements OrderTeacherLi
         ButterKnife.inject(this, v);
 
         HighFiveHttpClient.initCookieStore(getContext());
+
+
+
+
+
 
         return v;
     }

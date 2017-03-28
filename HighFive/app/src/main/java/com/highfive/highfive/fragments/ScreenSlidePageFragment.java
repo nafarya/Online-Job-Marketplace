@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.highfive.highfive.R;
@@ -39,7 +40,17 @@ public class ScreenSlidePageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
         TextView titleText = (TextView) view.findViewById(R.id.modeText);
+        ImageView imageView = (ImageView) view.findViewById(R.id.imageView2);
         titleText.setText(title);
+        if (title.equals("Школьник")) {
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_active_black_24dp));
+        }
+        if (title.equals("Студент")) {
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_school_black_24dp));
+        }
+        if (title.equals("Преподаватель")) {
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_work_black_24dp));
+        }
         return view;
     }
 }

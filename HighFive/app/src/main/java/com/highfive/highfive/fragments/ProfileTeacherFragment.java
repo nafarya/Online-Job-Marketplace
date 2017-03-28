@@ -107,7 +107,11 @@ public class ProfileTeacherFragment extends Fragment {
         }
 
         List<String> topThreeComment = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        int sz = 3;
+        if (comments.size() < sz) {
+            sz = comments.size();
+        }
+        for (int i = 0; i < sz; i++) {
             topThreeComment.add(comments.get(i));
         }
         adapter = new ProfileCommentsAdapter(topThreeComment);
@@ -147,7 +151,7 @@ public class ProfileTeacherFragment extends Fragment {
         if (profile == null) {
             profile = new Profile("test", "test");
         }
-
+        profile.setNegativeRating(15);
         profile.addComment(getString(R.string.comment));
 
     }

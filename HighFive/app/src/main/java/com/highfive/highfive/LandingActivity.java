@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
-import com.highfive.highfive.fragments.OrderListFragment;
+import com.highfive.highfive.fragments.OrderStudentListFragment;
 import com.highfive.highfive.fragments.OrderTeacherListFragment;
 import com.highfive.highfive.fragments.ProfileStudentFragment;
 import com.highfive.highfive.fragments.ProfileTeacherFragment;
@@ -138,7 +137,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         Type profileType = new TypeToken<Profile>(){}.getType();
         Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
         if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
-            fragment = new OrderListFragment();
+            fragment = new OrderStudentListFragment();
         } else {
             fragment = new OrderTeacherListFragment();
         }
@@ -256,7 +255,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         Type profileType = new TypeToken<Profile>(){}.getType();
         Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
         if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
-            fragment = new OrderListFragment();
+            fragment = new OrderStudentListFragment();
         } else {
             fragment = new OrderTeacherListFragment();
         }

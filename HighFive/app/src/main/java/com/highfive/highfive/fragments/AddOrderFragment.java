@@ -93,6 +93,7 @@ public class AddOrderFragment extends DialogFragment {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+
         HighFiveHttpClient.get("ordertypes", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

@@ -23,7 +23,6 @@ import butterknife.InjectView;
 
 public class ProfileStudentFragment extends Fragment {
 
-    @InjectView(R.id.fragment_profile_balance)          TextView profileBalance;
     @InjectView(R.id.fragment_profile_student_rating_bar)       RatingBar profileRating;
 
 

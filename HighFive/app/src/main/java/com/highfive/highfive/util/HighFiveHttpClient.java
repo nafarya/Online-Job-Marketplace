@@ -30,6 +30,7 @@ public class HighFiveHttpClient {
                 client.addHeader("api-token", token.getValue());
             }
         }
+        client.setLoggingEnabled(true);
     }
 
     public static void addUidCookie(String uid) {
