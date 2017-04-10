@@ -28,5 +28,10 @@
     <string name="deadLine">Сроки:</string>
     <string name="in_progress">Сейчас\nв работе</string>
     <string name="about">О себе</string>
+    <string name="order_budget">Бюджет заказа</string>
+    <string name="offers">Предложения</string>
+    <string name="deadline">Срок выполнения</string>
+    <string name="status">Статус</string>
+    <string name="attached_files">Прикрепленные файлы</string>
 
 </resources>

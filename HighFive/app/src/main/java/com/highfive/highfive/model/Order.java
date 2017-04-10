@@ -22,6 +22,9 @@ public class Order implements Parcelable {
     private String status;
     private String type;
     private String offer;
+    private String title;
+
+    public Order() {}
 
     public Order(String orderId, String themeId) {
         this.orderdId = orderId;
@@ -88,7 +91,11 @@ public class Order implements Parcelable {
     }
 
     public String getStatus() {
-        return status;
+        if (status.equals("active")) {
+            return "Открыт";
+        } else {
+            return "Завершен";
+        }
     }
 
     public void setStatus(String status) {
@@ -160,10 +167,20 @@ public class Order implements Parcelable {
     }
 
     public String getdeadLine() {
-        return deadLine;
+        String time = deadLine.substring(0, 4) + "." + deadLine.substring(5, 7) + "." +
+                deadLine.substring(8, 10) + " " + deadLine.substring(11, 16);
+        return time;
     }
 
     public void setdeadLine(String deadLine) {
         this.deadLine = deadLine;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

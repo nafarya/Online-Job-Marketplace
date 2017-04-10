@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Bid;
+import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
@@ -47,8 +48,9 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.order_title)               TextView orderTitle;
     @InjectView(R.id.order_description)         TextView orderDescription;
     @InjectView(R.id.order_subject)             TextView orderSubject;
-    @InjectView(R.id.order_type)                TextView orderType;
+    @InjectView(R.id.order_details_type)        TextView orderType;
     @InjectView(R.id.order_deadline)            TextView orderDeadline;
+    @InjectView(R.id.order_details_status)      TextView orderStatus;
     @InjectView(R.id.button_add_bid)            Button addBid;
     @InjectView(R.id.bid_amount)                EditText bidAmount;
     @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
@@ -62,6 +64,7 @@ public class OrderDetailsFragment extends Fragment {
     private Navigator navigator;
     private Profile profile;
     private SubjectList subList;
+    private Order order;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -79,7 +82,7 @@ public class OrderDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HighFiveHttpClient.initCookieStore(getContext());
-        View v = inflater.inflate(R.layout.fragment_order_details_teacher, container, false);
+        View v = inflater.inflate(R.layout.fragment_order_details, container, false);
         ButterKnife.inject(this, v);
 
 
@@ -167,12 +170,22 @@ public class OrderDetailsFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     JSONObject contents = response.getJSONObject("response");
-                    orderTitle.setText(contents.get("title").toString());
-                    orderDescription.setText(contents.get("description").toString());
-                    orderDeadline.setText(contents.get("deadline").toString());
-                    orderSubject.setText(getSubjectNameById(contents.get("subject").toString()));
-                    orderType.setText(getOrderTypeById(contents.get("type").toString()));
+                    order = new Order();
+                    order.setTitle(contents.get("title").toString());
+                    order.setDescription(contents.get("description").toString());
+                    order.setdeadLine(contents.get("deadline").toString());
+                    order.setSubjectId(contents.get("subject").toString());
+                    order.setStatus(contents.get("status").toString());
+                    order.setType(contents.get("type").toString());
+
+                    orderTitle.setText(order.getTitle());
+                    orderDescription.setText(order.getDescription());
+                    orderDeadline.setText(order.getdeadLine());
+                    orderSubject.setText(getSubjectNameById(order.getSubjectId()));
+                    orderStatus.setText(order.getStatus());
+                    orderType.setText(getOrderTypeById(order.getType()));
                     JSONObject bidObject = contents.getJSONObject("bids");
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

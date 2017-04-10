@@ -65,13 +65,16 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp">
 
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/order_list_item_price"
                     android:text="666 Руб"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="2.5"/>
+                    android:layout_weight="1.78"
+                    android:layout_marginLeft="8dp"/>
+
+
 
                 <TextView
                     android:layout_width="wrap_content"
