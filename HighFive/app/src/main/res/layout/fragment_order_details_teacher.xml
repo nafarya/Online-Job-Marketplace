@@ -2,17 +2,15 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/backgroundGrey"
+    android:clickable="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/top"
+            android:background="@color/backgroundGrey"
             android:orientation="vertical">
 
             <LinearLayout
@@ -114,7 +112,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
-                            android:text="@string/deadline"/>
+                            android:text="@string/deadLine"/>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -171,24 +169,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
-                android:id="@+id/current_bids_text_view"
+                android:id="@+id/current_bids_number"
                 android:text="Текущие ставки:"/>
-
-
-
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/bids_list"
-                android:layout_marginTop="16dp"
-                app:layoutManager="LinearLayoutManager">
-            </android.support.v7.widget.RecyclerView>
-
-
 
         </LinearLayout>
 
-    </ScrollView>
 
 
 

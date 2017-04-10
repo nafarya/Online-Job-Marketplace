@@ -1,15 +1,16 @@
 package com.highfive.highfive;
 
+import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.Order;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dan on 23.01.17.
  */
 
 public interface Navigator {
-    void navigateToTeacherProfile();
-
-    void navigateToStudentProfile();
 
     void navigateToProfile();
 
@@ -20,5 +21,9 @@ public interface Navigator {
     void navigateToChooseOrder();
 
     void navigateToOrderDetail(Order order);
+
+    void navigateToBidsList(ArrayList<Bid> bids);
+
+    void navigateToBidListComments();
 
 }

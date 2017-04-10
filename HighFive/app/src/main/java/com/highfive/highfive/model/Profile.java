@@ -1,5 +1,6 @@
 package com.highfive.highfive.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,17 +19,18 @@ public class Profile {
     private int negativeRating;
     private float rate;
     private boolean statusVIP;
+    private String description;
 
     private String type;
-    private List<String> comments;
-    private List<Order> orderList;
+    private ArrayList<String> comments;
+    private ArrayList<Order> orderList;
 
     public Profile(String name, String surname) {
         this.name = name;
         this.surname = surname;
         rate = 0;
-        comments = new LinkedList<>();
-        orderList = new LinkedList<>();
+        comments = new ArrayList<>();
+        orderList = new ArrayList<>();
         statusVIP = false;
     }
 
@@ -66,15 +68,15 @@ public class Profile {
         this.balance = Double.parseDouble(balance);
 
         this.type = type;
-        comments = new LinkedList<>();
-        orderList = new LinkedList<>();
+        comments = new ArrayList<>();
+        orderList = new ArrayList<>();
     }
 
     public void addOrder(Order order) {
         orderList.add(order);
     }
 
-    public List<Order> getAllOrders() {
+    public ArrayList<Order> getAllOrders() {
         return orderList;
     }
 
@@ -145,4 +147,47 @@ public class Profile {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public ArrayList<Order> getStudentOrders() {
+        ArrayList<Order> orders = new ArrayList<>();
+        for (int i = 0; i < orderList.size(); i++) {
+            if (uid.equals(orderList.get(i).getOrderCreatorId())) {
+                orders.add(orderList.get(i));
+            }
+        }
+        return orders;
+    }
+
+    public ArrayList<Order> getOrdersByFilter(String subject, String orderTypeId, String userType) {
+        ArrayList<Order> orders = new ArrayList<>();
+
+        for (int i = 0; i < orderList.size(); i++) {
+            if (userType.equals("teacher")) {
+                if (orderList.get(i).getSubjectId().equals(subject)) {
+                    orders.add(orderList.get(i));
+                }
+            }
+            else {
+                if (orderList.get(i).getSubjectId().equals(subject) && orderList.get(i).getOrderCreatorId().equals(uid)) {
+                    orders.add(orderList.get(i));
+                }
+            }
+
+        }
+        return orders;
+    }
+
+    public Order getOrderById(String id) {
+        for (int i = 0; i < orderList.size(); i++) {
+            if (orderList.get(i).getOrderdId().equals(id)) {
+                return orderList.get(i);
+            }
+        }
+        return null;
+    }
+
 }

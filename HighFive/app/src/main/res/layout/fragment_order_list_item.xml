@@ -13,6 +13,15 @@
         android:layout_marginTop="8dp"
         app:cardCornerRadius="8dp">
 
+
+
+        <ImageView
+            android:layout_width="3dp"
+            android:id="@+id/order_list_item_marker"
+            android:layout_height="match_parent"
+            android:background="@color/green"/>
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,13 +35,14 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/order_list_item_discription"
-                android:text="Описание: "
+                android:id="@+id/order_list_item_subject"
+                android:text="Subject: "
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="8dp"
@@ -42,13 +52,48 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/order_list_item_date"
-                android:text="Дата: "
-                android:textSize="16sp"
-                android:textColor="@color/black"
+                android:id="@+id/order_list_item_orderType"
+                android:text="orderType: "
+
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"/>
+                android:maxLines="2"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/order_list_item_price"
+                    android:text="666 Руб"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="2.5"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/order_list_item_date"
+                    android:text="До: "
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="5"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/order_list_item_bid_num"
+                    android:text="0 Ставок"
+                    android:layout_weight="1.5"/>
+
+
+
+            </LinearLayout>
+
+
 
         </LinearLayout>
 

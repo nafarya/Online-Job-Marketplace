@@ -20,17 +20,15 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.fragments.BidListCommentFragment;
+import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
-import com.highfive.highfive.fragments.OrderStudentListFragment;
-import com.highfive.highfive.fragments.OrderTeacherListFragment;
-import com.highfive.highfive.fragments.ProfileStudentFragment;
-import com.highfive.highfive.fragments.ProfileTeacherFragment;
+import com.highfive.highfive.fragments.OrderListRootFragment;
+import com.highfive.highfive.fragments.ProfileFragment;
+import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.Order;
-import com.highfive.highfive.model.Profile;
-import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -40,7 +38,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -69,31 +67,27 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = chooseOrdersFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+
+        navigateToChooseOrder();
+
     }
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-//        Fragment fragment = null;
         switch (id) {
             case R.id.nav_profile_fragment:
                 navigateToProfile();
-//                fragment = new ProfileTeacherFragment();
                 break;
             case R.id.nav_order_list_fragment:
                 navigateToChooseOrder();
-//                fragment = chooseOrdersFragment();
                 break;
             case R.id.nav_help_fragment:
                 navigateToHelp();
-//                fragment = new HelpFragment();
                 break;
             case R.id.nav_chat:
                 navigateToChat();
-//                fragment = new ChatFragment();
                 break;
             case R.id.nav_to_exit:
                 HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
@@ -131,18 +125,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         return true;
     }
 
-    @NonNull
-    private Fragment chooseOrdersFragment() {
-        Fragment fragment;
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
-            fragment = new OrderStudentListFragment();
-        } else {
-            fragment = new OrderTeacherListFragment();
-        }
-        return fragment;
-    }
 
     public void uploadAvatar(View view) {
         Intent intent = new Intent(this, FilePickerActivity.class);
@@ -212,28 +194,10 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         return mimeType;
     }
 
-    @Override
-    public void navigateToTeacherProfile() {
-        ProfileTeacherFragment fragment = new ProfileTeacherFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
-    }
-
-    @Override
-    public void navigateToStudentProfile() {
-        ProfileStudentFragment fragment= new ProfileStudentFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
-    }
 
     @Override
     public void navigateToProfile() {
-        Fragment fragment;
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
-            fragment = new ProfileStudentFragment();
-        } else {
-            fragment = new ProfileTeacherFragment();
-        }
+        Fragment fragment = new ProfileFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
@@ -251,14 +215,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToChooseOrder() {
-        Fragment fragment;
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-        if (profile == null || profile.getType().equals("student") || profile.getType().equals("pupil")) {
-            fragment = new OrderStudentListFragment();
-        } else {
-            fragment = new OrderTeacherListFragment();
-        }
+        Fragment fragment = new OrderListRootFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
@@ -270,6 +227,23 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         bundle.putString("theme", order.getTheme());
         bundle.putString("description", order.getDescription());
         fragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void navigateToBidsList(ArrayList<Bid> bids) {
+        BidListFragment fragment = new BidListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("bidList", bids);
+        bundle.putString("string", "stirng");
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
+
+    }
+
+    @Override
+    public void navigateToBidListComments() {
+        BidListCommentFragment fragment = new BidListCommentFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 }

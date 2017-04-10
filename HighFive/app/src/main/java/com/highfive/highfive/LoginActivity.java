@@ -11,14 +11,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.highfive.highfive.model.OrderType;
+import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.model.Subject;
+import com.highfive.highfive.model.SubjectList;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -31,6 +38,9 @@ import cz.msebera.android.httpclient.Header;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private Profile profile;
+    private ArrayList<Subject> subjectList;
+    private ArrayList<OrderType> typeList;
 
     @InjectView(R.id.input_email)       EditText emailText;
     @InjectView(R.id.input_password)    EditText passwordText;
@@ -144,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                         super.onSuccess(statusCode, headers, response);
                         try {
                             JSONObject contents = (JSONObject) response.get("response");
-                            Profile profile = new Profile(contents.getString("email"),
+                            profile = new Profile(contents.getString("email"),
                                     contents.getString("id"),
                                     contents.getString("username"),
                                     contents.getString("balance"),
@@ -176,6 +186,9 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+
+        getSubjects();
+        getOrderTypes();
     }
 
     public void onLoginFailed() {
@@ -206,5 +219,89 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private void getSubjects() {
+        String userType = "all";
+        RequestParams params = new RequestParams();
+        subjectList = new ArrayList<>();
+        params.add("type", userType);
+
+
+        HighFiveHttpClient.get("subjects", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    Subject tmp = new Subject("Все предметы", "all", "all", "allSubjects");
+                    subjectList.add(tmp);
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        tmp = new Subject(
+                                current.getString("name"),
+                                current.getString("science"),
+                                current.getString("difficultyLevel"),
+                                current.getString("id")
+                        );
+                        subjectList.add(tmp);
+                    }
+                    SubjectList list = new SubjectList(subjectList);
+                    Cache.getCacheManager().put("subjectList", list);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    private void getOrderTypes() {
+        RequestParams params = new RequestParams();
+        typeList = new ArrayList<>();
+        params.add("type", "all");
+        HighFiveHttpClient.get("ordertypes", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    OrderType tmp = new OrderType("Любой тип", "all", "all");
+                    typeList.add(tmp);
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        typeList.add(new OrderType(current.getString("name"),
+                                current.getString("difficultyLevel"),
+                                current.getString("id")));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                OrderTypeList orderTypeList = new OrderTypeList(typeList);
+                Cache.getCacheManager().put("orderTypeList", orderTypeList);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 }

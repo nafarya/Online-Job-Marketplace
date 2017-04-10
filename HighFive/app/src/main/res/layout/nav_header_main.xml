@@ -37,5 +37,10 @@
         android:text="@string/login_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
+    <ImageButton
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_account_balance_wallet_black_24dp"
+        />
 
 </LinearLayout>

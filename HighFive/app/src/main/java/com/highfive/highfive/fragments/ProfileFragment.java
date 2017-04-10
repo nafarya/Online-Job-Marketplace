@@ -36,7 +36,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by dan on 26.11.16.
  */
 
-public class ProfileTeacherFragment extends Fragment {
+public class ProfileFragment extends Fragment {
     private RecyclerView rv;
     private ProfileCommentsAdapter adapter;
     private Profile profile;
@@ -46,8 +46,11 @@ public class ProfileTeacherFragment extends Fragment {
     @InjectView(R.id.fragment_profile_negative_rating)  TextView profileNegativeRating;
     @InjectView(R.id.fragment_profile_positive_rating)  TextView profilePositiveRating;
     @InjectView(R.id.fragment_profile_teacher_login)    TextView profileLogin;
-//    @InjectView(R.id.fragment_profile_tasks_sent)       TextView profileTasksSent;
-//    @InjectView(R.id.fragment_profile_tasks_solved)     TextView profileTasksSolved;
+    @InjectView(R.id.fragment_profile_about)            TextView profileAbout;
+
+    @InjectView(R.id.fragment_profile_teacher_completed_orders)     TextView completedOrders;
+    @InjectView(R.id.fragment_profile_teacher_inprogress_orders)    TextView inprogressOrders;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,12 +125,17 @@ public class ProfileTeacherFragment extends Fragment {
         profileNegativeRating.setText(String.valueOf(profile.getNegativeRating()));
         profileRating.setRating(profile.getRate());
         profileLogin.setText(profile.getUsername());
+        profileAbout.setText(profile.getDescription());
+
+//        inprogressOrders.setText(profile.getStudentOrders().size());
+//        completedOrders.setText(profile.getAllOrders().size());
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile_teacher, container, false);
+        View v = inflater.inflate(R.layout.fragment_profile, container, false);
         rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
         rv.setNestedScrollingEnabled(false);
         ButterKnife.inject(this, v);

@@ -25,7 +25,7 @@
     <string name="add_bid">Сделать ставку</string>
     <string name="Subject">Предмет:</string>
     <string name="job_description">Работа состоит в том, что надо сделать все быстро и качественно.</string>
-    <string name="deadline">Сроки:</string>
+    <string name="deadLine">Сроки:</string>
     <string name="in_progress">Сейчас\nв работе</string>
     <string name="about">О себе</string>
 
