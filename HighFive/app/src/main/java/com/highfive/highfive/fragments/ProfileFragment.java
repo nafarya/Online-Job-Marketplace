@@ -166,9 +166,15 @@ public class ProfileFragment extends Fragment {
 
         float rating = (float)profile.getProfileRating();
         if (rating != 0.0) {
-            donutProgress.setText(String.format("%.2f", rating) + "%");
+            float rat;
+            if (profile.getPositiveRating() >= profile.getNegativeRating()) {
+                rat = (float)(1 - profile.getNegativeRating()/profile.getPositiveRating());
+                donutProgress.setText(String.format("%.1f", rat * 100) + "%");
+            } else {
+                rat = (float)(1 - profile.getPositiveRating()/profile.getNegativeRating());
+            }
+            donutProgress.setProgress(rat * 100);
             donutProgress.setTextColor(Color.rgb(69,90, 100));
-            donutProgress.setProgress(rating * 100 / 5);
             donutProgress.setUnfinishedStrokeColor(Color.rgb(246, 102, 92));
             donutProgress.setFinishedStrokeColor(Color.rgb(159, 214, 102));
         } else {

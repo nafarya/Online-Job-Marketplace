@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -40,8 +41,10 @@ import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nononsenseapps.filepicker.FilePickerActivity;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+import org.jsoup.helper.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,13 +61,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
 
-    private OrderListRootFragment chooseOrderFragment;
     private StudentOrderLoaderTask task;
     private Profile profile;
 
-    @InjectView(R.id.toolbar) Toolbar toolbar;
-    @InjectView(R.id.drawer_layout) DrawerLayout drawer;
-    @InjectView(R.id.nvView) NavigationView navigationView;
+    @InjectView(R.id.toolbar)           Toolbar toolbar;
+    @InjectView(R.id.drawer_layout)     DrawerLayout drawer;
+    @InjectView(R.id.nvView)            NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             task.execute(profile.getStudentOrderIdList());
         }
 
+
+        /*View headerView = navigationView.getHeaderView(0);
+        if (!StringUtil.isBlank(profile.getAvatar())) {
+            Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
+                    into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+        }*/
 
         navigateToChooseOrder();
 
@@ -239,7 +247,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToChooseOrder() {
-        chooseOrderFragment = new OrderListRootFragment();
+        OrderListRootFragment chooseOrderFragment = new OrderListRootFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, chooseOrderFragment).commit();
     }
 
