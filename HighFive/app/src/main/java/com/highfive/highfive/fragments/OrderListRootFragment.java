@@ -11,16 +11,27 @@ import android.view.ViewGroup;
 
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListPagerAdapter;
+import com.highfive.highfive.model.Order;
+import com.highfive.highfive.model.Profile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dan on 31.03.17.
  */
 
 public class OrderListRootFragment extends Fragment {
+
+    private List<Order> orderList;
+    private OrderListPagerAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_list_root, container, false);
+
+
 
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Активные"));
@@ -28,7 +39,7 @@ public class OrderListRootFragment extends Fragment {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) v.findViewById(R.id.pager);
-        final OrderListPagerAdapter adapter = new OrderListPagerAdapter
+        adapter = new OrderListPagerAdapter
                 (getFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -51,4 +62,10 @@ public class OrderListRootFragment extends Fragment {
 
         return v;
     }
+
+    public void updateList(ArrayList<Order> list) {
+        orderList = list;
+        adapter.setOrderList(list);
+    }
 }
+

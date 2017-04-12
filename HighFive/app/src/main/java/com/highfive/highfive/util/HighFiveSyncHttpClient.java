@@ -6,6 +6,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 import cz.msebera.android.httpclient.cookie.Cookie;
 import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
@@ -14,11 +15,11 @@ import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
  * Created by heat_wave on 25.12.16.
  */
 
-public class HighFiveHttpClient {
+public class HighFiveSyncHttpClient {
 
     private static final String BASE_URL = "https://yareshu.ru/api/";
 
-    private static AsyncHttpClient client = new AsyncHttpClient();
+    private static SyncHttpClient client = new SyncHttpClient();
     private static PersistentCookieStore cookieStore;
 
     public static void initCookieStore(Context context) {

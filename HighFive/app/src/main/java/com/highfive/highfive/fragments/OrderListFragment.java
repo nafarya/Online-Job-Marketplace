@@ -1,6 +1,9 @@
 package com.highfive.highfive.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -10,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
@@ -23,6 +27,7 @@ import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.model.SubjectList;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
+import com.highfive.highfive.util.HighFiveSyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
@@ -33,7 +38,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,6 +62,12 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     private Bundle savedState = null;
     private OrderTypeList orderTypeList;
     private ArrayList<OrderType> orderTypes;
+    private Order order;
+
+    private ArrayList<String> orderIdList = new ArrayList<>();
+    private ArrayList<Order> studentOrderList = new ArrayList<>();
+
+    private String curTab;
 
 
     @InjectView(R.id.order_list_rv_id)      RecyclerView orderListrv;
@@ -67,22 +80,25 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         View v = inflater.inflate(R.layout.fragment_order_list, container, false);
         ButterKnife.inject(this, v);
 
-        Bundle bundle = getArguments();
-        if (bundle.get("key").equals(0)) {
-                ///orderList = orders in progress
-        } else {
-                ///orderList = done orders
-
-        }
-
-        HighFiveHttpClient.initCookieStore(getContext());
-
         Type profileType = new TypeToken<Profile>(){}.getType();
         profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
         Type subListType = new TypeToken<SubjectList>(){}.getType();
         subList = (SubjectList) Cache.getCacheManager().get("subjectList", SubjectList.class, subListType);
         Type orderTypeListType = new TypeToken<OrderTypeList>(){}.getType();
         orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
+
+        Bundle bundle = getArguments();
+        if (bundle.getString("key").equals("0")) {
+                curTab = "active";
+                ///orderList = orders in progress
+        } else {
+                curTab = "completed";
+                ///orderList = done orders
+        }
+
+        HighFiveHttpClient.initCookieStore(getContext());
+
+
 
 
         ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
@@ -102,41 +118,82 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         orderTypeSpinner.setTitle("Выберите тип работы");
         orderTypeSpinner.setPositiveButton("OK");
 
-
-        if(savedState != null) {
-            orderList = savedState.getParcelableArrayList("orderList");
-        } else {
-            if (profile.getType().equals("teacher")) {
-                orderList = profile.getAllOrders();
-            } else {
-                orderList = profile.getStudentOrders();
-            }
-        }
-        savedState = null;
-
-
-
-        resetAdapter();
-
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddOrderFragment fragment = new AddOrderFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+                navigator.navigateToAddOrder();
             }
         });
         if (profile.getType().equals("teacher")) {
             fab.setVisibility(View.GONE);
+        }
+        resetAdapter();
+
+        RequestParams params = new RequestParams();
+        params.put("offset", 0);
+        params.put("limit", 50);
+        if (profile.getType().equals("teacher")) {
+            HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        JSONObject contents = response.getJSONObject("response");
+                        JSONArray subjArray = contents.getJSONArray("items");
+                        for (int i = 0; i < contents.getInt("count"); i++) {
+                            JSONObject current = (JSONObject) subjArray.get(i);
+                            Order tmp = new Order(current.getString("id"), current.getString("title"), " ");
+                            tmp.setOrderCreatorId(current.getString("creator"));
+                            tmp.setSubjectId(current.getString("subject"));
+                            tmp.setStatus(current.getString("status"));
+                            tmp.setType(current.getString("type"));
+                            tmp.setOffer(current.getString("offer"));
+                            tmp.setdeadLine(current.getString("deadline"));
+                            JSONArray bidArray = current.getJSONArray("bids");
+                            tmp.setBidArraySize(bidArray.length());
+                            profile.addOrder(tmp);
+                        }
+                        orderList = profile.getAllOrders();
+                        adapter.setOrderList(orderList);
+                        adapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                }
+            });
+        } else {
+            getStudentOrders();
         }
 
         return v;
     }
 
     private void resetAdapter() {
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList);
-        orderListrv.setAdapter(adapter);
+        if (curTab.equals("active")) {
+            orderList = profile.getActiveOrders();
+        } else {
+            orderList = profile.getCompletedOrders();
+        }
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
+        if (orderListrv != null) {
+            orderListrv.setAdapter(adapter);
+        }
+    }
+
+    public void setOrderList(ArrayList<Order> list) {
+        this.orderList = list;
+        profile.setOrderList(list);
+        resetAdapter();
     }
 
     @Override
@@ -162,56 +219,6 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RequestParams params = new RequestParams();
-        params.put("offset", 0);
-        params.put("limit", 50);
-
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-
-        HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    JSONArray subjArray = contents.getJSONArray("items");
-                    for (int i = 0; i < contents.getInt("count"); i++) {
-                        JSONObject current = (JSONObject) subjArray.get(i);
-                        Order tmp = new Order(current.getString("id"), current.getString("title"), " ");
-                        tmp.setOrderCreatorId(current.getString("creator"));
-                        tmp.setSubjectId(current.getString("subject"));
-                        tmp.setStatus(current.getString("status"));
-                        tmp.setType(current.getString("type"));
-                        tmp.setOffer(current.getString("offer"));
-                        tmp.setdeadLine(current.getString("deadline"));
-                        profile.addOrder(tmp);
-                    }
-                    OrderListAdapter adapter;
-                    if (profile.getType().equals("student")) {
-                        adapter = new OrderListAdapter(profile.getStudentOrders(),
-                                OrderListFragment.this, subList, orderTypeList);
-                    } else {
-                        adapter = new OrderListAdapter(profile.getAllOrders(),
-                                OrderListFragment.this, subList, orderTypeList);
-                    }
-                    if (orderListrv != null) {
-                        orderListrv.setAdapter(adapter);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
     }
 
 
@@ -229,7 +236,6 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     }
 
     private List<String> getSubjectNames() {
-
         if (profile.getType().equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
         } else {
@@ -254,4 +260,102 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         return names;
     }
 
+    private void getStudentOrders() {
+        //final ArrayList<String> orderIdList = profile.getStudentOrderIdList();
+        //new LoaderThread(orderIdList, adapter, getActivity()).start();
+    }
 }
+
+
+class LoaderThread extends Thread {
+
+    private List<String> orderIds;
+    private OrderListAdapter adapter;
+    private List<Order> orderList;
+    private final Activity activity;
+
+
+    public LoaderThread(List<String> list, OrderListAdapter adapter, Activity activity) {
+        super("LoaderThread");
+        this.orderIds = list;
+        this.adapter = adapter;
+        orderList = new ArrayList<>(orderIds.size());
+        this.activity = activity;
+    }
+
+    @Override
+    public void run() {
+        final CountDownLatch latch = new CountDownLatch(orderIds.size());
+        for (int ind = 0; ind < orderIds.size(); ind++) {
+            RequestParams orderParams = new RequestParams();
+            String orderId = orderIds.get(ind);
+            orderParams.add("id", orderId);
+
+            JsonHttpResponseHandler handler = new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        JSONObject contents = response.getJSONObject("response");
+                        Order order = new Order();
+                        order.setTitle(contents.get("title").toString());
+                        order.setDescription(contents.get("description").toString());
+                        order.setdeadLine(contents.get("deadline").toString());
+                        order.setSubjectId(contents.get("subject").toString());
+                        order.setStatus(contents.get("status").toString());
+                        order.setType(contents.get("type").toString());
+                        order.setOrderdId(contents.getString("id"));
+                        order.setOffer(contents.getString("offer"));
+
+                        JSONArray bidArray = contents.getJSONArray("bids");
+                        order.setBidArraySize(bidArray.length());
+
+                        for (int i = 0; i < orderIds.size(); i++) {
+                            if (order.getOrderdId().equals(orderIds.get(i))) {
+                                orderList.set(i, order);
+                            }
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        latch.countDown();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    latch.countDown();
+                }
+            };
+            handler.setUseSynchronousMode(true);
+
+            HighFiveSyncHttpClient.get("orders/" + orderId, orderParams, handler);
+        }
+        try {
+            latch.await();
+            adapter.setOrderList(orderList);
+            adapter.notifyDataSetChanged();
+
+            /*activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.setOrderList(orderList);
+                }
+            });*/
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
+

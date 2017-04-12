@@ -1,15 +1,19 @@
 package com.highfive.highfive.adapters;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.SubjectList;
+
+import org.jsoup.helper.StringUtil;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,13 +36,19 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     private OnItemClickListener listener;
     private SubjectList subjectList;
     private OrderTypeList orderTypeList;
+    private String curTab;
+
+    public void setOrderList(List<Order> orderList) {
+        this.orderList = orderList;
+    }
 
     public OrderListAdapter(List<Order> list, OnItemClickListener listener,
-                            SubjectList subjectList, OrderTypeList orderTypeList) {
+                            SubjectList subjectList, OrderTypeList orderTypeList, String curTab) {
         this.orderList = list;
         this.listener = listener;
         this.subjectList = subjectList;
         this.orderTypeList = orderTypeList;
+        this.curTab = curTab;
 
     }
 
@@ -51,13 +61,20 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Order order = orderList.get(position);
-        holder.theme.setText(order.getTheme());
+        if (StringUtil.isBlank(order.getTheme())) {
+            holder.theme.setText(order.getTitle());
+        } else {
+            holder.theme.setText(order.getTheme());
+        }
         holder.subject.setText(subjectList.getSubjectNameById(order.getSubjectId()));
         holder.orderType.setText(orderTypeList.getOrderTypeNameByTypeId(order.getType()));
         holder.price.setText(order.getOffer() + " Р");
-
-        //DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH);
+        holder.bidNum.setText(order.getBidArraySize() + " Ставок");
         holder.date.setText("до " + order.getdeadLine());
+
+        if (curTab.equals("completed")) {
+            holder.marker.setBackgroundColor(Color.RED);
+        }
     }
 
     @Override
@@ -73,6 +90,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         TextView price;
         TextView bidNum;
         OnItemClickListener listener;
+        ImageView marker;
 
         public ViewHolder(View itemView,  OnItemClickListener listener) {
             super(itemView);
@@ -83,7 +101,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             date = (TextView) itemView.findViewById(R.id.order_list_item_date);
             price = (TextView) itemView.findViewById(R.id.order_list_item_price);
             bidNum = (TextView) itemView.findViewById(R.id.order_list_item_bid_num);
-
+            marker = (ImageView) itemView.findViewById(R.id.order_list_item_marker);
             itemView.setOnClickListener(this);
         }
 

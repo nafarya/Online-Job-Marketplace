@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
@@ -48,6 +50,19 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.id.setText("UserID: " + bidList.get(position).getBidCreatorId());
         holder.price.setText((String.valueOf((int)bidList.get(position).getPrice())) + " Р");
+
+        int numOfComments = bidList.get(position).getBidComments().size();
+        String comments = " ";
+        if (numOfComments == 1) {
+            comments += "Комментарий";
+        }
+        if (numOfComments > 1 && numOfComments < 5) {
+            comments += "Комментария";
+        }
+        if (comments.equals(" ")) {
+            comments += "Комментариев";
+        }
+        holder.numOfComments.setText(String.valueOf(numOfComments) + comments);
     }
 
     @Override
@@ -58,6 +73,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView id;
         TextView price;
+        TextView numOfComments;
         RatingBar ratingBar;
         Button button;
         OnItemClickListener listener;
@@ -67,8 +83,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
             super(itemView);
             id = (TextView) itemView.findViewById(R.id.bidlist_item_id);
             price = (TextView) itemView.findViewById(R.id.bidlist_item_price);
+            numOfComments = (TextView) itemView.findViewById(R.id.bidList_item_num_of_comments);
             this.listener = listener;
             itemView.setOnClickListener(this);
+
 
             button = (Button) itemView.findViewById(R.id.bidlist_item_button);
             Type profileType = new TypeToken<Profile>(){}.getType();

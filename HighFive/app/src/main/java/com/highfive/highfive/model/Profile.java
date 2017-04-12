@@ -1,5 +1,6 @@
 package com.highfive.highfive.model;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,15 +10,20 @@ import java.util.List;
  */
 
 public class Profile {
-    private String name;
-    private String surname;
-    private String uid;
     private String email;
     private String username;
     private double balance;
-    private int positiveRating;
-    private int negativeRating;
-    private float rate;
+    private double positiveRating;
+    private double negativeRating;
+    private double neutralRating;
+    private String avatar;
+    private ArrayList<String> StudentOrderIdList;
+
+    private String name;
+    private String surname;
+    private String uid;
+
+    private double rate;
     private boolean statusVIP;
     private String description;
 
@@ -50,7 +56,7 @@ public class Profile {
         return type;
     }
 
-    public Profile(String email, String uid, String username, String balance, int negativeRating, int positiveRating,
+    public Profile(String email, String uid, String username, String balance, double negativeRating, double positiveRating,
                    String firstName, String secondName, String type) {
         this.email = email;
         this.uid = uid;
@@ -70,6 +76,8 @@ public class Profile {
         this.type = type;
         comments = new ArrayList<>();
         orderList = new ArrayList<>();
+        StudentOrderIdList = new ArrayList<>();
+
     }
 
     public void addOrder(Order order) {
@@ -100,7 +108,7 @@ public class Profile {
         this.surname = surname;
     }
 
-    public float getRate() {
+    public double getRate() {
         return rate;
     }
 
@@ -124,7 +132,7 @@ public class Profile {
         return comments;
     }
 
-    public int getPositiveRating() {
+    public double getPositiveRating() {
         return positiveRating;
     }
 
@@ -132,7 +140,7 @@ public class Profile {
         this.positiveRating = positiveRating;
     }
 
-    public int getNegativeRating() {
+    public double getNegativeRating() {
         return negativeRating;
     }
 
@@ -146,6 +154,10 @@ public class Profile {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDescription() {
@@ -190,4 +202,60 @@ public class Profile {
         return null;
     }
 
+    public double getNeutralRating() {
+        return neutralRating;
+    }
+
+    public void setNeutralRating(double neutralRating) {
+        this.neutralRating = neutralRating;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public ArrayList<String> getStudentOrderIdList() {
+        return StudentOrderIdList;
+    }
+
+    public void setStudentOrderIdList(ArrayList<String> studentOrderIdList) {
+        StudentOrderIdList = studentOrderIdList;
+    }
+
+    public void setOrderList(ArrayList<Order> list) {
+        orderList = list;
+    }
+
+    public ArrayList<Order> getActiveOrders() {
+        ArrayList<Order> orders = new ArrayList<>();
+        for (int i = 0; i < orderList.size(); i++) {
+            if (orderList.get(i).getStatus().equals("Открыт")) {
+                orders.add(orderList.get(i));
+            }
+        }
+        return orders;
+    }
+
+    public ArrayList<Order> getCompletedOrders() {
+        ArrayList<Order> orders = new ArrayList<>();
+        for (int i = 0; i < orderList.size(); i++) {
+            if (orderList.get(i).getStatus().equals("Завершен")) {
+                orders.add(orderList.get(i));
+            }
+        }
+        return orders;
+    }
+
+    public double getProfileRating() {
+        double sum = positiveRating + negativeRating + neutralRating;
+        double wSum = positiveRating - negativeRating + 0.5*neutralRating;
+        if (sum == 0) {
+            return 0.0;
+        }
+        return (wSum / sum) * 5.0;
+    }
 }

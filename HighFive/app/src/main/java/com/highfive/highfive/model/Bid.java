@@ -3,6 +3,8 @@ package com.highfive.highfive.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 /**
  * Created by dan on 08.03.17.
  */
@@ -14,10 +16,25 @@ public class Bid implements Parcelable {
     private String createdAt;
     private String updatedAt;
     private String bidId;
+    private ArrayList<BidComment> bidComments;
+
+    public void addBidComment(BidComment comment) {
+        bidComments.add(comment);
+    }
+
+    public ArrayList<BidComment> getBidComments() {
+        return bidComments;
+    }
+
+    public void setBidComments(ArrayList<BidComment> bidComments) {
+        this.bidComments = bidComments;
+    }
+
 
     public Bid(double price, String id) {
         this.price = price;
         this.bidCreatorId = id;
+        bidComments = new ArrayList<>();
     }
 
     public String getBidCreatorId() {
@@ -49,6 +66,7 @@ public class Bid implements Parcelable {
         dest.writeString(createdAt);
         dest.writeString(updatedAt);
         dest.writeString(bidId);
+        dest.writeList(bidComments);
     }
 
     // Creator
@@ -71,6 +89,7 @@ public class Bid implements Parcelable {
         createdAt = in.readString();
         updatedAt = in.readString();
         bidId= in.readString();
+        bidComments = in.readArrayList(BidComment.class.getClassLoader());
     }
 
     public String getOrderId() {

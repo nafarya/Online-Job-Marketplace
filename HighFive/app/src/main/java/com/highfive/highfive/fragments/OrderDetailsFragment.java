@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Bid;
+import com.highfive.highfive.model.BidComment;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.OrderTypeList;
@@ -55,6 +56,7 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.bid_amount)                EditText bidAmount;
     @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
     @InjectView(R.id.current_bids_number)       TextView bidsNumber;
+    @InjectView(R.id.avgBidPrice)               TextView avgBidPrice;
 
     private String orderId;
     private ArrayList<Bid> bidlist = new ArrayList<>();
@@ -184,7 +186,6 @@ public class OrderDetailsFragment extends Fragment {
                     orderSubject.setText(getSubjectNameById(order.getSubjectId()));
                     orderStatus.setText(order.getStatus());
                     orderType.setText(getOrderTypeById(order.getType()));
-                    JSONObject bidObject = contents.getJSONObject("bids");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -201,14 +202,13 @@ public class OrderDetailsFragment extends Fragment {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
-
         HighFiveHttpClient.get("orders/" + orderId + "/bids", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     JSONObject contents = response.getJSONObject("response");
                     int count = contents.getInt("count");
-
+                    double avgBid = 0;
                     JSONArray items = contents.getJSONArray("items");
                     for (int i = 0; i < count; i++) {
                         JSONObject current = items.getJSONObject(i);
@@ -217,10 +217,25 @@ public class OrderDetailsFragment extends Fragment {
                         bid.setCreatedAt(current.getString("createdAt"));
                         bid.setCreatedAt(current.getString("updatedAt"));
                         bid.setBidId(current.getString("id"));
+                        JSONArray comments = current.getJSONArray("comments");
+                        for (int j = 0; j < comments.length(); j++) {
+                            JSONObject comment = comments.getJSONObject(j);
+                            BidComment bidComment = new BidComment();
+                            bidComment.setUpdatedAt(comment.getString("updatedAt"));
+                            bidComment.setCreatedAt(comment.getString("createdAt"));
+                            bidComment.setText(comment.getString("text"));
+                            bidComment.setOwner(comment.getString("owner"));
+                            bidComment.set_id(comment.getString("_id"));
+                            bid.addBidComment(bidComment);
+                        }
                         bidlist.add(bid);
+                        avgBid += bid.getPrice();
+                    }
+                    bidsNumber.setText(String.valueOf(bidlist.size()));
+                    if (count > 0) {
+                        avgBidPrice.setText(String.valueOf((int)(avgBid / count)) + " Р");
                     }
 
-                    bidsNumber.setText(String.valueOf(bidlist.size()));
 
                 } catch (JSONException e) {
                     e.printStackTrace();

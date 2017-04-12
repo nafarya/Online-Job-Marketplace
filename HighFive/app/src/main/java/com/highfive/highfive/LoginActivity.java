@@ -158,11 +158,22 @@ public class LoginActivity extends AppCompatActivity {
                                     contents.getString("id"),
                                     contents.getString("username"),
                                     contents.getString("balance"),
-                                    contents.getJSONObject("rating").getInt("negative"),
-                                    contents.getJSONObject("rating").getInt("positive"),
+                                    contents.getJSONObject("rating").getDouble("negative"),
+                                    contents.getJSONObject("rating").getDouble("positive"),
                                     contents.getString("firstName"),
                                     contents.getString("secondName"),
                                     contents.getString("type").toLowerCase());
+                            profile.setNeutralRating(contents.getJSONObject("rating").getDouble("neutral"));
+                            profile.setAvatar(contents.getString("avatar"));
+                            if (profile.getType().equals("student")) {
+                                JSONArray array = contents.getJSONArray("orders");
+                                ArrayList<String> tmp = new ArrayList<>();
+                                for (int i = 0; i < array.length(); i++) {
+                                    tmp.add(array.getString(i));
+                                }
+                                profile.setStudentOrderIdList(tmp);
+                            }
+
                             Cache.getCacheManager().put("profile", profile);
 
                             startActivity(intent);
@@ -189,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
 
         getSubjects();
         getOrderTypes();
+
     }
 
     public void onLoginFailed() {

@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,15 +21,21 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.fragments.AddOrderFragment;
 import com.highfive.highfive.fragments.BidListCommentFragment;
 import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
+import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.OrderListRootFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
 import com.highfive.highfive.model.Bid;
+import com.highfive.highfive.model.BidComment;
 import com.highfive.highfive.model.Order;
+import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -38,7 +45,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -47,6 +57,10 @@ import cz.msebera.android.httpclient.Header;
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Navigator {
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
+
+    private OrderListRootFragment chooseOrderFragment;
+    private StudentOrderLoaderTask task;
+    private Profile profile;
 
     @InjectView(R.id.toolbar) Toolbar toolbar;
     @InjectView(R.id.drawer_layout) DrawerLayout drawer;
@@ -67,8 +81,19 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        if (profile.getType().equals("student")) {
+            task = new StudentOrderLoaderTask(this);
+            task.execute(profile.getStudentOrderIdList());
+        }
+
 
         navigateToChooseOrder();
+
+    }
+
+    public void updateChooseOrder(List<Order> list) {
 
     }
 
@@ -114,14 +139,13 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 return true;
         }
 
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
         item.setChecked(true);
         setTitle(item.getTitle());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+
         return true;
     }
 
@@ -215,8 +239,8 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToChooseOrder() {
-        Fragment fragment = new OrderListRootFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+        chooseOrderFragment = new OrderListRootFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, chooseOrderFragment).commit();
     }
 
     @Override
@@ -235,15 +259,24 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         BidListFragment fragment = new BidListFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("bidList", bids);
-        bundle.putString("string", "stirng");
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
 
     }
 
     @Override
-    public void navigateToBidListComments() {
+    public void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId) {
         BidListCommentFragment fragment = new BidListCommentFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("bidCommentsList", bidComments);
+        bundle.putString("creatorId", creatorId);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void navigateToAddOrder() {
+        AddOrderFragment fragment = new AddOrderFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 }

@@ -23,12 +23,9 @@ public class Order implements Parcelable {
     private String type;
     private String offer;
     private String title;
+    private int bidArraySize;
 
-    public Order() {}
-
-    public Order(String orderId, String themeId) {
-        this.orderdId = orderId;
-        this.theme = themeId;
+    public Order() {
     }
 
     public Order(String orderId, String themeId, String description) {
@@ -182,5 +179,13 @@ public class Order implements Parcelable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getBidArraySize() {
+        return bidArraySize;
+    }
+
+    public void setBidArraySize(int bidArraySize) {
+        this.bidArraySize = bidArraySize;
     }
 }

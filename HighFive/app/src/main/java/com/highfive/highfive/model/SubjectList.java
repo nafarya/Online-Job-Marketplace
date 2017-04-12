@@ -20,7 +20,8 @@ public class SubjectList {
     public ArrayList<Subject> getStudentSubjectList() {
         ArrayList<Subject> tmp = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getDifficultyLevel().equals("student")) {
+            if (list.get(i).getDifficultyLevel().equals("student") ||
+                    list.get(i).getDifficultyLevel().equals("all")) {
                 tmp.add(list.get(i));
             }
         }

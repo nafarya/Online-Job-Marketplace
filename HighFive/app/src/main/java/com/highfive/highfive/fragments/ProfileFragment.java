@@ -10,9 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ProfileCommentsAdapter;
@@ -20,11 +22,15 @@ import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.quickblox.core.helper.StringUtils;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.helper.StringUtil;
 
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +47,13 @@ public class ProfileFragment extends Fragment {
     private ProfileCommentsAdapter adapter;
     private Profile profile;
     private List<String> comments;
-
     @InjectView(R.id.fragment_profile_rating_bar)       RatingBar profileRating;
     @InjectView(R.id.fragment_profile_negative_rating)  TextView profileNegativeRating;
     @InjectView(R.id.fragment_profile_positive_rating)  TextView profilePositiveRating;
     @InjectView(R.id.fragment_profile_teacher_login)    TextView profileLogin;
     @InjectView(R.id.fragment_profile_about)            TextView profileAbout;
+    @InjectView(R.id.donut_progress)                    DonutProgress donutProgress;
+    @InjectView(R.id.avatar)                            ImageView avatar;
 
     @InjectView(R.id.fragment_profile_teacher_completed_orders)     TextView completedOrders;
     @InjectView(R.id.fragment_profile_teacher_inprogress_orders)    TextView inprogressOrders;
@@ -79,8 +86,8 @@ public class ProfileFragment extends Fragment {
                                     contents.getString("id"),
                                     contents.getString("username"),
                                     contents.getString("balance"),
-                                    contents.getJSONObject("rating").getInt("negative"),
-                                    contents.getJSONObject("rating").getInt("positive"),
+                                    contents.getJSONObject("rating").getDouble("negative"),
+                                    contents.getJSONObject("rating").getDouble("positive"),
                                     contents.getString("firstName"),
                                     contents.getString("secondName"),
                                     contents.getString("type").toLowerCase());
@@ -102,6 +109,35 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
+        rv.setNestedScrollingEnabled(false);
+        ButterKnife.inject(this, v);
+
+        fillProfileData();
+
+
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        createComments();
+    }
+
+    void createComments() {
+        if (profile == null) {
+            profile = new Profile("test", "test");
+        }
+        profile.setNegativeRating(15);
+        profile.addComment(getString(R.string.comment));
+
+    }
+
     private void fillProfileData() {
         comments = profile.getAllComments();
         if (comments == null || comments.size() < 3) {
@@ -120,47 +156,36 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfileCommentsAdapter(topThreeComment);
         rv.setAdapter(adapter);
 
+        if (!StringUtil.isBlank(profile.getAvatar())) {
+            Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
+        }
 
-        profilePositiveRating.setText(String.valueOf(profile.getPositiveRating()));
-        profileNegativeRating.setText(String.valueOf(profile.getNegativeRating()));
-        profileRating.setRating(profile.getRate());
+        profile.setPositiveRating(45);
+        profile.setNegativeRating(14);
+        profile.setDescription("я препод короче, красавчик, самый лучший");
+
+        float rating = (float)profile.getProfileRating();
+        if (rating != 0.0) {
+            donutProgress.setText(String.format("%.2f", rating) + "%");
+            donutProgress.setTextColor(Color.rgb(69,90, 100));
+            donutProgress.setProgress(rating * 100 / 5);
+            donutProgress.setUnfinishedStrokeColor(Color.rgb(246, 102, 92));
+            donutProgress.setFinishedStrokeColor(Color.rgb(159, 214, 102));
+        } else {
+            donutProgress.setText("N/A");
+        }
+
+        Drawable progress = profileRating.getProgressDrawable();
+        DrawableCompat.setTint(progress, Color.rgb(255,215,79));
+
+        profilePositiveRating.setText(String.valueOf((int)profile.getPositiveRating()));
+        profileNegativeRating.setText(String.valueOf((int)profile.getNegativeRating()));
+        profileRating.setRating((float)(profile.getRate()));
         profileLogin.setText(profile.getUsername());
         profileAbout.setText(profile.getDescription());
 
 //        inprogressOrders.setText(profile.getStudentOrders().size());
 //        completedOrders.setText(profile.getAllOrders().size());
-
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
-        rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
-        rv.setNestedScrollingEnabled(false);
-        ButterKnife.inject(this, v);
-
-        fillProfileData();
-
-
-        Drawable progress = profileRating.getProgressDrawable();
-        DrawableCompat.setTint(progress, Color.rgb(255,215,79));
-
-        return v;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        createComments();
-    }
-
-    void createComments() {
-        if (profile == null) {
-            profile = new Profile("test", "test");
-        }
-        profile.setNegativeRating(15);
-        profile.addComment(getString(R.string.comment));
 
     }
 }
