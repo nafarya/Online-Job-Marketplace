@@ -1,8 +1,9 @@
 package com.highfive.highfive.model;
 
-import java.lang.reflect.Array;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,7 +12,11 @@ import java.util.List;
 
 public class Profile {
     private String email;
+
+    @SerializedName("username")
+    @Expose
     private String username;
+
     private double balance;
     private double positiveRating;
     private double negativeRating;

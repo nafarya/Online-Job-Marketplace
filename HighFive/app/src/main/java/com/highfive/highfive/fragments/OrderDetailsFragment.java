@@ -4,6 +4,7 @@ package com.highfive.highfive.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.App;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
+import com.highfive.highfive.Response;
 import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
 import com.highfive.highfive.model.Order;
@@ -40,6 +43,9 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by heat_wave on 19.01.17.
@@ -67,6 +73,8 @@ public class OrderDetailsFragment extends Fragment {
     private Profile profile;
     private SubjectList subList;
     private Order order;
+
+    private List<Order> posts;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -166,6 +174,30 @@ public class OrderDetailsFragment extends Fragment {
         RequestParams params = new RequestParams();
         orderId = args.getString("orderId");
         params.add("id", orderId);
+
+
+        App.getApi()
+                .getOrderDetailsById(orderId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Response<Order>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG", e.getMessage(), e);
+                    }
+
+                    @Override
+                    public void onNext(Response<Order> orderResponse) {
+                        Order order = orderResponse.getResponse();
+                    }
+                });
+
+
 
         HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
             @Override

@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +27,6 @@ import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
-import com.highfive.highfive.fragments.OrderListFragment;
 import com.highfive.highfive.fragments.OrderListRootFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
 import com.highfive.highfive.model.Bid;
@@ -41,14 +38,11 @@ import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nononsenseapps.filepicker.FilePickerActivity;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
-import org.jsoup.helper.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +68,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         setContentView(R.layout.activity_landing);
         ButterKnife.inject(this);
         HighFiveHttpClient.initCookieStore(this);
+
 
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -3,6 +3,8 @@ package com.highfive.highfive.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,7 +13,9 @@ import java.util.Date;
  */
 
 public class Order implements Parcelable {
+    @SerializedName("id")
     private String orderdId;
+
     private String theme;
     private String description;
     private Date date;
