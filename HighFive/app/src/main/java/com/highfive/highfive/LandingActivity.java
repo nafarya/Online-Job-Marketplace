@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -30,6 +31,7 @@ import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
+import com.highfive.highfive.fragments.OrderLentaFragment;
 import com.highfive.highfive.fragments.OrderListRootFragment;
 import com.highfive.highfive.fragments.PaymentFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
@@ -97,6 +99,10 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             toolbar.setTitle("Пополнение баланса");
             drawer.closeDrawer(Gravity.LEFT);
         });
+        Menu menu = navigationView.getMenu();
+        if (!profile.getType().equals("teacher")) {
+            menu.findItem(R.id.nav_teacher_lenta).setVisible(false);
+        }
 
 
         navigateToChooseOrder();
@@ -114,6 +120,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         switch (id) {
             case R.id.nav_profile_fragment:
                 navigateToProfile();
+                break;
+            case R.id.nav_teacher_lenta:
+                navigateToLenta();
                 break;
             case R.id.nav_order_list_fragment:
                 navigateToChooseOrder();
@@ -298,5 +307,11 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
 
+    }
+
+    @Override
+    public void navigateToLenta() {
+        OrderLentaFragment fragment = new OrderLentaFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 }

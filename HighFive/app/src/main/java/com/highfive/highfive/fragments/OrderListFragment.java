@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.ArrayAdapter;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.Items;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.Response;
@@ -43,6 +47,7 @@ import cz.msebera.android.httpclient.Header;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -51,7 +56,7 @@ import rx.schedulers.Schedulers;
 
 public class OrderListFragment extends Fragment implements OrderListAdapter.OnItemClickListener{
 
-    private ArrayList<Order> orderList = new ArrayList<>();
+    private List<Order> orderList = new ArrayList<>();
     private OrderListAdapter adapter;
     private FloatingActionButton fab;
     private Navigator navigator;
@@ -64,28 +69,42 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     private String curTab;
 
 
-    @InjectView(R.id.order_list_rv_id)      RecyclerView orderListrv;
-    @InjectView(R.id.orderTypeSpinner)      SearchableSpinner orderTypeSpinner;
-    @InjectView(R.id.subjectSpinner)        SearchableSpinner subjectSpinner;
+    @InjectView(R.id.order_list_rv_id)              RecyclerView orderListrv;
+    @InjectView(R.id.card_order_list_subject)       CardView cardSubj;
+    @InjectView(R.id.card_order_list_ordertypes)    CardView cardOrderTypes;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_list, container, false);
         ButterKnife.inject(this, v);
-
         Bundle bundle = getArguments();
-        if (bundle.getString("key").equals("0")) {
-                curTab = "active";
-                ///orderList = orders in progress
-        } else {
-                curTab = "completed";
-                ///orderList = done orders
+        curTab = bundle.getString("key");
+
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
+        orderListrv.setAdapter(adapter);
+        //resetAdapter();
+
+        getUsersOrders(curTab);
+        cardSubj.setVisibility(View.GONE);
+        cardOrderTypes.setVisibility(View.GONE);
+
+        /*if (profile.getType().equals("teacher")) {
+            if (curTab.equals("active")) {
+                getUsersOrders("completed");
+            } else {
+                getUsersOrders("completed");
+            }
         }
+        if (profile.getType().equals("student")){
+            if (curTab.equals("active")) {
+                getUsersOrders("active");
+            } else {
+                getUsersOrders("completed");
+            }
+        }*/
 
-        HighFiveHttpClient.initCookieStore(getContext());
-
-        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
+        /*ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
                 (getActivity(), android.R.layout.simple_spinner_item, getSubjectNames());
 
 
@@ -100,29 +119,45 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         orderTypeSpinner.setAdapter(ordeTypeAdapter);
         orderTypeSpinner.setTitle("Выберите тип работы");
         orderTypeSpinner.setPositiveButton("OK");
-
+*/
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(view -> navigator.navigateToAddOrder());
         if (profile.getType().equals("teacher")) {
             fab.setVisibility(View.GONE);
         }
 
+        /*if (profile.getType().equals("teacher")) {
 
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
-        orderListrv.setAdapter(adapter);
-        resetAdapter();
-
-        if (profile.getType().equals("teacher")) {
-            getTeacherOrders();
         } else {
             List<Observable<Response<Order>>> observables = new ArrayList<>();
             for (String orderId : profile.getStudentOrderIdList()) {
-                observables.add(App.getApi().getOrderDetailsById(orderId).subscribeOn(Schedulers.io()));
+
+                // example how to "cache" objects and re-GET only those orders, which observable returned error
+                App.getApi()
+                        .getOrderDetailsById(orderId)
+                        .subscribeOn(Schedulers.io())
+                        .map(new Func1<Response<Order>, Pair<Integer, Order>>() {
+                            int index = 0;
+
+                            @Override
+                            public Pair<Integer, Order> call(Response<Order> orderResponse) {
+                                return new Pair<>(index++, orderResponse.getResponse());
+                            }
+                        })
+                        .retry(5)
+                        .distinct(integerOrderPair -> integerOrderPair.first)
+                        .map(integerOrderPair -> integerOrderPair.second)
+                        ;
+
+
+                observables.add(App.getApi().getOrderDetailsById(orderId).subscribeOn(Schedulers.io()).retry(5).onErrorReturn(t -> null));
             }
             Observable.zip(observables, orderResponseObjects -> {
                 List<Order> orders = new ArrayList<>();
                 for (Object obj : orderResponseObjects) {
-                    orders.add(((Response<Order>)obj).getResponse());
+                    if (obj != null) {
+                        orders.add(((Response<Order>) obj).getResponse());
+                    }
                 }
                 return orders;
             }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<Order>>() {
@@ -144,33 +179,34 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                     adapter.notifyDataSetChanged();
                 }
             });
-        }
+        }*/
 
         return v;
-    }
-
-    private void resetAdapter() {
-        if (curTab.equals("active")) {
-            orderList = profile.getActiveOrders();
-        } else {
-            orderList = profile.getCompletedOrders();
-        }
-        if (orderListrv != null) {
-        }
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (curTab.equals("active")) {
+                    if (profile.getType().equals("teacher")) {
+                        orderList.clear();
+                        getTeacherActiveOrders();
+                    } else {
+                        orderList = profile.getOrdersByFilter(
+                                subjects.get(i).getId(),
+                                orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
+                    }
+                } else {
+
+                }
+
                 if (profile.getType().equals("student")) {
                     orderList = profile.getOrdersByFilter(
                             subjects.get(i).getId(),
                             orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
                 } else {
-                    orderList.clear();
-                    getTeacherOrders();
                 }
                 adapter.setOrderList(orderList);
                 adapter.notifyDataSetChanged();
@@ -188,7 +224,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                             orderTypes.get(i).getId());
                 } else {
                     orderList.clear();
-                    getTeacherOrders();
+                    getTeacherActiveOrders();
                 }
                 adapter.setOrderList(orderList);
                 adapter.notifyDataSetChanged();
@@ -197,7 +233,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -212,15 +248,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         Type orderTypeListType = new TypeToken<OrderTypeList>(){}.getType();
         orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
 
-    }
-
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        //resetAdapter();
+        HighFiveHttpClient.initCookieStore(getContext());
 
     }
 
@@ -255,17 +283,17 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         return names;
     }
 
-    public void getTeacherOrders() {
+    public void getTeacherActiveOrders() {
         RequestParams params = new RequestParams();
         params.put("offset", 0);
         params.put("limit", 50);
 
-        if (subjectSpinner.getSelectedItemPosition() != 0) {
-            params.put("subjectId", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
-        }
-        if (orderTypeSpinner.getSelectedItemPosition() != 0) {
-            params.put("typeId", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
-        }
+//        if (subjectSpinner.getSelectedItemPosition() != 0) {
+//            params.put("subjectId", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
+//        }
+//        if (orderTypeSpinner.getSelectedItemPosition() != 0) {
+//            params.put("typeId", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
+//        }
         HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -306,5 +334,30 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+    }
+
+    private void getUsersOrders(String status) {
+        App.getApi()
+                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Response<Items<Order>>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG", e.getMessage(), e);
+                    }
+
+                    @Override
+                    public void onNext(Response<Items<Order>> orderResponse) {
+                        orderList = orderResponse.getResponse().items();
+                        adapter.setOrderList(orderList);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 }

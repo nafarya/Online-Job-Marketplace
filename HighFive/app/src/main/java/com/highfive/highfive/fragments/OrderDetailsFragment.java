@@ -207,7 +207,7 @@ public class OrderDetailsFragment extends Fragment {
 
 
 
-        HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
+        /*HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -236,7 +236,7 @@ public class OrderDetailsFragment extends Fragment {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
-        });
+        });*/
         HighFiveHttpClient.get("orders/" + orderId + "/bids", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

@@ -6,6 +6,9 @@
             android:id="@+id/nav_profile_fragment"
             android:title="@string/my_profile" />
         <item
+            android:id="@+id/nav_teacher_lenta"
+            android:title="@string/order_lenta" />
+        <item
             android:id="@+id/nav_order_list_fragment"
             android:title="@string/order_list" />
         <item

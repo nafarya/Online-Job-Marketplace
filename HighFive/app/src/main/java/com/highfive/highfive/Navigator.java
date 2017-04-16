@@ -31,4 +31,6 @@ public interface Navigator {
 
     void navigateToPayment();
 
+    void navigateToLenta();
+
 }

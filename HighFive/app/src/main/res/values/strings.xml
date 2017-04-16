@@ -3,7 +3,7 @@
     <string name="navigation_drawer_open">opened</string>
     <string name="navigation_drawer_close">closed</string>
     <string name="my_profile">Мой профиль</string>
-    <string name="order_list">Список заказов</string>
+    <string name="order_list">Мои заказы</string>
     <string name="help">Помощь</string>
     <string name="exit">Выход</string>
     <string name="name">name</string>
@@ -33,5 +33,6 @@
     <string name="deadline">Срок выполнения</string>
     <string name="status">Статус</string>
     <string name="attached_files">Прикрепленные файлы</string>
+    <string name="order_lenta">Лента заказов</string>
 
 </resources>

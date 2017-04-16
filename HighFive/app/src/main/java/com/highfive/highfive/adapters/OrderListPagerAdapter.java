@@ -30,14 +30,14 @@ public class OrderListPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 bundle = new Bundle();
-                bundle.putString("key", "0");
+                bundle.putString("key", "active");
                 bundle.putParcelableArrayList("orderList", orderList);
                 OrderListFragment tab1 = new OrderListFragment();
                 tab1.setArguments(bundle);
                 return tab1;
             case 1:
                 bundle = new Bundle();
-                bundle.putString("key", "1");
+                bundle.putString("key", "completed");
                 bundle.putParcelableArrayList("orderList", orderList);
                 OrderListFragment tab2 = new OrderListFragment();
                 tab2.setArguments(bundle);

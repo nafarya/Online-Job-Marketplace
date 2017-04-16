@@ -1,10 +1,13 @@
 package com.highfive.highfive.util;
 
+import com.highfive.highfive.Items;
 import com.highfive.highfive.Response;
 import com.highfive.highfive.model.Order;
 
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -16,5 +19,8 @@ public interface YaReshuApi {
     @GET("orders/{id}")
     Observable<Response<Order>> getOrderDetailsById(@Path("id") String id);
 
-
+    @GET("users/{id}/orders")
+    Observable<Response<Items<Order>>> getUsersOrders(@Header("api-token") String apiToken,
+                                                      @Path("id") String id,
+                                                      @Query("status") String status);
 }
