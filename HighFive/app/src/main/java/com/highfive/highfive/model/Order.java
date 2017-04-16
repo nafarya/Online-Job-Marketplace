@@ -111,11 +111,25 @@ public class Order implements Parcelable {
     }
 
     public String getStatus() {
-        if (status.equals("active")) {
-            return "Открыт";
-        } else {
-            return "Завершен";
+        switch (status) {
+            case "active":
+                return "В аукционе";
+            case "in work":
+                return "В работе";
+            case "waiting for author":
+                return "Ждет подтверждения";
+            case "cancelled":
+                return "Отменен";
+            case "on guarantee":
+                return "На гарантии";
+            case "in rework":
+                return "На доработке";
+            case "closed":
+                return "Завершен";
+            default:
+                return null;
         }
+
     }
 
     public void setStatus(String status) {

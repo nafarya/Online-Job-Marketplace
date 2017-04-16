@@ -84,46 +84,14 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
         adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
         orderListrv.setAdapter(adapter);
-        //resetAdapter();
 
         getUsersOrders(curTab);
         cardSubj.setVisibility(View.GONE);
         cardOrderTypes.setVisibility(View.GONE);
 
-        /*if (profile.getType().equals("teacher")) {
-            if (curTab.equals("active")) {
-                getUsersOrders("completed");
-            } else {
-                getUsersOrders("completed");
-            }
-        }
-        if (profile.getType().equals("student")){
-            if (curTab.equals("active")) {
-                getUsersOrders("active");
-            } else {
-                getUsersOrders("completed");
-            }
-        }*/
-
-        /*ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
-                (getActivity(), android.R.layout.simple_spinner_item, getSubjectNames());
-
-
-        subjectSpinner.setAdapter(subjectAdapter);
-        subjectSpinner.setTitle("Выберите предмет");
-        subjectSpinner.setPositiveButton("OK");
-
-        ArrayAdapter<String> ordeTypeAdapter = new ArrayAdapter<>
-                (getActivity(), android.R.layout.simple_spinner_item, getOrderTypeNames());
-
-
-        orderTypeSpinner.setAdapter(ordeTypeAdapter);
-        orderTypeSpinner.setTitle("Выберите тип работы");
-        orderTypeSpinner.setPositiveButton("OK");
-*/
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.setOnClickListener(view -> navigator.navigateToAddOrder());
-        if (profile.getType().equals("teacher")) {
+        if (profile.getType().equals("teacher") || !curTab.equals("active")) {
             fab.setVisibility(View.GONE);
         }
 
@@ -185,57 +153,6 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         return v;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-        /*subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (curTab.equals("active")) {
-                    if (profile.getType().equals("teacher")) {
-                        orderList.clear();
-                        getTeacherActiveOrders();
-                    } else {
-                        orderList = profile.getOrdersByFilter(
-                                subjects.get(i).getId(),
-                                orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
-                    }
-                } else {
-
-                }
-
-                if (profile.getType().equals("student")) {
-                    orderList = profile.getOrdersByFilter(
-                            subjects.get(i).getId(),
-                            orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
-                } else {
-                }
-                adapter.setOrderList(orderList);
-                adapter.notifyDataSetChanged();
-            }
-
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-        orderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (profile.getType().equals("student")) {
-                    orderList = profile.getOrdersByFilter(
-                            subjects.get(subjectSpinner.getSelectedItemPosition()).getId(),
-                            orderTypes.get(i).getId());
-                } else {
-                    orderList.clear();
-                    getTeacherActiveOrders();
-                }
-                adapter.setOrderList(orderList);
-                adapter.notifyDataSetChanged();
-            }
-
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });*/
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -282,59 +199,6 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
             names.add(orderTypes.get(i).getName());
         }
         return names;
-    }
-
-    public void getTeacherActiveOrders() {
-        RequestParams params = new RequestParams();
-        params.put("offset", 0);
-        params.put("limit", 50);
-
-//        if (subjectSpinner.getSelectedItemPosition() != 0) {
-//            params.put("subjectId", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
-//        }
-//        if (orderTypeSpinner.getSelectedItemPosition() != 0) {
-//            params.put("typeId", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
-//        }
-        HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    JSONArray subjArray = contents.getJSONArray("items");
-                    for (int i = 0; i < contents.getInt("count"); i++) {
-                        JSONObject current = (JSONObject) subjArray.get(i);
-                        Order tmp = new Order(current.getString("id"), current.getString("title"), " ");
-                        tmp.setOrderCreatorId(current.getString("creator"));
-                        tmp.setSubjectId(current.getString("subject"));
-                        tmp.setStatus(current.getString("status"));
-                        tmp.setType(current.getString("type"));
-                        tmp.setOffer(current.getString("offer"));
-                        tmp.setdeadLine(current.getString("deadline"));
-                        JSONArray bidArray = current.getJSONArray("bids");
-                        List<String> bids = new ArrayList<>();
-                        for (int j = 0; j < bidArray.length(); j++) {
-                            bids.add(bidArray.getString(j));
-                        }
-                        tmp.setBidsIds(bids);
-                        orderList.add(tmp);
-                    }
-                    adapter.setOrderList(orderList);
-                    adapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
     }
 
     private void getUsersOrders(String status) {
