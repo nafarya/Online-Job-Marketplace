@@ -32,16 +32,58 @@ public class OrderListPagerAdapter extends FragmentStatePagerAdapter {
                 bundle = new Bundle();
                 bundle.putString("key", "active");
                 bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab0 = new OrderListFragment();
+                tab0.setArguments(bundle);
+                return tab0;
+            case 1:
+                bundle = new Bundle();
+                bundle.putString("key", "in work");
+                bundle.putParcelableArrayList("orderList", orderList);
                 OrderListFragment tab1 = new OrderListFragment();
                 tab1.setArguments(bundle);
                 return tab1;
-            case 1:
+            case 2:
                 bundle = new Bundle();
-                bundle.putString("key", "completed");
+                bundle.putString("key", "in work");
                 bundle.putParcelableArrayList("orderList", orderList);
                 OrderListFragment tab2 = new OrderListFragment();
                 tab2.setArguments(bundle);
                 return tab2;
+            case 3:
+                bundle = new Bundle();
+                bundle.putString("key", "waiting for author");
+                bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab3 = new OrderListFragment();
+                tab3.setArguments(bundle);
+                return tab3;
+            case 4:
+                bundle = new Bundle();
+                bundle.putString("key", "cancelled");
+                bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab4 = new OrderListFragment();
+                tab4.setArguments(bundle);
+                return tab4;
+            case 5:
+                bundle = new Bundle();
+                bundle.putString("key", "on guarantee");
+                bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab5 = new OrderListFragment();
+                tab5.setArguments(bundle);
+                return tab5;
+            case 6:
+                bundle = new Bundle();
+                bundle.putString("key", "in rework");
+                bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab6 = new OrderListFragment();
+                tab6.setArguments(bundle);
+                return tab6;
+            case 7:
+                bundle = new Bundle();
+                bundle.putString("key", "closed");
+                bundle.putParcelableArrayList("orderList", orderList);
+                OrderListFragment tab7 = new OrderListFragment();
+                tab7.setArguments(bundle);
+                return tab7;
             default:
                 return null;
         }

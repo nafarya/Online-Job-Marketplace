@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
@@ -202,6 +203,9 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
                         }
                         tmp.setBidsIds(bids);
                         orderList.add(tmp);
+                    }
+                    if (orderList.size() == 0) {
+                        Toast.makeText(getContext(), "Таких заказов нет, выберите другие фильтры", Toast.LENGTH_LONG).show();
                     }
                     adapter.setOrderList(orderList);
                     adapter.notifyDataSetChanged();

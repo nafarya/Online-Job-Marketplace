@@ -23,7 +23,6 @@ import java.util.List;
 
 public class OrderListRootFragment extends Fragment {
 
-    private List<Order> orderList;
     private OrderListPagerAdapter adapter;
 
     @Nullable
@@ -31,11 +30,14 @@ public class OrderListRootFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order_list_root, container, false);
 
-
-
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Активные"));
-        tabLayout.addTab(tabLayout.newTab().setText("Выполненные"));
+        tabLayout.addTab(tabLayout.newTab().setText("В аукционе"));
+        tabLayout.addTab(tabLayout.newTab().setText("В работе"));
+        tabLayout.addTab(tabLayout.newTab().setText("Ждет подтверждения"));
+        tabLayout.addTab(tabLayout.newTab().setText("Отменены"));
+        tabLayout.addTab(tabLayout.newTab().setText("На гарантии"));
+        tabLayout.addTab(tabLayout.newTab().setText("На доработке"));
+        tabLayout.addTab(tabLayout.newTab().setText("Завершены"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) v.findViewById(R.id.pager);
@@ -63,9 +65,5 @@ public class OrderListRootFragment extends Fragment {
         return v;
     }
 
-    public void updateList(ArrayList<Order> list) {
-        orderList = list;
-        adapter.setOrderList(list);
-    }
 }
 
