@@ -49,10 +49,10 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="8dp"
-
+        android:id="@+id/add_balance_button"
         android:layout_marginLeft="16dp"
         android:layout_below="@+id/nav_header_card"
-        android:layout_toEndOf="@id/nav_header_balance"
+        android:layout_toRightOf="@id/nav_header_balance"
         android:src="@drawable/ic_account_balance_wallet_black_24dp"
         />
 

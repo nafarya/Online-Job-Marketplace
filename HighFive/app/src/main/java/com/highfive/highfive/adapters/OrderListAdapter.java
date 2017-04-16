@@ -2,6 +2,7 @@ package com.highfive.highfive.adapters;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +14,8 @@ import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.SubjectList;
 
-import org.jsoup.helper.StringUtil;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by dan on 02.12.16.
@@ -61,7 +56,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Order order = orderList.get(position);
-        if (StringUtil.isBlank(order.getTheme())) {
+        if (TextUtils.isEmpty(order.getTheme())) {
             holder.theme.setText(order.getTitle());
         } else {
             holder.theme.setText(order.getTheme());
@@ -69,7 +64,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         holder.subject.setText(subjectList.getSubjectNameById(order.getSubjectId()));
         holder.orderType.setText(orderTypeList.getOrderTypeNameByTypeId(order.getType()));
         holder.price.setText(order.getOffer() + " Р");
-        holder.bidNum.setText(order.getBidArraySize() + " Ставок");
+        holder.bidNum.setText(order.getNumOfBids() + " Ставок");
         holder.date.setText("до " + order.getdeadLine());
 
         if (curTab.equals("completed")) {

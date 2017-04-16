@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +23,12 @@ import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.quickblox.core.helper.StringUtils;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.helper.StringUtil;
 
 import java.lang.reflect.Type;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,7 +154,7 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfileCommentsAdapter(topThreeComment);
         rv.setAdapter(adapter);
 
-        if (!StringUtil.isBlank(profile.getAvatar())) {
+        if (!TextUtils.isEmpty(profile.getAvatar())) {
             Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
         }
 

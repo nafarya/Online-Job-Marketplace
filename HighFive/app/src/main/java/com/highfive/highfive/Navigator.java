@@ -29,4 +29,6 @@ public interface Navigator {
 
     void navigateToAddOrder();
 
+    void navigateToPayment();
+
 }

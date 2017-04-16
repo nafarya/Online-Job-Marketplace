@@ -63,6 +63,7 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
     @InjectView(R.id.current_bids_number)       TextView bidsNumber;
     @InjectView(R.id.avgBidPrice)               TextView avgBidPrice;
+    @InjectView(R.id.order_details_budget)      TextView orderBudget;
 
     private String orderId;
     private ArrayList<Bid> bidlist = new ArrayList<>();
@@ -194,6 +195,13 @@ public class OrderDetailsFragment extends Fragment {
                     @Override
                     public void onNext(Response<Order> orderResponse) {
                         Order order = orderResponse.getResponse();
+                        orderTitle.setText(order.getTitle());
+                        orderDescription.setText(order.getDescription());
+                        orderDeadline.setText(order.getdeadLine());
+                        orderSubject.setText(getSubjectNameById(order.getSubjectId()));
+                        orderStatus.setText(order.getStatus());
+                        orderType.setText(getOrderTypeById(order.getType()));
+                        orderBudget.setText(order.getOffer() + " Р");
                     }
                 });
 
@@ -212,12 +220,7 @@ public class OrderDetailsFragment extends Fragment {
                     order.setStatus(contents.get("status").toString());
                     order.setType(contents.get("type").toString());
 
-                    orderTitle.setText(order.getTitle());
-                    orderDescription.setText(order.getDescription());
-                    orderDeadline.setText(order.getdeadLine());
-                    orderSubject.setText(getSubjectNameById(order.getSubjectId()));
-                    orderStatus.setText(order.getStatus());
-                    orderType.setText(getOrderTypeById(order.getType()));
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();

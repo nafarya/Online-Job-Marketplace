@@ -179,21 +179,22 @@ public class Profile {
         return orders;
     }
 
-    public ArrayList<Order> getOrdersByFilter(String subject, String orderTypeId, String userType) {
+    public ArrayList<Order> getOrdersByFilter(String subjectId, String orderTypeId) {
         ArrayList<Order> orders = new ArrayList<>();
-
+        boolean subjFlag = false;
+        boolean typeFlag = false;
         for (int i = 0; i < orderList.size(); i++) {
-            if (userType.equals("teacher")) {
-                if (orderList.get(i).getSubjectId().equals(subject)) {
-                    orders.add(orderList.get(i));
-                }
+            if (subjectId.equals("all") || orderList.get(i).getSubjectId().equals(subjectId)) {
+                subjFlag = true;
             }
-            else {
-                if (orderList.get(i).getSubjectId().equals(subject) && orderList.get(i).getOrderCreatorId().equals(uid)) {
-                    orders.add(orderList.get(i));
-                }
+            if (orderTypeId.equals("all") || orderList.get(i).getType().equals(orderTypeId)) {
+                typeFlag = true;
             }
-
+            if (subjFlag && typeFlag) {
+                orders.add(orderList.get(i));
+            }
+            subjFlag = false;
+            typeFlag = false;
         }
         return orders;
     }

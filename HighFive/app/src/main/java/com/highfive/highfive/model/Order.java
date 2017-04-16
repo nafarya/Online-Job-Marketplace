@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by dan on 02.12.16.
@@ -16,18 +17,44 @@ public class Order implements Parcelable {
     @SerializedName("id")
     private String orderdId;
 
+    @SerializedName("theme")
     private String theme;
+
+    @SerializedName("description")
     private String description;
-    private Date date;
+
+    @SerializedName("deadline")
     private String deadLine;
+
+    @SerializedName("creator")
     private String orderCreatorId;
-    private ArrayList<Bid> bidlist = new ArrayList<>();
+
+    @SerializedName("subject")
     private String subjectId;
+
+    @SerializedName("status")
     private String status;
+
+    @SerializedName("type")
     private String type;
+
+    @SerializedName("updatedAt")
+    private String updatedAt;
+
+    @SerializedName("offer")
     private String offer;
+
+    @SerializedName("title")
     private String title;
-    private int bidArraySize;
+
+    public void setBidsIds(List<String> bidsIds) {
+        this.bidsIds = bidsIds;
+    }
+
+    @SerializedName("bids")
+    private List<String> bidsIds = new ArrayList<>();
+
+    private ArrayList<Bid> bidlist = new ArrayList<>();
 
     public Order() {
     }
@@ -57,14 +84,6 @@ public class Order implements Parcelable {
 
     public void setTheme(String theme) {
         this.theme = theme;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getOrderdId() {
@@ -185,11 +204,19 @@ public class Order implements Parcelable {
         this.title = title;
     }
 
-    public int getBidArraySize() {
-        return bidArraySize;
+    public int getNumOfBids() {
+        return bidsIds.size();
+        //return bidArraySize;
     }
 
     public void setBidArraySize(int bidArraySize) {
-        this.bidArraySize = bidArraySize;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

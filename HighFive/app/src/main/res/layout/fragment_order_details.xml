@@ -104,6 +104,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1000 Р"
+                        android:id="@+id/order_details_budget"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:layout_marginLeft="16dp"

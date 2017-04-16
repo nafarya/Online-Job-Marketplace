@@ -246,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     JSONObject contents = response.getJSONObject("response");
                     JSONArray subjArray = contents.getJSONArray("items");
-                    Subject tmp = new Subject("Все предметы", "all", "all", "allSubjects");
+                    Subject tmp = new Subject("Все предметы", "all", "all", "all");
                     subjectList.add(tmp);
                     for (int i = 0; i < contents.getInt("count"); i++) {
                         JSONObject current = (JSONObject) subjArray.get(i);

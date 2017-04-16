@@ -15,9 +15,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -28,6 +31,7 @@ import com.highfive.highfive.fragments.ChatFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
 import com.highfive.highfive.fragments.OrderListRootFragment;
+import com.highfive.highfive.fragments.PaymentFragment;
 import com.highfive.highfive.fragments.ProfileFragment;
 import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
@@ -38,6 +42,7 @@ import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nononsenseapps.filepicker.FilePickerActivity;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
@@ -55,7 +60,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     private static final String TAG = "LandingActivity";
     public static final int FILE_CODE = 11;
 
-    private StudentOrderLoaderTask task;
     private Profile profile;
 
     @InjectView(R.id.toolbar)           Toolbar toolbar;
@@ -80,17 +84,20 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
         Type profileType = new TypeToken<Profile>(){}.getType();
         profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-        if (profile.getType().equals("student")) {
-            task = new StudentOrderLoaderTask(this);
-            task.execute(profile.getStudentOrderIdList());
-        }
 
 
-        /*View headerView = navigationView.getHeaderView(0);
-        if (!StringUtil.isBlank(profile.getAvatar())) {
+        View headerView = navigationView.getHeaderView(0);
+        if (!(profile.getAvatar().isEmpty())) {
             Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
                     into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
-        }*/
+        }
+        ImageButton addBalanceBtn = (ImageButton) headerView.findViewById(R.id.add_balance_button);
+        addBalanceBtn.setOnClickListener(view -> {
+            navigateToPayment();
+            toolbar.setTitle("Пополнение баланса");
+            drawer.closeDrawer(Gravity.LEFT);
+        });
+
 
         navigateToChooseOrder();
 
@@ -281,5 +288,15 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public void navigateToAddOrder() {
         AddOrderFragment fragment = new AddOrderFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void navigateToPayment() {
+        PaymentFragment fragment = new PaymentFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("uid", profile.getUid());
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+
     }
 }
