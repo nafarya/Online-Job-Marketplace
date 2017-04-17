@@ -1,7 +1,7 @@
 package com.highfive.highfive.util;
 
-import com.highfive.highfive.Items;
-import com.highfive.highfive.Response;
+import com.highfive.highfive.responseModels.Items;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Order;
 
 import retrofit2.http.GET;

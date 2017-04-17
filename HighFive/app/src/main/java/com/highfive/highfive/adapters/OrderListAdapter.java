@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,8 +68,31 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         holder.bidNum.setText(order.getNumOfBids() + " Ставок");
         holder.date.setText("до " + order.getdeadLine());
 
-        if (curTab.equals("completed")) {
-            holder.marker.setBackgroundColor(Color.RED);
+        switch (curTab) {
+            case "lenta":
+                holder.changeStatusBtn.setVisibility(View.GONE);
+                break;
+            case "in work":
+                holder.changeStatusBtn.setText("Отменить");
+                break;
+            case "waiting for author":
+                holder.changeStatusBtn.setText("Отменить");
+                break;
+            case "cancelled":
+                holder.changeStatusBtn.setVisibility(View.GONE);
+                break;
+            case "on guarantee":
+                holder.changeStatusBtn.setVisibility(View.GONE);
+                break;
+            case "in rework":
+                holder.changeStatusBtn.setText("Отменить");
+                break;
+            case "closed":
+                holder.changeStatusBtn.setVisibility(View.GONE);
+                break;
+            default:
+                holder.changeStatusBtn.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -86,6 +110,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         TextView bidNum;
         OnItemClickListener listener;
         ImageView marker;
+        Button changeStatusBtn;
 
         public ViewHolder(View itemView,  OnItemClickListener listener) {
             super(itemView);
@@ -97,12 +122,17 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             price = (TextView) itemView.findViewById(R.id.order_list_item_price);
             bidNum = (TextView) itemView.findViewById(R.id.order_list_item_bid_num);
             marker = (ImageView) itemView.findViewById(R.id.order_list_item_marker);
+            changeStatusBtn = (Button) itemView.findViewById(R.id.change_status_button);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            listener.onItemClick(getAdapterPosition());
+            if (view.getId() == R.id.change_status_button) {
+                ///change status logic
+            } else {
+                listener.onItemClick(getAdapterPosition());
+            }
         }
     }
 }

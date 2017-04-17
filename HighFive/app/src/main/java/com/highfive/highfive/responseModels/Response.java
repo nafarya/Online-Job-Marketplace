@@ -1,4 +1,4 @@
-package com.highfive.highfive;
+package com.highfive.highfive.responseModels;
 
 import com.google.gson.annotations.SerializedName;
 

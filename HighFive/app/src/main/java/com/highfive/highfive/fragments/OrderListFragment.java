@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
-import com.highfive.highfive.Items;
+import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
-import com.highfive.highfive.Response;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.adapters.OrderListAdapter;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderType;

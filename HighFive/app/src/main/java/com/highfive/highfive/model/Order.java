@@ -129,7 +129,6 @@ public class Order implements Parcelable {
             default:
                 return null;
         }
-
     }
 
     public void setStatus(String status) {

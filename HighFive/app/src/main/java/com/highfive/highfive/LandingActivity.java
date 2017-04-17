@@ -240,24 +240,28 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToProfile() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         Fragment fragment = new ProfileFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
     @Override
     public void navigateToChat() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         ChatFragment fragment = new ChatFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
     @Override
     public void navigateToHelp() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         HelpFragment fragment = new HelpFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 
     @Override
     public void navigateToChooseOrder() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         OrderListRootFragment chooseOrderFragment = new OrderListRootFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, chooseOrderFragment).commit();
     }
@@ -301,6 +305,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToPayment() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         PaymentFragment fragment = new PaymentFragment();
         Bundle bundle = new Bundle();
         bundle.putString("uid", profile.getUid());
@@ -311,6 +316,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     public void navigateToLenta() {
+        while(getSupportFragmentManager().popBackStackImmediate());
         OrderLentaFragment fragment = new OrderLentaFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }

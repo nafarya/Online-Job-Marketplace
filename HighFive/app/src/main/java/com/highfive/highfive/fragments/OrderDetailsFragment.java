@@ -18,7 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
-import com.highfive.highfive.Response;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
 import com.highfive.highfive.model.Order;

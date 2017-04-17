@@ -91,18 +91,18 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
             fab.setOnClickListener(view -> navigator.navigateToAddOrder());
         }
 
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "active");
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "lenta");
         orderListrv.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         orderListrv.setLayoutManager(linearLayoutManager);
         orderListrv.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int current_page) {
-                getTeacherActiveOrders(current_page*50);
+                getTeachersLenta(current_page * 50);
             }
         });
 
-        //getTeacherActiveOrders(0);
+        //getTeachersLenta(0);
 
         return v;
     }
@@ -130,7 +130,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 orderList.clear();
-                getTeacherActiveOrders(0);
+                getTeachersLenta(0);
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -140,7 +140,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         orderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 orderList.clear();
-                getTeacherActiveOrders(0);
+                getTeachersLenta(0);
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -181,7 +181,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         return names;
     }
 
-    public void getTeacherActiveOrders(int startPos) {
+    public void getTeachersLenta(int startPos) {
         RequestParams params = new RequestParams();
         params.put("offset", startPos);
         params.put("limit", startPos + 50);
