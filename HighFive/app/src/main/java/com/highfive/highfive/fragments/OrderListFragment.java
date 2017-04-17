@@ -4,16 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
@@ -30,13 +26,6 @@ import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.model.SubjectList;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,11 +33,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import cz.msebera.android.httpclient.Header;
-import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -84,6 +70,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
         adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
         orderListrv.setAdapter(adapter);
+
 
         getUsersOrders(curTab);
         cardSubj.setVisibility(View.GONE);

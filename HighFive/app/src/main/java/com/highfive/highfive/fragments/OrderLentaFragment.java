@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListAdapter;
+import com.highfive.highfive.listeners.EndlessRecyclerOnScrollListener;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.OrderTypeList;
@@ -91,7 +93,16 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
 
         adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "active");
         orderListrv.setAdapter(adapter);
-        getTeacherActiveOrders();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        orderListrv.setLayoutManager(linearLayoutManager);
+        orderListrv.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                getTeacherActiveOrders(current_page*50);
+            }
+        });
+
+        //getTeacherActiveOrders(0);
 
         return v;
     }
@@ -119,7 +130,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 orderList.clear();
-                getTeacherActiveOrders();
+                getTeacherActiveOrders(0);
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -129,7 +140,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         orderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 orderList.clear();
-                getTeacherActiveOrders();
+                getTeacherActiveOrders(0);
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -170,10 +181,10 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         return names;
     }
 
-    public void getTeacherActiveOrders() {
+    public void getTeacherActiveOrders(int startPos) {
         RequestParams params = new RequestParams();
-        params.put("offset", 0);
-        params.put("limit", 50);
+        params.put("offset", startPos);
+        params.put("limit", startPos + 50);
 
         if (subjectSpinner.getSelectedItemPosition() != 0) {
             params.put("subjectId", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
@@ -181,6 +192,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         if (orderTypeSpinner.getSelectedItemPosition() != 0) {
             params.put("typeId", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
         }
+        List<Order> tmpOrderList = new ArrayList<>();
         HighFiveHttpClient.get("orders", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -202,7 +214,12 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
                             bids.add(bidArray.getString(j));
                         }
                         tmp.setBidsIds(bids);
-                        orderList.add(tmp);
+                        tmpOrderList.add(tmp);
+                    }
+                    if (startPos == 0) {
+                        orderList = tmpOrderList;
+                    } else {
+                        orderList.addAll(tmpOrderList);
                     }
                     if (orderList.size() == 0) {
                         Toast.makeText(getContext(), "Таких заказов нет, выберите другие фильтры", Toast.LENGTH_LONG).show();

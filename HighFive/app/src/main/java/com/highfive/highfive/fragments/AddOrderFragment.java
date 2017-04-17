@@ -14,11 +14,16 @@ import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
+import com.highfive.highfive.model.OrderType;
+import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.model.Subject;
+import com.highfive.highfive.model.SubjectList;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -28,6 +33,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,92 +45,32 @@ import cz.msebera.android.httpclient.Header;
 
 public class AddOrderFragment extends DialogFragment {
 
-    @InjectView(R.id.subject_spinner)           Spinner subjectSpinner;
-    @InjectView(R.id.job_type_spinner)          Spinner jobTypeSpinner;
+    @InjectView(R.id.subject_spinner)           SearchableSpinner subjectSpinner;
+    @InjectView(R.id.job_type_spinner)          SearchableSpinner orderTypeSpinner;
     @InjectView(R.id.add_order_title)           EditText addOrderTitle;
     @InjectView(R.id.add_order_description)     EditText addOrderDescription;
     @InjectView(R.id.add_order_date)            EditText addOrderDate;
     @InjectView(R.id.add_order_offer)           EditText addOrderOffer;
     @InjectView(R.id.add_order_button_id)       Button addOrderButton;
 
-    private ArrayList<String> subjects = new ArrayList<>();
-    private ArrayList<String> subjectIds = new ArrayList<>();
-    private ArrayList<String> jobTypes = new ArrayList<>();
-    private ArrayList<String> jobTypeIds = new ArrayList<>();
+    private Profile profile;
+    private SubjectList subList;
+    private List<Subject> subjects;
+    private OrderTypeList orderTypeList;
+    private List<OrderType> orderTypes;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Type profileType = new TypeToken<Profile>(){}.getType();
-        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-        String userType = profile != null ? profile.getType().toLowerCase() : "student";
-        RequestParams params = new RequestParams();
-        params.add("type", userType);
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        Type subListType = new TypeToken<SubjectList>(){}.getType();
+        subList = (SubjectList) Cache.getCacheManager().get("subjectList", SubjectList.class, subListType);
+        Type orderTypeListType = new TypeToken<OrderTypeList>(){}.getType();
+        orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
 
-        HighFiveHttpClient.get("subjects", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    JSONArray subjArray = contents.getJSONArray("items");
-                    for (int i = 0; i < contents.getInt("count"); i++) {
-                        JSONObject current = (JSONObject) subjArray.get(i);
-                        subjects.add(current.getString("name"));
-                        subjectIds.add(current.getString("id"));
-                    }
-                    ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.simple_spinner_item, subjects);
-                    if (subjectSpinner != null) {
-                        subjectSpinner.setAdapter(subjectAdapter);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-        });
-
-        HighFiveHttpClient.get("ordertypes", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    JSONArray subjArray = contents.getJSONArray("items");
-                    for (int i = 0; i < contents.getInt("count"); i++) {
-                        JSONObject current = (JSONObject) subjArray.get(i);
-                        jobTypes.add(current.getString("name"));
-                        jobTypeIds.add(current.getString("id"));
-                    }
-                    ArrayAdapter<String> jobTypeAdapter = new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.simple_spinner_item, jobTypes);
-                    if (jobTypeSpinner != null) {
-                        jobTypeSpinner.setAdapter(jobTypeAdapter);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-        });
     }
 
     @Nullable
@@ -133,14 +79,31 @@ public class AddOrderFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_add_order, container, false);
         ButterKnife.inject(this, v);
 
+        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
+                (getActivity(), android.R.layout.simple_spinner_item, getSubjectNames());
+
+
+        subjectSpinner.setAdapter(subjectAdapter);
+        subjectSpinner.setTitle("Выберите предмет");
+        subjectSpinner.setPositiveButton("OK");
+
+        ArrayAdapter<String> ordeTypeAdapter = new ArrayAdapter<String>
+                (getActivity(), android.R.layout.simple_spinner_item, getOrderTypeNames());
+
+
+        orderTypeSpinner.setAdapter(ordeTypeAdapter);
+        orderTypeSpinner.setTitle("Выберите тип работы");
+        orderTypeSpinner.setPositiveButton("OK");
+
+
         addOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 RequestParams params = new RequestParams();
                 params.add("title", addOrderTitle.getText().toString());
                 params.add("description", addOrderDescription.getText().toString());
-                params.add("subject", subjectIds.get((subjectSpinner.getSelectedItemPosition())));
-                params.add("type", jobTypeIds.get(jobTypeSpinner.getSelectedItemPosition()));
+                params.add("subject", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
+                params.add("type", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
                 params.add("offer", addOrderOffer.getText().toString());
                 params.add("deadline", new DateTime(Instant.now().plus(1_000_000L)).toString()); //TODO: proper reading of date
                 HighFiveHttpClient.post("orders", params, new JsonHttpResponseHandler() {
@@ -171,5 +134,30 @@ public class AddOrderFragment extends DialogFragment {
             }
         });
         return v;
+    }
+
+    private List<String> getSubjectNames() {
+        if (profile.getType().equals("teacher") && subList != null) {
+            subjects = subList.getSubjectList();
+        } else {
+            if (subList != null) {
+                subjects = subList.getStudentSubjectList();
+            }
+        }
+
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < subjects.size(); i++) {
+            list.add(subjects.get(i).getName());
+        }
+        return list;
+    }
+
+    private List<String> getOrderTypeNames() {
+        orderTypes = orderTypeList.getorderTypelist();
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < orderTypes.size(); i++) {
+            names.add(orderTypes.get(i).getName());
+        }
+        return names;
     }
 }
