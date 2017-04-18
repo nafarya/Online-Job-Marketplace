@@ -1,5 +1,6 @@
 package com.highfive.highfive.util;
 
+import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Order;
@@ -23,4 +24,6 @@ public interface YaReshuApi {
     Observable<Response<Items<Order>>> getUsersOrders(@Header("api-token") String apiToken,
                                                       @Path("id") String id,
                                                       @Query("status") String status);
+    @GET("users/{id}")
+    Observable<Response<Profile>> getUserById(@Path("id") String id);
 }

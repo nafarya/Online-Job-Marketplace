@@ -1,13 +1,14 @@
 package com.highfive.highfive.fragments;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,12 +122,6 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        createComments();
-    }
-
     void createComments() {
         if (profile == null) {
             profile = new Profile("test", "test");
@@ -154,9 +149,7 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfileCommentsAdapter(topThreeComment);
         rv.setAdapter(adapter);
 
-        if (!TextUtils.isEmpty(profile.getAvatar())) {
-            Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
-        }
+        Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
 
         profile.setPositiveRating(45);
         profile.setNegativeRating(14);
@@ -179,12 +172,20 @@ public class ProfileFragment extends Fragment {
             donutProgress.setText("N/A");
         }
 
-        Drawable progress = profileRating.getProgressDrawable();
-        DrawableCompat.setTint(progress, Color.rgb(255,215,79));
+        LayerDrawable drawable = (LayerDrawable) profileRating.getProgressDrawable();
+        Drawable progress = drawable.getDrawable(2);
+        DrawableCompat.setTint(progress, getResources().getColor(R.color.gold));
+        progress = drawable.getDrawable(1);
+        DrawableCompat.setTintMode(progress, PorterDuff.Mode.DST_ATOP);
+        DrawableCompat.setTint(progress, getResources().getColor(R.color.gold));
+        DrawableCompat.setTintMode(progress, PorterDuff.Mode.SRC_ATOP);
+        DrawableCompat.setTint(progress, getResources().getColor(R.color.darkGrey));
+        progress = drawable.getDrawable(0);
+        DrawableCompat.setTint(progress, getResources().getColor(R.color.darkGrey));
 
         profilePositiveRating.setText(String.valueOf((int)profile.getPositiveRating()));
         profileNegativeRating.setText(String.valueOf((int)profile.getNegativeRating()));
-        profileRating.setRating((float)(profile.getRate()));
+        profileRating.setRating((float)2.5);
         profileLogin.setText(profile.getUsername());
         profileAbout.setText(profile.getDescription());
 

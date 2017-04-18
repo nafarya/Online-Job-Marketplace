@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 
 public class Bid implements Parcelable {
-    private double price;
+    private double offer;
     private String bidCreatorId;
     private String orderId;
     private String createdAt;
@@ -30,9 +30,12 @@ public class Bid implements Parcelable {
         this.bidComments = bidComments;
     }
 
+    public Bid() {
+        bidComments = new ArrayList<>();
+    }
 
-    public Bid(double price, String id) {
-        this.price = price;
+    public Bid(double offer, String id) {
+        this.offer = offer;
         this.bidCreatorId = id;
         bidComments = new ArrayList<>();
     }
@@ -45,12 +48,12 @@ public class Bid implements Parcelable {
         this.bidCreatorId = bidCreatorId;
     }
 
-    public double getPrice() {
-        return price;
+    public double getOffer() {
+        return offer;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setOffer(double offer) {
+        this.offer = offer;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class Bid implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(price);
+        dest.writeDouble(offer);
         dest.writeString(bidCreatorId);
         dest.writeString(orderId);
         dest.writeString(createdAt);
@@ -83,7 +86,7 @@ public class Bid implements Parcelable {
 
     // "De-parcel object
     public Bid(Parcel in) {
-        price = in.readDouble();
+        offer = in.readDouble();
         bidCreatorId = in.readString();
         orderId = in.readString();
         createdAt = in.readString();

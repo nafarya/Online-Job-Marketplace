@@ -73,9 +73,6 @@ public class OrderDetailsFragment extends Fragment {
     private Navigator navigator;
     private Profile profile;
     private SubjectList subList;
-    private Order order;
-
-    private List<Order> posts;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -107,8 +104,6 @@ public class OrderDetailsFragment extends Fragment {
         orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
 
 
-
-
         if (!profile.getType().equals("teacher")) {
             bidCard.setVisibility(View.GONE);
             subjectList = subList.getStudentSubjectList();
@@ -120,30 +115,11 @@ public class OrderDetailsFragment extends Fragment {
         addBid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestParams params = new RequestParams();
-                params.add("id", orderId);
-                params.add("offer", bidAmount.getText().toString());
-                HighFiveHttpClient.post("orders/" + orderId + "/bids", params, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        super.onSuccess(statusCode, headers, response);
-                        Toast.makeText(getContext(), "Ставка отправлена", Toast.LENGTH_SHORT).show();
-                        bidAmount.setText("");
-
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse);
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        super.onFailure(statusCode, headers, responseString, throwable);
-                    }
-                });
+                postBid();
             }
         });
+        getOrderDetails();
+        getBids();
 
         return v;
     }
@@ -171,12 +147,11 @@ public class OrderDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle args = this.getArguments();
-
-        RequestParams params = new RequestParams();
         orderId = args.getString("orderId");
-        params.add("id", orderId);
 
+    }
 
+    private void getOrderDetails() {
         App.getApi()
                 .getOrderDetailsById(orderId)
                 .subscribeOn(Schedulers.io())
@@ -204,39 +179,11 @@ public class OrderDetailsFragment extends Fragment {
                         orderBudget.setText(order.getOffer() + " Р");
                     }
                 });
+    }
 
-
-
-        /*HighFiveHttpClient.get("orders/" + orderId, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    JSONObject contents = response.getJSONObject("response");
-                    order = new Order();
-                    order.setTitle(contents.get("title").toString());
-                    order.setDescription(contents.get("description").toString());
-                    order.setdeadLine(contents.get("deadline").toString());
-                    order.setSubjectId(contents.get("subject").toString());
-                    order.setStatus(contents.get("status").toString());
-                    order.setType(contents.get("type").toString());
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });*/
+    private void getBids() {
+        RequestParams params = new RequestParams();
+        params.add("id", orderId);
         HighFiveHttpClient.get("orders/" + orderId + "/bids", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -247,11 +194,13 @@ public class OrderDetailsFragment extends Fragment {
                     JSONArray items = contents.getJSONArray("items");
                     for (int i = 0; i < count; i++) {
                         JSONObject current = items.getJSONObject(i);
-                        Bid bid = new Bid(current.getDouble("offer"), current.getString("id"));
-                        bid.setOrderId(current.getString("order"));
+                        Bid bid = new Bid();
                         bid.setCreatedAt(current.getString("createdAt"));
-                        bid.setCreatedAt(current.getString("updatedAt"));
+                        bid.setUpdatedAt(current.getString("updatedAt"));
+                        bid.setOffer(current.getDouble("offer"));
                         bid.setBidId(current.getString("id"));
+                        bid.setOrderId(current.getString("order"));
+                        bid.setBidCreatorId(current.getString("creator"));
                         JSONArray comments = current.getJSONArray("comments");
                         for (int j = 0; j < comments.length(); j++) {
                             JSONObject comment = comments.getJSONObject(j);
@@ -264,13 +213,17 @@ public class OrderDetailsFragment extends Fragment {
                             bid.addBidComment(bidComment);
                         }
                         bidlist.add(bid);
-                        avgBid += bid.getPrice();
+                        avgBid += bid.getOffer();
                     }
                     bidsNumber.setText(String.valueOf(bidlist.size()));
                     if (count > 0) {
                         avgBidPrice.setText(String.valueOf((int)(avgBid / count)) + " Р");
                     }
-
+                    for (int i = 0; i < bidlist.size(); i++) {
+                        if (bidlist.get(i).getBidCreatorId().equals(profile.getUid())) {
+                            bidCard.setVisibility(View.GONE);
+                        }
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -287,7 +240,33 @@ public class OrderDetailsFragment extends Fragment {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+    }
 
+    private void postBid() {
+        RequestParams params = new RequestParams();
+        params.add("id", orderId);
+        params.add("offer", bidAmount.getText().toString());
+        HighFiveHttpClient.post("orders/" + orderId + "/bids", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Toast.makeText(getContext(), "Ставка отправлена", Toast.LENGTH_SHORT).show();
+                bidAmount.setText("");
 
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                if (statusCode == 400) {
+                    Toast.makeText(getContext(), "Вы уже сделали ставку", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 }

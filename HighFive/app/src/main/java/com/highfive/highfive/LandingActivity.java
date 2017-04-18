@@ -89,10 +89,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
 
         View headerView = navigationView.getHeaderView(0);
-        if (!(profile.getAvatar().isEmpty())) {
-            Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
-                    into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
-        }
+        Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
+                into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+
         ImageButton addBalanceBtn = (ImageButton) headerView.findViewById(R.id.add_balance_button);
         addBalanceBtn.setOnClickListener(view -> {
             navigateToPayment();
@@ -106,10 +105,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
 
         navigateToChooseOrder();
-
-    }
-
-    public void updateChooseOrder(List<Order> list) {
 
     }
 
@@ -241,7 +236,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     @Override
     public void navigateToProfile() {
         while(getSupportFragmentManager().popBackStackImmediate());
-        Fragment fragment = new ProfileFragment();
+        ProfileFragment fragment = new ProfileFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
     }
 

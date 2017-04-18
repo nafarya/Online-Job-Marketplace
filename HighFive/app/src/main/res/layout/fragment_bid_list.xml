@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:id="@+id/fragment_bid_list_rv"
         app:layoutManager="LinearLayoutManager"
-        android:background="@color/tw__solid_white">
+        android:background="@color/grey">
 
     </android.support.v7.widget.RecyclerView>
 

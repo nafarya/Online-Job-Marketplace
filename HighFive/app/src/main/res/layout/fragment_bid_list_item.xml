@@ -20,6 +20,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="40dp"
+                android:id="@+id/bid_list_item_profile"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/com_facebook_profile_picture_blank_square"/>
@@ -36,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
-                android:id="@+id/bidlist_item_id"/>
+                android:id="@+id/bidlist_item_username"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -71,6 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
+                android:layout_marginBottom="8dp"
                 android:id="@+id/bidList_item_num_of_comments"
                 android:text="5 комментариев"/>
 
@@ -81,7 +83,7 @@
                 android:id="@+id/bidlist_item_button"
                 android:text="Выбрать исполнителем"
                 android:background="@color/green"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
