@@ -1,9 +1,12 @@
 package com.highfive.highfive.fragments;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +21,8 @@ import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
+import com.highfive.highfive.adapters.FilesAdapter;
+import com.highfive.highfive.model.File;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
@@ -43,6 +48,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -51,7 +57,7 @@ import rx.schedulers.Schedulers;
  * Created by heat_wave on 19.01.17.
  */
 
-public class OrderDetailsFragment extends Fragment {
+public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnItemClickListener{
     @InjectView(R.id.order_title)               TextView orderTitle;
     @InjectView(R.id.order_description)         TextView orderDescription;
     @InjectView(R.id.order_subject)             TextView orderSubject;
@@ -64,25 +70,19 @@ public class OrderDetailsFragment extends Fragment {
     @InjectView(R.id.current_bids_number)       TextView bidsNumber;
     @InjectView(R.id.avgBidPrice)               TextView avgBidPrice;
     @InjectView(R.id.order_details_budget)      TextView orderBudget;
+    @InjectView(R.id.order_details_files_rv)    RecyclerView fileRecyclerView;
 
     private String orderId;
-    private ArrayList<Bid> bidlist = new ArrayList<>();
+    private ArrayList<Bid> bidlist;
     private List<Subject> subjectList;
     private OrderTypeList orderTypeList;
     private List<OrderType> typeList;
     private Navigator navigator;
     private Profile profile;
     private SubjectList subList;
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        bidsNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navigator.navigateToBidsList(bidlist);
-            }
-        });
-    }
+    private List<File> fileList;
+    private Order order;
+    private FilesAdapter filesAdapter;
 
 
 
@@ -112,14 +112,14 @@ public class OrderDetailsFragment extends Fragment {
         }
         typeList = orderTypeList.getorderTypelist();
 
-        addBid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                postBid();
-            }
-        });
+        addBid.setOnClickListener(v1 -> postBid());
+        bidsNumber.setOnClickListener(view -> navigator.navigateToBidsList(bidlist));
+
+        filesAdapter = new FilesAdapter(fileList, this);
+        fileRecyclerView.setAdapter(filesAdapter);
         getOrderDetails();
         getBids();
+
 
         return v;
     }
@@ -148,6 +148,8 @@ public class OrderDetailsFragment extends Fragment {
 
         Bundle args = this.getArguments();
         orderId = args.getString("orderId");
+        fileList = new ArrayList<>();
+        bidlist = new ArrayList<>();
 
     }
 
@@ -169,14 +171,17 @@ public class OrderDetailsFragment extends Fragment {
 
                     @Override
                     public void onNext(Response<Order> orderResponse) {
-                        Order order = orderResponse.getResponse();
+                        order = orderResponse.getResponse();
                         orderTitle.setText(order.getTitle());
                         orderDescription.setText(order.getDescription());
                         orderDeadline.setText(order.getdeadLine());
-                        orderSubject.setText(getSubjectNameById(order.getSubjectId()));
+                        orderSubject.setText(getSubjectNameById(order.getSubject()));
                         orderStatus.setText(order.getStatus());
                         orderType.setText(getOrderTypeById(order.getType()));
                         orderBudget.setText(order.getOffer() + " Р");
+                        if (order.getFiles() != null) {
+                            parseFiles(order.getFiles());
+                        }
                     }
                 });
     }
@@ -268,5 +273,46 @@ public class OrderDetailsFragment extends Fragment {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+    }
+
+    private void parseFiles(List<String> fileIds) {
+        List<Observable<Response<File>>> observables = new ArrayList<>();
+        for (String fileId : fileIds) {
+            observables.add(App.getApi().getFileById(fileId).subscribeOn(Schedulers.io()).retry(5).onErrorReturn(t -> null));
+        }
+        Observable.zip(observables, orderResponseObjects -> {
+            List<File> fileList = new ArrayList<>();
+            for (Object obj : orderResponseObjects) {
+                if (obj != null) {
+                    fileList.add(((Response<File>) obj).getResponse());
+                }
+            }
+            return fileList;
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<File>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(List<File> tmpFileList) {
+                fileList = tmpFileList;
+                filesAdapter.setFiles(fileList);
+                filesAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onItemClick(int item) {
+        Intent browserIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://yareshu.ru/uploads/" + fileList.get(item).getPath()));
+        startActivity(browserIntent);
     }
 }

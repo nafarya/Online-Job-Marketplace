@@ -57,7 +57,7 @@ public class ChatFragment extends Fragment {
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot msgSnapshot : snapshot.getChildren()) {
                     Chat msg = msgSnapshot.getValue(Chat.class);
-                    Log.i("Chat", msg.getName() + ": " + msg.getText());
+                    Log.i("Chat", msg.getFirstName() + ": " + msg.getText());
                 }
             }
 
@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment {
         chatAdapter = new FirebaseRecyclerAdapter<Chat, ChatHolder>(Chat.class, android.R.layout.two_line_list_item, ChatHolder.class, ref) {
             @Override
             public void populateViewHolder(ChatHolder chatMessageViewHolder, Chat chatMessage, int position) {
-                chatMessageViewHolder.setName(chatMessage.getName());
+                chatMessageViewHolder.setFirstName(chatMessage.getFirstName());
                 chatMessageViewHolder.setText(chatMessage.getText());
             }
         };

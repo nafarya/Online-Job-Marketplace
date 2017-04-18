@@ -265,7 +265,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public void navigateToOrderDetail(Order order) {
         OrderDetailsFragment fragment = new OrderDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("orderId", order.getOrderdId());
+        bundle.putString("orderId", order.getId());
         bundle.putString("theme", order.getTheme());
         bundle.putString("description", order.getDescription());
         fragment.setArguments(bundle);

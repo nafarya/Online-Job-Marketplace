@@ -1,5 +1,6 @@
 package com.highfive.highfive.util;
 
+import com.highfive.highfive.model.File;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.responseModels.Response;
@@ -26,4 +27,7 @@ public interface YaReshuApi {
                                                       @Query("status") String status);
     @GET("users/{id}")
     Observable<Response<Profile>> getUserById(@Path("id") String id);
+
+    @GET("files/{id}")
+    Observable<Response<File>> getFileById(@Path("id") String id);
 }

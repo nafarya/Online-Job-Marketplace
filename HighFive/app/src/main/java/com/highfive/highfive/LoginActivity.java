@@ -16,6 +16,7 @@ import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.model.SubjectList;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by heat_wave on 25.12.16.
@@ -147,60 +151,9 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
         final Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
-        HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
-                new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        super.onSuccess(statusCode, headers, response);
-                        try {
-                            JSONObject contents = (JSONObject) response.get("response");
-                            profile = new Profile(contents.getString("email"),
-                                    contents.getString("id"),
-                                    contents.getString("username"),
-                                    contents.getString("balance"),
-                                    contents.getJSONObject("rating").getDouble("negative"),
-                                    contents.getJSONObject("rating").getDouble("positive"),
-                                    contents.getString("firstName"),
-                                    contents.getString("secondName"),
-                                    contents.getString("type").toLowerCase());
-                            profile.setNeutralRating(contents.getJSONObject("rating").getDouble("neutral"));
-                            profile.setAvatar(contents.getString("avatar"));
-                            if (profile.getType().equals("student")) {
-                                JSONArray array = contents.getJSONArray("orders");
-                                ArrayList<String> tmp = new ArrayList<>();
-                                for (int i = 0; i < array.length(); i++) {
-                                    tmp.add(array.getString(i));
-                                }
-                                profile.setStudentOrderIdList(tmp);
-                            }
-
-                            Cache.getCacheManager().put("profile", profile);
-
-                            startActivity(intent);
-                            finish();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse);
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        super.onFailure(statusCode, headers, responseString, throwable);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-
         getSubjects();
         getOrderTypes();
-
+        getProfile(intent);
     }
 
     public void onLoginFailed() {
@@ -315,5 +268,32 @@ public class LoginActivity extends AppCompatActivity {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+    }
+
+    private void getProfile(Intent intent) {
+        App.getApi()
+                .getUserById(HighFiveHttpClient.getUidCookie().getValue())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Response<Profile>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG", e.getMessage(), e);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onNext(Response<Profile> orderResponse) {
+                        profile = orderResponse.getResponse();
+                        Cache.getCacheManager().put("profile", profile);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
     }
 }

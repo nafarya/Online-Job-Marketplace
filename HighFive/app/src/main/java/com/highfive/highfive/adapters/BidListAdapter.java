@@ -60,7 +60,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
         if (profileList != null) {
             Picasso.with(context).load("https://yareshu.ru/" + profileList.get(position).getAvatar()).into(holder.avatar);
             holder.username.setText(profileList.get(position).getUsername());
-            holder.ratingBar.setRating((float)profileList.get(position).getRate());
+            holder.ratingBar.setRating((float)profileList.get(position).getProfileRating());
         } else {
             holder.username.setText(bidList.get(position).getBidCreatorId());
         }

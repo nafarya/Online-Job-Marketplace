@@ -3,71 +3,134 @@ package com.highfive.highfive.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
- * Created by dan on 02.12.16.
+ * Created by dan on 18.04.17.
  */
 
 public class Order implements Parcelable {
-    @SerializedName("id")
-    private String orderdId;
-
-    @SerializedName("theme")
-    private String theme;
-
-    @SerializedName("description")
-    private String description;
-
-    @SerializedName("deadline")
-    private String deadLine;
-
-    @SerializedName("creator")
-    private String orderCreatorId;
-
-    @SerializedName("subject")
-    private String subjectId;
-
-    @SerializedName("status")
-    private String status;
-
-    @SerializedName("type")
-    private String type;
 
     @SerializedName("updatedAt")
+    @Expose
     private String updatedAt;
-
-    @SerializedName("offer")
-    private String offer;
-
+    @SerializedName("createdAt")
+    @Expose
+    private String createdAt;
     @SerializedName("title")
+    @Expose
     private String title;
-
-    public void setBidsIds(List<String> bidsIds) {
-        this.bidsIds = bidsIds;
-    }
-
+    @SerializedName("description")
+    @Expose
+    private String description;
+    @SerializedName("subject")
+    @Expose
+    private String subject;
+    @SerializedName("type")
+    @Expose
+    private String type;
+    @SerializedName("creator")
+    @Expose
+    private String creator;
+    @SerializedName("deadline")
+    @Expose
+    private String deadline;
+    @SerializedName("offer")
+    @Expose
+    private int offer;
+    @SerializedName("lastStatusChange")
+    @Expose
+    private String lastStatusChange;
+    @SerializedName("status")
+    @Expose
+    private String status;
+    //        @SerializedName("options")
+//        @Expose
+//        private List<Object> options = null;
+    @SerializedName("files")
+    @Expose
+    private List<String> files = null;
     @SerializedName("bids")
-    private List<String> bidsIds = new ArrayList<>();
+    @Expose
+    private List<String> bidsIds = null;
+
+    @SerializedName("selectedBid")
+    @Expose
+    private String selectedBid;
+    @SerializedName("chatToken")
+    @Expose
+    private String chatToken;
+    @SerializedName("id")
+    @Expose
+    private String id;
+    @SerializedName("theme")
+    @Expose
+    private String theme;
 
     private ArrayList<Bid> bidlist = new ArrayList<>();
 
-    public Order() {
+
+    public final static Parcelable.Creator<Order> CREATOR = new Creator<Order>() {
+
+
+        @SuppressWarnings({
+                "unchecked"
+        })
+        public Order createFromParcel(Parcel in) {
+            Order instance = new Order();
+            instance.updatedAt = ((String) in.readValue((String.class.getClassLoader())));
+            instance.createdAt = ((String) in.readValue((String.class.getClassLoader())));
+            instance.title = ((String) in.readValue((String.class.getClassLoader())));
+            instance.description = ((String) in.readValue((String.class.getClassLoader())));
+            instance.subject = ((String) in.readValue((String.class.getClassLoader())));
+            instance.type = ((String) in.readValue((String.class.getClassLoader())));
+            instance.creator = ((String) in.readValue((String.class.getClassLoader())));
+            instance.deadline = ((String) in.readValue((String.class.getClassLoader())));
+            instance.offer = ((int) in.readValue((int.class.getClassLoader())));
+            instance.lastStatusChange = ((String) in.readValue((String.class.getClassLoader())));
+            instance.status = ((String) in.readValue((String.class.getClassLoader())));
+//                in.readList(instance.options, (java.lang.Object.class.getClassLoader()));
+            in.readList(instance.files, (java.lang.String.class.getClassLoader()));
+            in.readList(instance.bidsIds, (java.lang.String.class.getClassLoader()));
+            instance.selectedBid = ((String) in.readValue((String.class.getClassLoader())));
+            instance.chatToken = ((String) in.readValue((String.class.getClassLoader())));
+            instance.id = ((String) in.readValue((String.class.getClassLoader())));
+            instance.bidlist = in.readArrayList(Bid.class.getClassLoader());
+            return instance;
+        }
+
+        public Order[] newArray(int size) {
+            return (new Order[size]);
+        }
+
+    };
+
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public Order(String orderId, String themeId, String description) {
-        this.orderdId = orderId;
-        this.theme = themeId;
-        this.description = description;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public void addBid(String id, int price) {
-        Bid bid = new Bid(price, id);
-        bidlist.add(bid);
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -78,36 +141,52 @@ public class Order implements Parcelable {
         this.description = description;
     }
 
-    public String getTheme() {
-        return theme;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setTheme(String theme) {
-        this.theme = theme;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    public String getOrderdId() {
-        return orderdId;
+    public String getType() {
+        return type;
     }
 
-    public void setOrderdId(String orderdId) {
-        this.orderdId = orderdId;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getOrderCreatorId() {
-        return orderCreatorId;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setOrderCreatorId(String orderCreatorId) {
-        this.orderCreatorId = orderCreatorId;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
-    public String getSubjectId() {
-        return subjectId;
+    public String getDeadline() {
+        return deadline;
     }
 
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
+    public int getOffer() {
+        return offer;
+    }
+
+    public void setOffer(int offer) {
+        this.offer = offer;
+    }
+
+    public String getLastStatusChange() {
+        return lastStatusChange;
+    }
+
+    public void setLastStatusChange(String lastStatusChange) {
+        this.lastStatusChange = lastStatusChange;
     }
 
     public String getStatus() {
@@ -135,101 +214,99 @@ public class Order implements Parcelable {
         this.status = status;
     }
 
-    @Override
+//        public List<Object> getOptions() {
+//            return options;
+//        }
+//
+//        public void setOptions(List<Object> options) {
+//            this.options = options;
+//        }
+
+    public List<String> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<String> files) {
+        this.files = files;
+    }
+
+    public List<String> getBids() {
+        return bidsIds;
+    }
+
+    public void setBids(List<String> bidsIds) {
+        this.bidsIds = bidsIds;
+    }
+
+    public String getSelectedBid() {
+        return selectedBid;
+    }
+
+    public void setSelectedBid(String selectedBid) {
+        this.selectedBid = selectedBid;
+    }
+
+    public String getChatToken() {
+        return chatToken;
+    }
+
+    public void setChatToken(String chatToken) {
+        this.chatToken = chatToken;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(updatedAt);
+        dest.writeValue(createdAt);
+        dest.writeValue(title);
+        dest.writeValue(description);
+        dest.writeValue(subject);
+        dest.writeValue(type);
+        dest.writeValue(creator);
+        dest.writeValue(deadline);
+        dest.writeValue(offer);
+        dest.writeValue(lastStatusChange);
+        dest.writeValue(status);
+//            dest.writeList(options);
+        dest.writeList(files);
+        dest.writeList(bidsIds);
+        dest.writeValue(selectedBid);
+        dest.writeValue(chatToken);
+        dest.writeValue(id);
+        dest.writeList(bidlist);
+    }
+
     public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(orderdId);
-        dest.writeString(theme);
-        dest.writeString(description);
-
-        //dest.writeString(date);
-
-        dest.writeString(orderCreatorId);
-        dest.writeList(bidlist);
-        dest.writeString(subjectId);
-        dest.writeString(status);
-        dest.writeString(type);
-        dest.writeString(offer);
-        dest.writeString(deadLine);
-    }
-
-    // Creator
-    public static final Parcelable.Creator CREATOR
-            = new Parcelable.Creator() {
-        public Bid createFromParcel(Parcel in) {
-            return new Bid(in);
-        }
-
-        public Bid[] newArray(int size) {
-            return new Bid[size];
-        }
-    };
-
-    // "De-parcel object
-    public Order(Parcel in) {
-        orderdId = in.readString();
-        theme = in.readString();
-        description = in.readString();
-        orderCreatorId  = in.readString();
-        bidlist = in.readArrayList(Bid.class.getClassLoader());
-        subjectId = in.readString();
-        status = in.readString();
-        type = in.readString();
-        offer = in.readString();
-        deadLine = in.readString();
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getOffer() {
-        return offer;
-    }
-
-    public void setOffer(String offer) {
-        this.offer = offer;
-    }
-
     public String getdeadLine() {
-        String time = deadLine.substring(0, 4) + "." + deadLine.substring(5, 7) + "." +
-                deadLine.substring(8, 10) + " " + deadLine.substring(11, 16);
+        String time = deadline.substring(0, 4) + "." + deadline.substring(5, 7) + "." +
+                deadline.substring(8, 10) + " " + deadline.substring(11, 16);
         return time;
     }
-
-    public void setdeadLine(String deadLine) {
-        this.deadLine = deadLine;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public int getNumOfBids() {
         return bidsIds.size();
         //return bidArraySize;
     }
 
-    public void setBidArraySize(int bidArraySize) {
+    public void addBid(String id, int price) {
+        Bid bid = new Bid(price, id);
+        bidlist.add(bid);
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 }

@@ -1,5 +1,6 @@
 package com.highfive.highfive.fragments;
 
+import android.database.Observable;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -18,9 +19,12 @@ import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.App;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ProfileCommentsAdapter;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.model.ProfileComment;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -31,21 +35,21 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by dan on 26.11.16.
  */
 
 public class ProfileFragment extends Fragment {
-    private RecyclerView rv;
-    private ProfileCommentsAdapter adapter;
-    private Profile profile;
-    private List<String> comments;
     @InjectView(R.id.fragment_profile_rating_bar)       RatingBar profileRating;
     @InjectView(R.id.fragment_profile_negative_rating)  TextView profileNegativeRating;
     @InjectView(R.id.fragment_profile_positive_rating)  TextView profilePositiveRating;
@@ -53,10 +57,14 @@ public class ProfileFragment extends Fragment {
     @InjectView(R.id.fragment_profile_about)            TextView profileAbout;
     @InjectView(R.id.donut_progress)                    DonutProgress donutProgress;
     @InjectView(R.id.avatar)                            ImageView avatar;
-
+    @InjectView(R.id.profile_comments_rv)               RecyclerView rv;
     @InjectView(R.id.fragment_profile_teacher_completed_orders)     TextView completedOrders;
     @InjectView(R.id.fragment_profile_teacher_inprogress_orders)    TextView inprogressOrders;
 
+    private ProfileCommentsAdapter adapter;
+    private Profile profile;
+    private List<ProfileComment> comments;
+    private List<Profile> commentAuthors;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +74,7 @@ public class ProfileFragment extends Fragment {
             Profile myProfile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
             if (myProfile != null && myProfile.getUid().equals(HighFiveHttpClient.getUidCookie().getValue())) {
                 profile = myProfile;
+                comments = profile.getAllComments();
             } else {
                 //regenerateProfile();
                 //show a profile stub maybe?
@@ -85,8 +94,6 @@ public class ProfileFragment extends Fragment {
                                     contents.getString("id"),
                                     contents.getString("username"),
                                     contents.getString("balance"),
-                                    contents.getJSONObject("rating").getDouble("negative"),
-                                    contents.getJSONObject("rating").getDouble("positive"),
                                     contents.getString("firstName"),
                                     contents.getString("secondName"),
                                     contents.getString("type").toLowerCase());
@@ -112,57 +119,30 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
-        rv = (RecyclerView) v.findViewById(R.id.profile_comments_rv);
-        rv.setNestedScrollingEnabled(false);
         ButterKnife.inject(this, v);
 
         fillProfileData();
-
-
         return v;
     }
 
-    void createComments() {
-        if (profile == null) {
-            profile = new Profile("test", "test");
-        }
-        profile.setNegativeRating(15);
-        profile.addComment(getString(R.string.comment));
-
-    }
 
     private void fillProfileData() {
-        comments = profile.getAllComments();
-        if (comments == null || comments.size() < 3) {
-            createComments();
-            comments = profile.getAllComments();
-        }
-
-        List<String> topThreeComment = new ArrayList<>();
-        int sz = 3;
-        if (comments.size() < sz) {
-            sz = comments.size();
-        }
-        for (int i = 0; i < sz; i++) {
-            topThreeComment.add(comments.get(i));
-        }
-        adapter = new ProfileCommentsAdapter(topThreeComment);
+        Collections.reverse(comments);
+        adapter = new ProfileCommentsAdapter(comments, getContext());
         rv.setAdapter(adapter);
+        rv.setNestedScrollingEnabled(false);
+        parseCommentsAuthorsInfo();
 
         Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
-
-        profile.setPositiveRating(45);
-        profile.setNegativeRating(14);
-        profile.setDescription("я препод короче, красавчик, самый лучший");
 
         float rating = (float)profile.getProfileRating();
         if (rating != 0.0) {
             float rat;
-            if (profile.getPositiveRating() >= profile.getNegativeRating()) {
-                rat = (float)(1 - profile.getNegativeRating()/profile.getPositiveRating());
+            if (profile.getRating().getPositive() >= profile.getRating().getNegative()) {
+                rat = (float)(1 - profile.getRating().getNegative() /profile.getRating().getPositive());
                 donutProgress.setText(String.format("%.1f", rat * 100) + "%");
             } else {
-                rat = (float)(1 - profile.getPositiveRating()/profile.getNegativeRating());
+                rat = (float)(1 - profile.getRating().getPositive()/profile.getRating().getNegative());
             }
             donutProgress.setProgress(rat * 100);
             donutProgress.setTextColor(Color.rgb(69,90, 100));
@@ -183,14 +163,47 @@ public class ProfileFragment extends Fragment {
         progress = drawable.getDrawable(0);
         DrawableCompat.setTint(progress, getResources().getColor(R.color.darkGrey));
 
-        profilePositiveRating.setText(String.valueOf((int)profile.getPositiveRating()));
-        profileNegativeRating.setText(String.valueOf((int)profile.getNegativeRating()));
-        profileRating.setRating((float)2.5);
+        profilePositiveRating.setText(String.valueOf((int)profile.getRating().getPositive()));
+        profileNegativeRating.setText(String.valueOf((int)profile.getRating().getNegative()));
+        profileRating.setRating((float)profile.getProfileRating());
         profileLogin.setText(profile.getUsername());
         profileAbout.setText(profile.getDescription());
-
-//        inprogressOrders.setText(profile.getStudentOrders().size());
-//        completedOrders.setText(profile.getAllOrders().size());
-
     }
+
+    private void parseCommentsAuthorsInfo() {
+        List<rx.Observable<Response<Profile>>> observables = new ArrayList<>();
+        for (int i = 0; i < comments.size(); i++) {
+            String profileId = comments.get(i).getAuthor();
+            observables.add(App.getApi().getUserById(profileId).subscribeOn(Schedulers.io()).retry(5).onErrorReturn(t -> null));
+        }
+        rx.Observable.zip(observables, profileResponseObjects -> {
+            List<Profile> profiles = new ArrayList<>();
+            for (Object obj : profileResponseObjects) {
+                if (obj != null) {
+                    profiles.add(((Response<Profile>) obj).getResponse());
+                }
+            }
+            return profiles;
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<Profile>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(List<Profile> profiles) {
+                commentAuthors = profiles;
+                Collections.reverse(commentAuthors);
+                adapter.setProfileList(commentAuthors);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+
 }

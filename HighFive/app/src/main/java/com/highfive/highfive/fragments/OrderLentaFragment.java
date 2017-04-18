@@ -201,19 +201,21 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
                     JSONArray subjArray = contents.getJSONArray("items");
                     for (int i = 0; i < contents.getInt("count"); i++) {
                         JSONObject current = (JSONObject) subjArray.get(i);
-                        Order tmp = new Order(current.getString("id"), current.getString("title"), " ");
-                        tmp.setOrderCreatorId(current.getString("creator"));
-                        tmp.setSubjectId(current.getString("subject"));
+                        Order tmp = new Order();
+                        tmp.setId(current.getString("id"));
+                        tmp.setTitle(current.getString("title"));
+                        tmp.setCreator(current.getString("creator"));
+                        tmp.setSubject(current.getString("subject"));
                         tmp.setStatus(current.getString("status"));
                         tmp.setType(current.getString("type"));
-                        tmp.setOffer(current.getString("offer"));
-                        tmp.setdeadLine(current.getString("deadline"));
+                        tmp.setOffer(current.getInt("offer"));
+                        tmp.setDeadline(current.getString("deadline"));
                         JSONArray bidArray = current.getJSONArray("bids");
                         List<String> bids = new ArrayList<>();
                         for (int j = 0; j < bidArray.length(); j++) {
                             bids.add(bidArray.getString(j));
                         }
-                        tmp.setBidsIds(bids);
+                        tmp.setBids(bids);
                         tmpOrderList.add(tmp);
                     }
                     if (startPos == 0) {

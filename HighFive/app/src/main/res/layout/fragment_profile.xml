@@ -76,13 +76,12 @@
                 android:layout_marginTop="16dp"
                 android:id="@+id/fragment_profile_about"
                 android:textSize="16sp"
-                android:textColor="@color/black"
-                android:maxLines="2"
-                android:lines="2" />
+                android:textColor="@color/black" />
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="16dp"
                 android:src="@color/darkGrey"/>
 
             <LinearLayout

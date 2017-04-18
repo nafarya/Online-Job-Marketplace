@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="2dp">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp">
+<android.support.v7.widget.CardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,33 +18,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-
-
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginTop="8dp"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/comment_avatar"
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/profile_comment_avatar"
                     android:clickable="true"
-                    android:src="@drawable/com_facebook_profile_picture_blank_square"
-                    />
+                    android:src="@drawable/com_facebook_profile_picture_blank_square" />
+
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/profile_comment_rating_bar"
+                    android:layout_toRightOf="@id/profile_comment_avatar"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:max="5"
+                    android:numStars="5"
+                    android:stepSize="0.01"
+                    style="@android:style/Widget.Holo.Light.RatingBar.Small"
+                    android:rating="2.5"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/profile_comment_rating_image"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_alignParentRight="true"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/comment_avatar"
-                    android:text="24 января 2016"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginRight="16dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/comment_login_name"
-                    android:text="@string/name"
-                    android:layout_toRightOf="@id/comment_avatar"
-                    android:layout_marginTop="16dp"
+                    android:id="@+id/profile_comment_username"
+                    android:layout_below="@id/profile_comment_avatar"
+                    android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"/>
 
             </RelativeLayout>
@@ -59,12 +65,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/comment"
                 android:gravity="left"
-                android:id="@+id/profile_comment_list_item_id"
+                android:id="@+id/profile_comment_text"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"/>
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
-
-</LinearLayout>

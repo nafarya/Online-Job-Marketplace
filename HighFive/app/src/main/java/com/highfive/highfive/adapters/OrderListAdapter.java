@@ -62,7 +62,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         } else {
             holder.theme.setText(order.getTheme());
         }
-        holder.subject.setText(subjectList.getSubjectNameById(order.getSubjectId()));
+        holder.subject.setText(subjectList.getSubjectNameById(order.getSubject()));
         holder.orderType.setText(orderTypeList.getOrderTypeNameByTypeId(order.getType()));
         holder.price.setText(order.getOffer() + " Р");
         holder.bidNum.setText(order.getNumOfBids() + " Ставок");
@@ -102,15 +102,15 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        TextView theme;
-        TextView subject;
-        TextView orderType;
-        TextView date;
-        TextView price;
-        TextView bidNum;
-        OnItemClickListener listener;
-        ImageView marker;
-        Button changeStatusBtn;
+        private TextView theme;
+        private TextView subject;
+        private TextView orderType;
+        private TextView date;
+        private TextView price;
+        private TextView bidNum;
+        private OnItemClickListener listener;
+        private ImageView marker;
+        private Button changeStatusBtn;
 
         public ViewHolder(View itemView,  OnItemClickListener listener) {
             super(itemView);
