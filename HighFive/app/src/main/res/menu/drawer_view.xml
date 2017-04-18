@@ -12,14 +12,14 @@
             android:id="@+id/nav_order_list_fragment"
             android:title="@string/order_list" />
         <item
+            android:id="@+id/nav_chat"
+            android:title="@string/chat" />
+        <item
             android:id="@+id/nav_help_fragment"
             android:title="@string/help" />
         <item
             android:id="@+id/nav_to_exit"
             android:title="@string/exit_title" />
-        <item
-            android:id="@+id/nav_chat"
-            android:title="@string/chat" />
     </group>
 
 

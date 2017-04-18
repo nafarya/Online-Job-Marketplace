@@ -82,6 +82,6 @@ public class ChatFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        chatAdapter.cleanup();
+        //chatAdapter.cleanup();
     }
 }

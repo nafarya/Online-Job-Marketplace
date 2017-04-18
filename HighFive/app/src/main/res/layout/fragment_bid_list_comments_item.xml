@@ -38,11 +38,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="studen"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_below="@id/card_view_bidcomment_marker"
-                android:id="@+id/bid_list_comment_item_owner_type"/>
+                android:id="@+id/bid_list_comment_item_username"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -62,7 +61,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_below="@id/bid_list_comment_item_owner_type"
+                android:layout_below="@id/bid_list_comment_item_username"
                 android:background="@color/darkGrey"/>
 
             <TextView

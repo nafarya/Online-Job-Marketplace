@@ -58,19 +58,19 @@ import rx.schedulers.Schedulers;
  */
 
 public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnItemClickListener{
-    @InjectView(R.id.order_title)               TextView orderTitle;
-    @InjectView(R.id.order_description)         TextView orderDescription;
-    @InjectView(R.id.order_subject)             TextView orderSubject;
-    @InjectView(R.id.order_details_type)        TextView orderType;
-    @InjectView(R.id.order_deadline)            TextView orderDeadline;
-    @InjectView(R.id.order_details_status)      TextView orderStatus;
-    @InjectView(R.id.button_add_bid)            Button addBid;
-    @InjectView(R.id.bid_amount)                EditText bidAmount;
-    @InjectView(R.id.bid_card)                  RelativeLayout bidCard;
-    @InjectView(R.id.current_bids_number)       TextView bidsNumber;
-    @InjectView(R.id.avgBidPrice)               TextView avgBidPrice;
-    @InjectView(R.id.order_details_budget)      TextView orderBudget;
-    @InjectView(R.id.order_details_files_rv)    RecyclerView fileRecyclerView;
+    @InjectView(R.id.order_title)                       TextView orderTitle;
+    @InjectView(R.id.order_description)                 TextView orderDescription;
+    @InjectView(R.id.order_subject)                     TextView orderSubject;
+    @InjectView(R.id.order_details_type)                TextView orderType;
+    @InjectView(R.id.order_deadline)                    TextView orderDeadline;
+    @InjectView(R.id.order_details_status)              TextView orderStatus;
+    @InjectView(R.id.button_add_bid)                    Button addBid;
+    @InjectView(R.id.bid_amount)                        EditText bidAmount;
+    @InjectView(R.id.bid_card)                          RelativeLayout bidCard;
+    @InjectView(R.id.current_bids_number)               TextView bidsNumber;
+    @InjectView(R.id.avgBidPrice)                       TextView avgBidPrice;
+    @InjectView(R.id.order_details_budget)              TextView orderBudget;
+    @InjectView(R.id.order_details_files_rv)            RecyclerView fileRecyclerView;
 
     private String orderId;
     private ArrayList<Bid> bidlist;

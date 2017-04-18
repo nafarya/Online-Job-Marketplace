@@ -9,12 +9,13 @@
     android:layout_marginTop="8dp"
     android:layout_marginLeft="8dp"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/darkGrey">
+    app:cardBackgroundColor="@color/materialGrey">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/file_item_name"
+            android:layout_margin="8dp"
             android:textColor="@color/tw__solid_white"
             android:layout_gravity="center"/>
 

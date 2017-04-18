@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.BidComment;
+import com.highfive.highfive.model.Profile;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.
 
     private List<BidComment> comments;
     private String creatorId;
+    private List<Profile> commentProfiles;
 
     public BidCommentsAdapter(List<BidComment> comments, String creatorId) {
         this.comments = comments;
@@ -36,17 +38,17 @@ public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.text.setText(comments.get(position).getText());
         holder.time.setText(comments.get(position).getCreatedAt());
-
-        if (comments.get(position).getOwner().equals("student")) {
-            holder.ownerType.setText("Студент");
-        } else {
-            holder.ownerType.setText("Преподаватель");
-        }
+        holder.username.setVisibility(View.GONE);
         if (comments.get(position).get_id().equals(creatorId)) {
             holder.creatorMarker.setText("Автор заказа");
         } else {
-            holder.creatorMarker.setText("Левый чувак");
             holder.creatorMarker.setBackgroundColor(Color.parseColor("#ADFF2F"));
+            if (comments.get(position).getOwner().equals("student")) {
+                holder.creatorMarker.setText("Студент");
+            } else {
+                holder.creatorMarker.setText("Преподаватель");
+            }
+
         }
     }
 
@@ -55,18 +57,22 @@ public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.
         return comments.size();
     }
 
+    public void setCommentProfiles(List<Profile> commentProfiles) {
+        this.commentProfiles = commentProfiles;
+    }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         TextView time;
-        TextView ownerType;
+        TextView username;
         TextView creatorMarker;
 
         public ViewHolder(View itemView) {
             super(itemView);
             text = (TextView) itemView.findViewById(R.id.bid_list_comment_item_comment);
             time = (TextView) itemView.findViewById(R.id.bid_list_comment_item_time);
-            ownerType = (TextView) itemView.findViewById(R.id.bid_list_comment_item_owner_type);
+            username = (TextView) itemView.findViewById(R.id.bid_list_comment_item_username);
             creatorMarker = (TextView) itemView.findViewById(R.id.bid_list_comment_item_creator_marker);
         }
 

@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:clickable="true"
-    android:background="#5b718c"
+    android:background="@color/tw__solid_white"
     android:onClick="startSignup">
 
     <TextView style="?android:textAppearanceMedium"
