@@ -3,85 +3,70 @@ package com.highfive.highfive.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.highfive.highfive.R;
-import com.highfive.highfive.services.auth.Authenticator;
-import com.highfive.highfive.services.messaging.Chat;
-import com.highfive.highfive.services.messaging.ChatHolder;
+import com.highfive.highfive.util.HighFiveHttpClient;
 
-/**
- * Created by heat_wave on 12/4/16.
- */
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 
 public class ChatFragment extends Fragment {
 
-    private RecyclerView chatView;
-    private FirebaseRecyclerAdapter chatAdapter;
-    private EditText message;
-    private DatabaseReference ref;
+    private Socket socket;
+    private String chatToken;
+    private String authToken = "d9d357eaa641ccb8f7a699296749e8f8";
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
-        /*message = (EditText) v.findViewById(R.id.message_text);
-        v.findViewById(R.id.send_button).setOnClickListener(new View.OnClickListener() {
+
+        authToken = HighFiveHttpClient.getTokenCookie().getValue();
+        Bundle bundle = getArguments();
+        //chatToken = bundle.getString("orderToken");
+
+        IO.Options opts = new IO.Options();
+        opts.forceNew = true;
+        opts.query = "key=" + authToken + ":" + chatToken;
+
+        try {
+            socket = IO.socket("https://yareshu.ru/api/socket.io", opts);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+
             @Override
-            public void onClick(View v) {
-                ref.push().setValue(new Chat(Authenticator.getCurrentUser().getEmail(),
-                        Authenticator.getCurrentUser().getUid(), message.getText().toString()));
-                message.setText("");
+            public void call(Object... args) {
+                socket.emit("history");
+                //socket.disconnect();
             }
+
+        }).on("event", new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                int x = 0;
+
+            }
+
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {}
+                int x = 0;
         });
-        chatView = (RecyclerView) v.findViewById(R.id.chat);
-        chatView.setHasFixedSize(true);
-        chatView.setLayoutManager(new LinearLayoutManager(getContext()));
+        socket.connect();
 
-        ref = FirebaseDatabase.getInstance().getReference();
-        ref.limitToLast(5).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                for (DataSnapshot msgSnapshot : snapshot.getChildren()) {
-                    Chat msg = msgSnapshot.getValue(Chat.class);
-                    Log.i("Chat", msg.getFirstName() + ": " + msg.getText());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("Chat", "The read failed: " + firebaseError.getDetails());
-            }
-        });
-
-        chatAdapter = new FirebaseRecyclerAdapter<Chat, ChatHolder>(Chat.class, android.R.layout.two_line_list_item, ChatHolder.class, ref) {
-            @Override
-            public void populateViewHolder(ChatHolder chatMessageViewHolder, Chat chatMessage, int position) {
-                chatMessageViewHolder.setFirstName(chatMessage.getFirstName());
-                chatMessageViewHolder.setText(chatMessage.getText());
-            }
-        };
-        chatView.setAdapter(chatAdapter);
-*/
         return v;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //chatAdapter.cleanup();
-    }
 }
