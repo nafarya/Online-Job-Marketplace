@@ -15,8 +15,6 @@ public interface Navigator {
 
     void navigateToProfile();
 
-    void navigateToChat();
-
     void navigateToHelp();
 
     void navigateToChooseOrder();
@@ -32,5 +30,9 @@ public interface Navigator {
     void navigateToPayment();
 
     void navigateToLenta();
+
+    void navigateToChatList();
+
+    void navigateToChat(Order order);
 
 }

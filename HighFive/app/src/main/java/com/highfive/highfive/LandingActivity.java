@@ -29,6 +29,7 @@ import com.highfive.highfive.fragments.AddOrderFragment;
 import com.highfive.highfive.fragments.BidListCommentFragment;
 import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
+import com.highfive.highfive.fragments.ChatListFragment;
 import com.highfive.highfive.fragments.HelpFragment;
 import com.highfive.highfive.fragments.OrderDetailsFragment;
 import com.highfive.highfive.fragments.OrderLentaFragment;
@@ -126,7 +127,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 navigateToHelp();
                 break;
             case R.id.nav_chat:
-                navigateToChat();
+                navigateToChatList();
                 break;
             case R.id.nav_to_exit:
                 HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
@@ -241,10 +242,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToChat() {
-        while(getSupportFragmentManager().popBackStackImmediate());
+    public void navigateToChat(Order order) {
         ChatFragment fragment = new ChatFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("order", order);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -313,6 +316,13 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public void navigateToLenta() {
         while(getSupportFragmentManager().popBackStackImmediate());
         OrderLentaFragment fragment = new OrderLentaFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void navigateToChatList() {
+        while(getSupportFragmentManager().popBackStackImmediate());
+        ChatListFragment fragment = new ChatListFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 }
