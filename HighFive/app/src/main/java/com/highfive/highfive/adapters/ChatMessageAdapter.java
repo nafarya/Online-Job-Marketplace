@@ -1,5 +1,6 @@
 package com.highfive.highfive.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Message;
+import com.highfive.highfive.model.Profile;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -19,9 +22,13 @@ import java.util.List;
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.ViewHolder> {
 
     private List<Message> messages;
+    private Context context;
+    private Profile profile;
 
-    public ChatMessageAdapter(List<Message> messages) {
+    public ChatMessageAdapter(List<Message> messages, Context context, Profile profile) {
         this.messages = messages;
+        this.context = context;
+        this.profile = profile;
     }
 
     @Override
@@ -34,6 +41,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     public void onBindViewHolder(ChatMessageAdapter.ViewHolder holder, int position) {
         holder.text.setText(messages.get(position).getText());
         holder.time.setText(messages.get(position).getTime());
+        if (messages.get(position).getUser().equals(profile.getUid())) {
+            holder.username.setText(profile.getUsername());
+            Picasso.with(context).load("https://yareshu.ru/" + profile.getAvatar()).into(holder.avatar);
+        } else {
+
+        }
     }
 
     @Override

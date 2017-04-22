@@ -36,7 +36,9 @@ public class Message {
     }
 
     public String getTime() {
-        return time;
+        String tmp = time.substring(11, 16) + " " + time.substring(8, 10) + "." + time.substring(5, 7) + "." +
+                 time.substring(0, 4);
+        return tmp;
     }
 
     public void setTime(String time) {

@@ -3,6 +3,7 @@ package com.highfive.highfive.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,11 @@ import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ChatMessageAdapter;
 import com.highfive.highfive.model.Message;
 import com.highfive.highfive.model.Order;
+import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.responseModels.NameValuePairs;
 import com.highfive.highfive.responseModels.Obj;
 import com.highfive.highfive.responseModels.Values;
+import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 
 import org.json.JSONArray;
@@ -40,11 +43,12 @@ public class ChatFragment extends Fragment {
     @InjectView(R.id.chat)          RecyclerView chatRv;
 
     private Socket socket;
-    private String chatToken = "d9d357eaa641ccb8f7a699296749e8f8";
+    private String chatToken;
     private String authToken;
     private Order order;
     private List<Message> messages;
     private ChatMessageAdapter adapter;
+    private Profile profile;
 
     @Nullable
     @Override
@@ -88,33 +92,27 @@ public class ChatFragment extends Fragment {
                 int x = 0;
 
             }
-        }).on("history", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                String s = gson.toJson(args[1]);
-                try {
-                    JSONArray array = new JSONArray(s);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Type collectionType = new TypeToken<Values<Collection<Obj>>>(){}.getType();
-                Values<Collection<Obj>> wtf = gson.fromJson(s, collectionType);
-                List<Obj> list = new ArrayList<Obj>(wtf.getValues());
-                for (int i = 0; i < list.size(); i++) {
-                    Message msg = new Message();
-                    msg.setId(list.get(i).getNameValuePairs().getId());
-                    msg.setOrder(list.get(i).getNameValuePairs().getOrder());
-                    msg.setText(list.get(i).getNameValuePairs().getText());
-                    msg.setTime(list.get(i).getNameValuePairs().getTime());
-                    msg.setUser(list.get(i).getNameValuePairs().getUser());
-                    messages.add(msg);
-                }
-
-                adapter.setMessages(messages);
-                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
-
+        }).on("history", args -> {
+            String s = gson.toJson(args[1]);
+            Type collectionType = new TypeToken<Values<Collection<Obj>>>(){}.getType();
+            Values<Collection<Obj>> wtf = gson.fromJson(s, collectionType);
+            List<Obj> list = new ArrayList<Obj>(wtf.getValues());
+            for (int i = 0; i < list.size(); i++) {
+                Message msg = new Message();
+                msg.setId(list.get(i).getNameValuePairs().getId());
+                msg.setOrder(list.get(i).getNameValuePairs().getOrder());
+                msg.setText(list.get(i).getNameValuePairs().getText());
+                msg.setTime(list.get(i).getNameValuePairs().getTime());
+                msg.setUser(list.get(i).getNameValuePairs().getUser());
+                messages.add(msg);
             }
+
+            adapter.setMessages(messages);
+            FragmentActivity act = getActivity();
+            if (act != null) {
+                act.runOnUiThread(() -> adapter.notifyDataSetChanged());
+            }
+
 
         }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
 
@@ -130,7 +128,11 @@ public class ChatFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+
         messages = new ArrayList<Message>();
-        adapter = new ChatMessageAdapter(messages);
+        adapter = new ChatMessageAdapter(messages, getContext(), profile);
     }
 }
