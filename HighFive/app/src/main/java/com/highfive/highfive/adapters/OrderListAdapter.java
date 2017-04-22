@@ -90,6 +90,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             case "closed":
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
+            case "chat":
+                holder.changeStatusBtn.setText("Завершить");
+                break;
             default:
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;

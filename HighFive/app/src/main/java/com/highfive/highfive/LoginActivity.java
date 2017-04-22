@@ -46,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
     private ArrayList<Subject> subjectList;
     private ArrayList<OrderType> typeList;
 
+    private static boolean profileFlag = false;
+    private static boolean subjectFlag = false;
+    private static boolean typeFlag = false;
+
     @InjectView(R.id.input_email)       EditText emailText;
     @InjectView(R.id.input_password)    EditText passwordText;
     @InjectView(R.id.btn_login)         Button loginButton;
@@ -151,8 +155,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
         final Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
-        getSubjects();
-        getOrderTypes();
+        getSubjects(intent);
+        getOrderTypes(intent);
         getProfile(intent);
     }
 
@@ -186,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
         return valid;
     }
 
-    private void getSubjects() {
+    private void getSubjects(Intent intent) {
         String userType = "all";
         RequestParams params = new RequestParams();
         subjectList = new ArrayList<>();
@@ -213,6 +217,11 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     SubjectList list = new SubjectList(subjectList);
                     Cache.getCacheManager().put("subjectList", list);
+                    subjectFlag = true;
+                    if (subjectFlag && profileFlag && typeFlag) {
+                        startActivity(intent);
+                        finish();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -231,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void getOrderTypes() {
+    private void getOrderTypes(Intent intent) {
         RequestParams params = new RequestParams();
         typeList = new ArrayList<>();
         params.add("type", "all");
@@ -255,6 +264,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 OrderTypeList orderTypeList = new OrderTypeList(typeList);
                 Cache.getCacheManager().put("orderTypeList", orderTypeList);
+                typeFlag = true;
+                if (subjectFlag && profileFlag && typeFlag) {
+                    startActivity(intent);
+                    finish();
+                }
 
             }
 
@@ -291,8 +305,12 @@ public class LoginActivity extends AppCompatActivity {
                     public void onNext(Response<Profile> orderResponse) {
                         profile = orderResponse.getResponse();
                         Cache.getCacheManager().put("profile", profile);
-                        startActivity(intent);
-                        finish();
+
+                        profileFlag = true;
+                        if (subjectFlag && profileFlag && typeFlag) {
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                 });
     }
