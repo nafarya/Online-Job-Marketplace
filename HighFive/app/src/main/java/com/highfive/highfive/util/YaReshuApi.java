@@ -6,8 +6,10 @@ import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Order;
 
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -30,4 +32,13 @@ public interface YaReshuApi {
 
     @GET("files/{id}")
     Observable<Response<File>> getFileById(@Path("id") String id);
+
+
+    ///bidId is need only for choose
+    @POST("orders/{id}/{status}")
+    Call<Response> changeOrderStatus(@Header("api-token") String apiToken,
+                                     @Path("id") String id,
+                                     @Path("status") String status,
+                                     @Query("bid") String bidId);
+
 }

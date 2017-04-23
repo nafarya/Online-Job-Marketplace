@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderTypeList;
+import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.model.SubjectList;
 
 
@@ -26,6 +27,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
 
     public interface OnItemClickListener {
         void onItemClick(int item);
+        void changeStatusButton(int item, String newStatus);
     }
 
     private List<Order> orderList;
@@ -33,18 +35,21 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     private SubjectList subjectList;
     private OrderTypeList orderTypeList;
     private String curTab;
+    private Profile profile;
 
     public void setOrderList(List<Order> orderList) {
         this.orderList = orderList;
     }
 
     public OrderListAdapter(List<Order> list, OnItemClickListener listener,
-                            SubjectList subjectList, OrderTypeList orderTypeList, String curTab) {
+                            SubjectList subjectList, OrderTypeList orderTypeList, String curTab,
+                            Profile profile) {
         this.orderList = list;
         this.listener = listener;
         this.subjectList = subjectList;
         this.orderTypeList = orderTypeList;
         this.curTab = curTab;
+        this.profile = profile;
 
     }
 
@@ -72,8 +77,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             case "lenta":
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
-            case "in work":
+            case "active":
                 holder.changeStatusBtn.setText("Отменить");
+                break;
+            case "in work":
+                holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "waiting for author":
                 holder.changeStatusBtn.setText("Отменить");
@@ -85,13 +93,17 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "in rework":
-                holder.changeStatusBtn.setText("Отменить");
+                holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "closed":
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "chat":
-                holder.changeStatusBtn.setText("Завершить");
+                if (profile.getType().equals("teacher")) {
+                    holder.changeStatusBtn.setText("Завершить");
+                } else {
+                    holder.changeStatusBtn.setVisibility(View.GONE);
+                }
                 break;
             default:
                 holder.changeStatusBtn.setVisibility(View.GONE);
@@ -126,13 +138,27 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             bidNum = (TextView) itemView.findViewById(R.id.order_list_item_bid_num);
             marker = (ImageView) itemView.findViewById(R.id.order_list_item_marker);
             changeStatusBtn = (Button) itemView.findViewById(R.id.change_status_button);
+            changeStatusBtn.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (view.getId() == R.id.change_status_button) {
-                ///change status logic
+                switch (curTab) {
+                    case "active":
+                        listener.changeStatusButton(getAdapterPosition(), "cancel");
+                        break;
+                    case "waiting for author":
+                        listener.changeStatusButton(getAdapterPosition(), "cancel");
+                        break;
+                    case "in rework":
+                        listener.changeStatusButton(getAdapterPosition(), "cancel");
+                        break;
+                    case "chat":
+                        listener.changeStatusButton(getAdapterPosition(), "complete");
+                        break;
+                }
             } else {
                 listener.onItemClick(getAdapterPosition());
             }

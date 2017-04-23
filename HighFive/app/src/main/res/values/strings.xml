@@ -34,5 +34,6 @@
     <string name="status">Статус</string>
     <string name="attached_files">Прикрепленные файлы</string>
     <string name="order_lenta">Лента заказов</string>
+    <string name="add_order">Добавить заказ</string>
 
 </resources>

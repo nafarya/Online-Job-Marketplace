@@ -40,6 +40,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     private List<Profile> profileList;
     private Navigator navigator;
     private BidListAdapter adapter;
+    private String orderId;
 
     @InjectView(R.id.fragment_bid_list_rv)      RecyclerView bidListRv;
     @InjectView(R.id.bid_list_no_bids_text)     TextView nobids;
@@ -51,6 +52,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
         Bundle bundle = getArguments();
         bidList = new ArrayList<>();
         bidList = bundle.getParcelableArrayList("bidList");
+        orderId = bundle.getString("orderId");
         ButterKnife.inject(this, v);
         if (bidList.size() != 0) {
             nobids.setVisibility(View.GONE);
@@ -81,6 +83,12 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     public void onItemClick(int item) {
         navigator.navigateToBidListComments(bidList.get(item).getBidComments(),
                 bidList.get(item).getBidCreatorId());
+    }
+
+    @Override
+    public void onChooseButtonClick(int item, String newStatus) {
+        navigator.navigateToStatusChangeDialog(orderId, newStatus, bidList.get(item).getBidId());
+        adapter.notifyDataSetChanged();
     }
 
     private void parseBidsProfileInfo() {

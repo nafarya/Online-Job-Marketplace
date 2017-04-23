@@ -21,7 +21,7 @@ public interface Navigator {
 
     void navigateToOrderDetail(Order order);
 
-    void navigateToBidsList(ArrayList<Bid> bids);
+    void navigateToBidsList(ArrayList<Bid> bids, String orderId);
 
     void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId);
 
@@ -34,5 +34,7 @@ public interface Navigator {
     void navigateToChatList();
 
     void navigateToChat(Order order);
+
+    void navigateToStatusChangeDialog(String id, String newStatus, String bidId);
 
 }

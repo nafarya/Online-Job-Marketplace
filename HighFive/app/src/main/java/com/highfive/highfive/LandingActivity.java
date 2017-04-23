@@ -3,16 +3,17 @@ package com.highfive.highfive;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -40,6 +42,7 @@ import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -53,11 +56,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Navigator {
     private static final String TAG = "LandingActivity";
@@ -90,8 +94,18 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
 
         View headerView = navigationView.getHeaderView(0);
-        Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
-                into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+        if (profile != null) {
+            Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
+                    into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+            TextView balance = (TextView) headerView.findViewById(R.id.nav_header_balance);
+            balance.setText("Баланс: " + profile.getBalance() + " Руб");
+            Menu menu = navigationView.getMenu();
+            if (!profile.getType().equals("teacher")) {
+                menu.findItem(R.id.nav_teacher_lenta).setVisible(false);
+            } else {
+                menu.findItem(R.id.nav_add_order).setVisible(false);
+            }
+        }
 
         ImageButton addBalanceBtn = (ImageButton) headerView.findViewById(R.id.add_balance_button);
         addBalanceBtn.setOnClickListener(view -> {
@@ -99,10 +113,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             toolbar.setTitle("Пополнение баланса");
             drawer.closeDrawer(Gravity.LEFT);
         });
-        Menu menu = navigationView.getMenu();
-        if (!profile.getType().equals("teacher")) {
-            menu.findItem(R.id.nav_teacher_lenta).setVisible(false);
-        }
+
+
+
 
 
         navigateToChooseOrder();
@@ -119,6 +132,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 break;
             case R.id.nav_teacher_lenta:
                 navigateToLenta();
+                break;
+            case R.id.nav_add_order:
+                navigateToAddOrder();
                 break;
             case R.id.nav_order_list_fragment:
                 navigateToChooseOrder();
@@ -251,6 +267,41 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
+    public void navigateToStatusChangeDialog(String id, String newStatus, String bidId) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                       Call<Response> call = App.getApi().changeOrderStatus(HighFiveHttpClient.getTokenCookie().getValue(),
+                                id,
+                                newStatus, bidId);
+                        call.enqueue(new Callback<Response>() {
+                            @Override
+                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                int x = 0;
+                            }
+
+                            @Override
+                            public void onFailure(Call<Response> call, Throwable t) {
+                                int x = 0;
+                            }
+                        });
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Вы уверены?").setPositiveButton("Да", dialogClickListener)
+                .setNegativeButton("Нет", dialogClickListener).show();
+    }
+
+    @Override
     public void navigateToHelp() {
         while(getSupportFragmentManager().popBackStackImmediate());
         HelpFragment fragment = new HelpFragment();
@@ -276,10 +327,11 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToBidsList(ArrayList<Bid> bids) {
+    public void navigateToBidsList(ArrayList<Bid> bids, String orderId) {
         BidListFragment fragment = new BidListFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("bidList", bids);
+        bundle.putString("orderId", orderId);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
 

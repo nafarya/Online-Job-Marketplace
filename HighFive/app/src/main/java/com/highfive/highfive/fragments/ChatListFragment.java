@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
@@ -42,6 +45,7 @@ import rx.schedulers.Schedulers;
 public class ChatListFragment extends Fragment implements OrderListAdapter.OnItemClickListener{
 
     @InjectView(R.id.chat_list_rv_id)           RecyclerView chatRv;
+    @InjectView(R.id.chat_list_no_orders)       TextView noOrders;
 
     private List<Order> orderList = new ArrayList<>();
     private OrderListAdapter adapter;
@@ -59,9 +63,10 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
         View v = inflater.inflate(R.layout.fragment_chat_list, container, false);
         ButterKnife.inject(this, v);
 
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "in work");
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "chat", profile);
         chatRv.setAdapter(adapter);
         getUsersOrders("in work");
+
 
         return v;
     }
@@ -102,6 +107,10 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
                     @Override
                     public void onNext(Response<Items<Order>> orderResponse) {
                         orderList = orderResponse.getResponse().items();
+                        if (orderList.size() != 0) {
+                            noOrders.setVisibility(View.GONE
+                            );
+                        }
                         adapter.setOrderList(orderList);
                         adapter.notifyDataSetChanged();
                     }
@@ -111,5 +120,10 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
     @Override
     public void onItemClick(int item) {
         navigator.navigateToChat(orderList.get(item));
+    }
+
+    @Override
+    public void changeStatusButton(int item, String newStatus) {
+        navigator.navigateToStatusChangeDialog(orderList.get(item).getId(), "complete", "");
     }
 }

@@ -26,27 +26,27 @@
                 android:src="@drawable/com_facebook_profile_picture_blank_square"/>
 
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:id="@+id/bidlist_item_username"/>
+
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="4">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/bidlist_item_username"/>
 
                 <RatingBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/bidlist_item_rating_bar"
+                    android:layout_below="@id/bidlist_item_username"
                     android:layout_marginLeft="16dp"
                     android:max="5"
                     android:numStars="5"
@@ -57,6 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_marginLeft="16dp"
                     android:id="@+id/bidlist_item_price"
                     android:layout_alignParentRight="true"
@@ -65,36 +66,30 @@
                     android:textSize="20sp"
                     android:text="900 P"
                     android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_below="@id/bidlist_item_rating_bar"
+                    android:id="@+id/bidList_item_num_of_comments"
+                    android:text="5 комментариев"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/bidList_item_num_of_comments"
+                    android:id="@+id/bidlist_item_button"
+                    android:text="Выбрать исполнителем"
+                    android:background="@color/green"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_marginLeft="16dp"/>
             </RelativeLayout>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginBottom="8dp"
-                android:id="@+id/bidList_item_num_of_comments"
-                android:text="5 комментариев"/>
-
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bidlist_item_button"
-                android:text="Выбрать исполнителем"
-                android:background="@color/green"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_marginLeft="16dp"/>
-
-
-
-
-
-        </LinearLayout>
-
 
     </LinearLayout>
 

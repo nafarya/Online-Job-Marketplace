@@ -141,7 +141,10 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 // By default we just finish the Activity and log them in automatically
-                this.finish();
+                final Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+                getSubjects(intent);
+                getOrderTypes(intent);
+                getProfile(intent);
             }
         }
     }

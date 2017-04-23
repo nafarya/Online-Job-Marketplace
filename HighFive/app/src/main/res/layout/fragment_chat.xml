@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="top"
         android:layout_weight="4"
+        android:background="@color/chat_background"
         app:layoutManager="LinearLayoutManager"
         android:id="@+id/chat"
         android:layout_above="@+id/relativeLayout">
@@ -27,32 +28,41 @@
         android:layout_marginBottom="8dp"
         android:id="@+id/relativeLayout">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@color/grey"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/send_button"
-            android:scaleX="0.25"
-            android:scaleY="0.5"
+        <ImageButton
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:id="@+id/send_message_button"
             android:layout_alignParentRight="true"
             android:background="@drawable/ic_send_black_24dp"/>
+
+        <ImageButton
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:rotation="45"
+            android:scaleX="-1"
+            android:scaleY="-1"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:id="@+id/chat_attach_file"
+            android:background="@drawable/ic_attach_file_black_24dp"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/message_text"
+            android:hint="Введите сообщение"
             android:padding="5dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="12dp"
-            android:layout_toLeftOf="@id/send_button"
+            android:layout_toLeftOf="@id/send_message_button"
+            android:layout_toRightOf="@id/chat_attach_file"
             android:background="@android:color/background_light"
             android:lines="1"/>
+
+
     </RelativeLayout>
 
 </RelativeLayout>

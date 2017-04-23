@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -61,7 +62,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
     @InjectView(R.id.order_list_rv_id)      RecyclerView orderListrv;
     @InjectView(R.id.orderTypeSpinner)      SearchableSpinner orderTypeSpinner;
     @InjectView(R.id.subjectSpinner)        SearchableSpinner subjectSpinner;
-    @InjectView(R.id.fab)                   FloatingActionButton fab;
+    @InjectView(R.id.order_list_no_orders)  TextView noOrders;
 
     @Nullable
     @Override
@@ -85,13 +86,7 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
         orderTypeSpinner.setTitle("Выберите тип работы");
         orderTypeSpinner.setPositiveButton("OK");
 
-        if (profile.getType().equals("teacher")) {
-            fab.setVisibility(View.GONE);
-        } else {
-            fab.setOnClickListener(view -> navigator.navigateToAddOrder());
-        }
-
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "lenta");
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "lenta", profile);
         orderListrv.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         orderListrv.setLayoutManager(linearLayoutManager);
@@ -154,6 +149,11 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
     public void onItemClick(int item) {
         Order order = orderList.get(item);
         navigator.navigateToOrderDetail(order);
+    }
+
+    @Override
+    public void changeStatusButton(int item, String newStatus) {
+        navigator.navigateToStatusChangeDialog(orderList.get(item).getId(), newStatus, "");
     }
 
     private List<String> getSubjectNames() {
@@ -225,6 +225,9 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
                     }
                     if (orderList.size() == 0) {
                         Toast.makeText(getContext(), "Таких заказов нет, выберите другие фильтры", Toast.LENGTH_LONG).show();
+                        noOrders.setVisibility(View.VISIBLE);
+                    } else {
+                        noOrders.setVisibility(View.GONE);
                     }
                     adapter.setOrderList(orderList);
                     adapter.notifyDataSetChanged();

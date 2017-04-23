@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
@@ -59,6 +60,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     @InjectView(R.id.order_list_rv_id)              RecyclerView orderListrv;
     @InjectView(R.id.card_order_list_subject)       CardView cardSubj;
     @InjectView(R.id.card_order_list_ordertypes)    CardView cardOrderTypes;
+    @InjectView(R.id.order_list_no_orders)          TextView noOrders;
 
     @Nullable
     @Override
@@ -68,19 +70,15 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         Bundle bundle = getArguments();
         curTab = bundle.getString("key");
 
-        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab);
+        adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab, profile);
         orderListrv.setAdapter(adapter);
 
-
-        getUsersOrders(curTab);
+        if (profile != null) {
+            getUsersOrders(curTab);
+        }
         cardSubj.setVisibility(View.GONE);
         cardOrderTypes.setVisibility(View.GONE);
 
-        fab = (FloatingActionButton) v.findViewById(R.id.fab);
-        fab.setOnClickListener(view -> navigator.navigateToAddOrder());
-        if (profile.getType().equals("teacher") || !curTab.equals("active")) {
-            fab.setVisibility(View.GONE);
-        }
 
         /*if (profile.getType().equals("teacher")) {
 
@@ -163,6 +161,11 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
             navigator.navigateToOrderDetail(order);
     }
 
+    @Override
+    public void changeStatusButton(int item, String newStatus) {
+        navigator.navigateToStatusChangeDialog(orderList.get(item).getId(), newStatus, "");
+    }
+
     private List<String> getSubjectNames() {
         if (profile.getType().equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
@@ -207,6 +210,9 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                     @Override
                     public void onNext(Response<Items<Order>> orderResponse) {
                         orderList = orderResponse.getResponse().items();
+                        if (orderList.size() != 0) {
+                            noOrders.setVisibility(View.GONE);
+                        }
                         adapter.setOrderList(orderList);
                         adapter.notifyDataSetChanged();
                     }

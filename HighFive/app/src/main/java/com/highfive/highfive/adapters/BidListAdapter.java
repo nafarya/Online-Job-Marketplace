@@ -33,6 +33,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
 
     public interface OnItemClickListener {
         void onItemClick(int item);
+        void onChooseButtonClick(int item, String newStatus);
     }
 
     private List<Bid> bidList;
@@ -106,6 +107,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
 
 
             button = (Button) itemView.findViewById(R.id.bidlist_item_button);
+            button.setOnClickListener(this);
             Type profileType = new TypeToken<Profile>(){}.getType();
             Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
             if (profile.getType().equals("teacher")) {
@@ -127,7 +129,11 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
 
         @Override
         public void onClick(View view) {
-            listener.onItemClick(getAdapterPosition());
+            if (view.getId() == R.id.bidlist_item_button) {
+                listener.onChooseButtonClick(getAdapterPosition(), "choose");
+            } else {
+                listener.onItemClick(getAdapterPosition());
+            }
         }
     }
 }

@@ -113,7 +113,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
         typeList = orderTypeList.getorderTypelist();
 
         addBid.setOnClickListener(v1 -> postBid());
-        bidsNumber.setOnClickListener(view -> navigator.navigateToBidsList(bidlist));
+        bidsNumber.setOnClickListener(view -> navigator.navigateToBidsList(bidlist, order.getId()));
 
         filesAdapter = new FilesAdapter(fileList, this);
         fileRecyclerView.setAdapter(filesAdapter);
