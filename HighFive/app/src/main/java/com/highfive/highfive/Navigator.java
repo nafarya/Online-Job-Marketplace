@@ -35,6 +35,5 @@ public interface Navigator {
 
     void navigateToChat(Order order);
 
-    void navigateToStatusChangeDialog(String id, String newStatus, String bidId);
 
 }

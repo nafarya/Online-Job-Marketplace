@@ -267,41 +267,6 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToStatusChangeDialog(String id, String newStatus, String bidId) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                       Call<Response> call = App.getApi().changeOrderStatus(HighFiveHttpClient.getTokenCookie().getValue(),
-                                id,
-                                newStatus, bidId);
-                        call.enqueue(new Callback<Response>() {
-                            @Override
-                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                int x = 0;
-                            }
-
-                            @Override
-                            public void onFailure(Call<Response> call, Throwable t) {
-                                int x = 0;
-                            }
-                        });
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Вы уверены?").setPositiveButton("Да", dialogClickListener)
-                .setNegativeButton("Нет", dialogClickListener).show();
-    }
-
-    @Override
     public void navigateToHelp() {
         while(getSupportFragmentManager().popBackStackImmediate());
         HelpFragment fragment = new HelpFragment();
@@ -350,7 +315,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     @Override
     public void navigateToAddOrder() {
         AddOrderFragment fragment = new AddOrderFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }
 
     @Override

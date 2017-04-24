@@ -33,7 +33,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
 
     public interface OnItemClickListener {
         void onItemClick(int item);
-        void onChooseButtonClick(int item, String newStatus);
+        void onChooseButtonClick(int item);
     }
 
     private List<Bid> bidList;
@@ -130,7 +130,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
         @Override
         public void onClick(View view) {
             if (view.getId() == R.id.bidlist_item_button) {
-                listener.onChooseButtonClick(getAdapterPosition(), "choose");
+                listener.onChooseButtonClick(getAdapterPosition());
             } else {
                 listener.onItemClick(getAdapterPosition());
             }

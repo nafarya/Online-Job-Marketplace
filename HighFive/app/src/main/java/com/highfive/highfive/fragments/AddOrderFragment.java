@@ -13,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.OrderTypeList;
@@ -58,10 +59,13 @@ public class AddOrderFragment extends DialogFragment {
     private List<Subject> subjects;
     private OrderTypeList orderTypeList;
     private List<OrderType> orderTypes;
+    private Navigator navigator;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        navigator = (Navigator) getActivity();
 
         Type profileType = new TypeToken<Profile>(){}.getType();
         profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
@@ -112,7 +116,7 @@ public class AddOrderFragment extends DialogFragment {
                         try {
                             JSONObject contents = response.getJSONObject("response"); //TODO: do something with response
                             Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
-                            getActivity().getSupportFragmentManager().popBackStack();
+                            navigator.navigateToChooseOrder();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

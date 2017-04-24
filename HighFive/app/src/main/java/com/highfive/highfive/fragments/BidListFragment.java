@@ -1,13 +1,17 @@
 package com.highfive.highfive.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
@@ -18,6 +22,7 @@ import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
+import com.highfive.highfive.util.HighFiveHttpClient;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,6 +30,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit2.Call;
+import retrofit2.Callback;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -86,9 +93,42 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     }
 
     @Override
-    public void onChooseButtonClick(int item, String newStatus) {
-        navigator.navigateToStatusChangeDialog(orderId, newStatus, bidList.get(item).getBidId());
-        adapter.notifyDataSetChanged();
+    public void onChooseButtonClick(int item) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Call<Response> call = App.getApi().chooseBidForOrder(HighFiveHttpClient.getTokenCookie().getValue(),
+                                orderId, bidList.get(item).getBidId());
+                        call.enqueue(new Callback<Response>() {
+                            @Override
+                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                int x = 0;
+                                if (response.code() == 200) {
+                                    Toast.makeText(getContext(), "Исполнитель выбран", Toast.LENGTH_SHORT);
+                                    navigator.navigateToChooseOrder();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Response> call, Throwable t) {
+                                int x = 0;
+                            }
+                        });
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Вы уверены?").setPositiveButton("Да", dialogClickListener)
+                .setNegativeButton("Нет", dialogClickListener).show();
+
     }
 
     private void parseBidsProfileInfo() {

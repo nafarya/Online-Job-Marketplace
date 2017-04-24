@@ -1,9 +1,11 @@
 package com.highfive.highfive.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.App;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListAdapter;
@@ -25,6 +28,7 @@ import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.model.SubjectList;
+import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -42,6 +46,8 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * Created by dan on 16.04.17.
@@ -153,7 +159,37 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
 
     @Override
     public void changeStatusButton(int item, String newStatus) {
-        navigator.navigateToStatusChangeDialog(orderList.get(item).getId(), newStatus, "");
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Call<Response> call = App.getApi().changeOrderStatus(HighFiveHttpClient.getTokenCookie().getValue(),
+                                orderList.get(item).getId(),
+                                newStatus);
+                        call.enqueue(new Callback<Response>() {
+                            @Override
+                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                int x = 0;
+                            }
+
+                            @Override
+                            public void onFailure(Call<Response> call, Throwable t) {
+                                int x = 0;
+                            }
+                        });
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Вы уверены?").setPositiveButton("Да", dialogClickListener)
+                .setNegativeButton("Нет", dialogClickListener).show();
     }
 
     private List<String> getSubjectNames() {
