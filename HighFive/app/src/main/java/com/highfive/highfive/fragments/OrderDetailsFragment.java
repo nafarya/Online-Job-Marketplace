@@ -256,7 +256,8 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
                 Toast.makeText(getContext(), "Ставка отправлена", Toast.LENGTH_SHORT).show();
-                bidAmount.setText("");
+                getBids();
+
 
             }
 
