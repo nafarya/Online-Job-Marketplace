@@ -58,6 +58,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.1.0'
 
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.7'
+    compile 'com.droidninja:filepicker:2.0.3'
 
     compile ('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android

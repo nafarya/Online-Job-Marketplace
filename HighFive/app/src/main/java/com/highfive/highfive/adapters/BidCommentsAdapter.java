@@ -19,6 +19,10 @@ import java.util.List;
 
 public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.ViewHolder>{
 
+    public void setComments(List<BidComment> comments) {
+        this.comments = comments;
+    }
+
     private List<BidComment> comments;
     private String creatorId;
     private List<Profile> commentProfiles;
@@ -38,7 +42,11 @@ public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.text.setText(comments.get(position).getText());
         holder.time.setText(comments.get(position).getCreatedAt());
-        holder.username.setVisibility(View.GONE);
+        if (commentProfiles != null) {
+            holder.username.setText(getUsername(comments.get(position).get_id()));
+        } else {
+            holder.username.setVisibility(View.GONE);
+        }
         if (comments.get(position).get_id().equals(creatorId)) {
             holder.creatorMarker.setText("Автор заказа");
         } else {
@@ -50,6 +58,16 @@ public class BidCommentsAdapter extends RecyclerView.Adapter<BidCommentsAdapter.
             }
 
         }
+    }
+
+    private String getUsername(String id) {
+        for (int i = 0; i < commentProfiles.size(); i++) {
+            if (commentProfiles.get(i).getUid().equals(id)) {
+                return commentProfiles.get(i).getUsername();
+            }
+
+        }
+        return "error";
     }
 
     @Override

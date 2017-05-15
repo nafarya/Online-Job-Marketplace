@@ -3,17 +3,14 @@ package com.highfive.highfive;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -47,7 +44,6 @@ import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -56,10 +52,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -68,6 +68,9 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public static final int FILE_CODE = 11;
 
     private Profile profile;
+    private ArrayList<String> filePaths;
+    private List<String> photoPaths;
+    private List<String> docPaths;
 
     @InjectView(R.id.toolbar)           Toolbar toolbar;
     @InjectView(R.id.drawer_layout)     DrawerLayout drawer;
@@ -180,60 +183,50 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         return true;
     }
 
-
-    public void uploadAvatar(View view) {
-        Intent intent = new Intent(this, FilePickerActivity.class);
-        intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
-        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
-        intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
-        startActivityForResult(intent, FILE_CODE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
-            ClipData clip = data.getClipData();
-            Uri uri = null;
-            if (clip != null) {
-                for (int i = 0; i < clip.getItemCount(); i++) {
-                    uri = clip.getItemAt(i).getUri();
-                }
-            } else {
-                uri = data.getData();
-            }
-            if (uri != null) {
-                String mimeType = getMimeType(uri);
-                if (mimeType != null && mimeType.startsWith("image") &&
-                        (mimeType.endsWith("jpeg") || mimeType.endsWith("png") || mimeType.endsWith("gif"))) {
-                    RequestParams params = new RequestParams();
-                    try {
-                        params.put("file", new File(uri.getPath()));
-                        HighFiveHttpClient.post("users/" + HighFiveHttpClient.getUidCookie().getValue() + "/avatar",
-                                params, new JsonHttpResponseHandler() {
-                                    @Override
-                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                        super.onSuccess(statusCode, headers, response);
-                                    }
-
-                                    @Override
-                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                        super.onFailure(statusCode, headers, responseString, throwable);
-                                    }
-
-                                    @Override
-                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                        super.onFailure(statusCode, headers, throwable, errorResponse);
-                                    }
-                                });
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Файл не найден!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
+//            ClipData clip = data.getClipData();
+//            Uri uri = null;
+//            if (clip != null) {
+//                for (int i = 0; i < clip.getItemCount(); i++) {
+//                    uri = clip.getItemAt(i).getUri();
+//                }
+//            } else {
+//                uri = data.getData();
+//            }
+//            if (uri != null) {
+//                String mimeType = getMimeType(uri);
+//                if (mimeType != null && mimeType.startsWith("image") &&
+//                        (mimeType.endsWith("jpeg") || mimeType.endsWith("png") || mimeType.endsWith("gif"))) {
+//                    RequestParams params = new RequestParams();
+//                    try {
+//                        params.put("file", new File(uri.getPath()));
+//                        HighFiveHttpClient.post("users/" + HighFiveHttpClient.getUidCookie().getValue() + "/avatar",
+//                                params, new JsonHttpResponseHandler() {
+//                                    @Override
+//                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                                        super.onSuccess(statusCode, headers, response);
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                                        super.onFailure(statusCode, headers, responseString, throwable);
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                                        super.onFailure(statusCode, headers, throwable, errorResponse);
+//                                    }
+//                                });
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                        Toast.makeText(this, "Файл не найден!", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public String getMimeType(Uri uri) {
         String mimeType;
@@ -303,11 +296,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId) {
+    public void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId, String bidId) {
         BidListCommentFragment fragment = new BidListCommentFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("bidCommentsList", bidComments);
         bundle.putString("creatorId", creatorId);
+        bundle.putString("bidId", bidId);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
     }
@@ -342,4 +336,74 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         ChatListFragment fragment = new ChatListFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
     }
+
+    @Override
+    public void pickPhoto() {
+        filePaths = new ArrayList<>();
+        FilePickerBuilder.getInstance().setMaxCount(1)
+                .setSelectedFiles(filePaths)
+                .setActivityTheme(R.style.FilePicker)
+                .pickPhoto(this);
+    }
+
+    @Override
+    public void pickDocs() {
+        filePaths = new ArrayList<>();
+        FilePickerBuilder.getInstance().setMaxCount(5)
+                .setSelectedFiles(filePaths)
+                .setActivityTheme(R.style.FilePicker)
+                .pickFile(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode)
+        {
+            case FilePickerConst.REQUEST_CODE_PHOTO:
+                if(resultCode== Activity.RESULT_OK && data!=null)
+                {
+                    photoPaths = new ArrayList<>();
+                    photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+                    if (photoPaths.size() != 0) {
+                        File imgFile = new File(photoPaths.get(0));
+                        if (imgFile.exists()) {
+                            ImageView myImage = (ImageView) findViewById(R.id.avatar);
+                            myImage.setImageURI(Uri.fromFile(imgFile));
+
+//                            Call<Response> call = App.getApi().uploadAvatar(HighFiveHttpClient.getTokenCookie().getValue(),
+//                                    profile.getUid(), );
+//                            call.enqueue(new Callback<Response>() {
+//                                @Override
+//                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//                                    int x = 0;
+//                                    if (response.code() == 200) {
+//                                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
+//
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Response> call, Throwable t) {
+//                                    int x = 0;
+//                                }
+//                            });
+                        }
+                    }
+                }
+                break;
+            case FilePickerConst.REQUEST_CODE_DOC:
+                if(resultCode== Activity.RESULT_OK && data!=null)
+                {
+                    docPaths = new ArrayList<>();
+                    docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+                }
+                break;
+        }
+//        addThemToView(photoPaths,docPaths);
+    }
+
+
+
+
+
 }

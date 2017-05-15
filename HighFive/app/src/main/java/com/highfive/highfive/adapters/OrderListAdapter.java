@@ -40,6 +40,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     public void setOrderList(List<Order> orderList) {
         this.orderList = orderList;
     }
+    public void setSubjectList(SubjectList subjectList) {this.subjectList = subjectList;}
+    public void setOrderTypeList(OrderTypeList orderTypeList) {this.orderTypeList = orderTypeList;}
 
     public OrderListAdapter(List<Order> list, OnItemClickListener listener,
                             SubjectList subjectList, OrderTypeList orderTypeList, String curTab,
@@ -67,8 +69,12 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         } else {
             holder.theme.setText(order.getTheme());
         }
-        holder.subject.setText(subjectList.getSubjectNameById(order.getSubject()));
-        holder.orderType.setText(orderTypeList.getOrderTypeNameByTypeId(order.getType()));
+        if (subjectList != null) {
+            holder.subject.setText(subjectList.getSubjectNameById(order.getSubject()));
+        }
+        if (orderTypeList != null) {
+            holder.orderType.setText(orderTypeList.getOrderTypeNameByTypeId(order.getType()));
+        }
         holder.price.setText(order.getOffer() + " Р");
         holder.bidNum.setText(order.getNumOfBids() + " Ставок");
         holder.date.setText("до " + order.getdeadLine());

@@ -2,6 +2,8 @@ package com.highfive.highfive.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,10 +66,31 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 //        } else {
 //
 //        }
+//        holder.tvMessage.setMaxWidth(80);
+//        holder.tvMessage.setMaxLines(2);
+//        holder.filename.setMaxWidth(80);
+//        holder.filename.setMaxLines(2);
+
         holder.ivImage.setVisibility(View.GONE);
         holder.tvMessage.setVisibility(View.VISIBLE);
         holder.tvMessage.setText(messages.get(position).getText());
         holder.tvTime.setText(messages.get(position).getTime());
+
+
+        if (messages.get(position).getFile() == null) {
+            holder.filename.setVisibility(View.GONE);
+        } else {
+            holder.filename.setVisibility(View.VISIBLE);
+        }
+
+        if (messages.get(position).getText().equals("")) {
+            //holder.filename.setText("https://yareshu.ru");
+            if (messages.get(position).getFile() != null) {
+                holder.tvMessage.setText(messages.get(position).getFile().getName());
+                holder.filename.setText("https://yareshu.ru/uploads/" + messages.get(position).getFile().getPath());
+                holder.filename.setMaxLines(2);
+            }
+        }
 
     }
 
@@ -82,25 +105,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        //private ImageView avatar;
-//        private TextView username;
-//        private TextView time;
-//        private TextView text;
-
         TextView tvMessage, tvTime;
         ImageView ivImage;
         ChatMessageView chatMessageView;
+        TextView filename;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            //avatar = (ImageView) itemView.findViewById(R.id.chat_message_avatar);
-//            username = (TextView) itemView.findViewById(R.id.chat_message_username);
-//            time = (TextView) itemView.findViewById(R.id.chat_message_time);
-//            text = (TextView) itemView.findViewById(R.id.chat_message_text);
             chatMessageView = (ChatMessageView) itemView.findViewById(R.id.chatMessageView);
             tvMessage = (TextView) itemView.findViewById(R.id.tv_message);
             tvTime = (TextView) itemView.findViewById(R.id.tv_time);
             ivImage = (ImageView) itemView.findViewById(R.id.iv_image);
+            filename = (TextView) itemView.findViewById(R.id.tv_file_message);
         }
     }
 }

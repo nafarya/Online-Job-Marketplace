@@ -4,19 +4,22 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ChatMessageAdapter;
+import com.highfive.highfive.model.File;
 import com.highfive.highfive.model.Message;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
@@ -28,6 +31,7 @@ import com.highfive.highfive.util.HighFiveHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
@@ -57,13 +61,19 @@ public class ChatFragment extends Fragment {
     private List<Message> messages;
     private ChatMessageAdapter adapter;
     private Profile profile;
+    private Navigator navigator;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.inject(this, v);
-
+        attachFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navigator.pickDocs();
+            }
+        });
         chatRv.setAdapter(adapter);
 
         authToken = HighFiveHttpClient.getTokenCookie().getValue();
@@ -98,10 +108,31 @@ public class ChatFragment extends Fragment {
             @Override
             public void call(Object... args) {
                 String s = gson.toJson(args[0]);
+                JSONObject json = new JSONObject();
+                try {
+                    json = new JSONObject(s);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObject file = new JsonParser().parse(s).getAsJsonObject();
+                Message msg = new Message();
                 Type objType = new TypeToken<Obj>(){}.getType();
                 Obj obj = gson.fromJson(s, objType);
                 NameValuePairs tmp = obj.getNameValuePairs();
-                Message msg = new Message();
+                if (tmp.getFile() != null) {
+                    try {
+                        JSONObject wtf1 = (JSONObject) json.get("nameValuePairs");
+                        JSONObject wtf2 = (JSONObject) wtf1.get("file");
+                        JSONObject wtf3 = (JSONObject) wtf2.get("nameValuePairs");
+                        File wtf4 = new File();
+                        wtf4.setId(wtf3.getString("id"));
+                        wtf4.setName(wtf3.getString("name"));
+                        wtf4.setPath(wtf3.getString("path"));
+                        msg.setFile(wtf4);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
                 msg.setId(tmp.getId());
                 msg.setUser(tmp.getUser());
                 msg.setText(tmp.getText());
@@ -131,6 +162,23 @@ public class ChatFragment extends Fragment {
                 msg.setText(list.get(i).getNameValuePairs().getText());
                 msg.setTime(list.get(i).getNameValuePairs().getTime());
                 msg.setUser(list.get(i).getNameValuePairs().getUser());
+
+                String json = gson.toJson(args[1]);
+                try {
+                    JSONObject wtf = new JSONObject(json);
+                    JSONArray array = wtf.getJSONArray("values");
+                    JSONObject wtf1 = (JSONObject) ((JSONObject)array.get(i)).get("nameValuePairs");
+                    JSONObject wtf2 = (JSONObject) wtf1.get("file");
+                    JSONObject wtf3 = (JSONObject) wtf2.get("nameValuePairs");
+                    File wtf4 = new File();
+                    wtf4.setId(wtf3.getString("id"));
+                    wtf4.setName(wtf3.getString("name"));
+                    wtf4.setPath(wtf3.getString("path"));
+                    msg.setFile(wtf4);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 messages.add(msg);
             }
             Collections.reverse(messages);
@@ -174,6 +222,7 @@ public class ChatFragment extends Fragment {
 
         Type profileType = new TypeToken<Profile>(){}.getType();
         profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+        navigator = (Navigator) getActivity();
 
         messages = new ArrayList<Message>();
         adapter = new ChatMessageAdapter(messages, getContext(), profile);

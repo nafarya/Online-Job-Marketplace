@@ -6,13 +6,16 @@ import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Order;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -36,15 +39,29 @@ public interface YaReshuApi {
     @GET("files/{id}")
     Observable<Response<File>> getFileById(@Path("id") String id);
 
+
+
     @POST("orders/{id}/{status}")
     Call<Response> changeOrderStatus(@Header("api-token") String apiToken,
                                      @Path("id") String id,
                                      @Path("status") String status);
 
     @FormUrlEncoded
+    @POST("bids/{id}/comments")
+    Call<Response> addComment(@Header("api-token") String apiToken,
+                              @Path("id") String id,
+                              @Field("comment") String comment);
+
+    @FormUrlEncoded
     @POST("orders/{id}/choose")
     Call<Response> chooseBidForOrder(@Header("api-token") String apiToken,
                                      @Path("id") String id,
                                      @Field("bid") String bidId);
+
+    @Multipart
+    @POST("users/{id}/avatar")
+    Call<Response> uploadAvatar(@Header("api-token") String apiToken,
+                                @Path("id") String id,
+                                @Part MultipartBody.Part file);
 
 }

@@ -89,7 +89,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     @Override
     public void onItemClick(int item) {
         navigator.navigateToBidListComments(bidList.get(item).getBidComments(),
-                bidList.get(item).getBidCreatorId());
+                bidList.get(item).getBidCreatorId(), bidList.get(item).getBidId());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.highfive.highfive.fragments;
 
-import android.database.Observable;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ProfileCommentsAdapter;
 import com.highfive.highfive.model.Profile;
@@ -27,11 +27,7 @@ import com.highfive.highfive.model.ProfileComment;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,7 +36,6 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import cz.msebera.android.httpclient.Header;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -65,6 +60,9 @@ public class ProfileFragment extends Fragment {
     private Profile profile;
     private List<ProfileComment> comments;
     private List<Profile> commentAuthors;
+    private Navigator navigator;
+    private List<String> photoPaths;
+    private ArrayList<String> filePaths;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,51 +78,19 @@ public class ProfileFragment extends Fragment {
                 //show a profile stub maybe?
             }
         }
-    }
-
-    private void regenerateProfile() {
-        HighFiveHttpClient.get("users/" + HighFiveHttpClient.getUidCookie().getValue(), null,
-                new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        super.onSuccess(statusCode, headers, response);
-                        try {
-                            JSONObject contents = (JSONObject) response.get("response");
-                            profile = new Profile(contents.getString("email"),
-                                    contents.getString("id"),
-                                    contents.getString("username"),
-                                    contents.getString("balance"),
-                                    contents.getString("firstName"),
-                                    contents.getString("secondName"),
-                                    contents.getString("type").toLowerCase());
-                            Cache.getCacheManager().put("profile", profile);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse);
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        super.onFailure(statusCode, headers, responseString, throwable);
-                    }
-                });
+        navigator = (Navigator) getActivity();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        filePaths = new ArrayList<>();
         ButterKnife.inject(this, v);
-
+        avatar.setOnClickListener(view -> navigator.pickPhoto());
         fillProfileData();
         return v;
     }
-
 
     private void fillProfileData() {
         Collections.reverse(comments);
@@ -204,6 +170,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
 
 }

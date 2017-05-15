@@ -1,6 +1,7 @@
 package com.highfive.highfive.fragments;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -29,13 +30,21 @@ import com.highfive.highfive.model.Subject;
 import com.highfive.highfive.model.SubjectList;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cz.msebera.android.httpclient.Header;
 import retrofit2.Call;
 import retrofit2.Callback;
 import rx.Subscriber;
@@ -157,6 +166,16 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
         HighFiveHttpClient.initCookieStore(getContext());
 
+        if (profile == null) {
+            getProfile();
+        }
+        if (subList == null) {
+            getSubjects();
+        }
+        if (orderTypeList == null) {
+            getOrderTypes();
+        }
+
     }
 
     @Override
@@ -250,6 +269,121 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                         }
                         adapter.setOrderList(orderList);
                         adapter.notifyDataSetChanged();
+                    }
+                });
+    }
+
+    private void getSubjects() {
+        String userType = "all";
+        RequestParams params = new RequestParams();
+        ArrayList<Subject> subjectList = new ArrayList<>();
+        params.add("type", userType);
+
+
+        HighFiveHttpClient.get("subjects", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    Subject tmp = new Subject("Все предметы", "all", "all", "all");
+                    subjectList.add(tmp);
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        tmp = new Subject(
+                                current.getString("name"),
+                                current.getString("science"),
+                                current.getString("difficultyLevel"),
+                                current.getString("id")
+                        );
+                        subjectList.add(tmp);
+                    }
+                    SubjectList list = new SubjectList(subjectList);
+                    Cache.getCacheManager().put("subjectList", list);
+                    subList = list;
+                    adapter.setSubjectList(list);
+                    adapter.notifyDataSetChanged();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    private void getOrderTypes() {
+        RequestParams params = new RequestParams();
+        ArrayList<OrderType> typeList = new ArrayList<>();
+        params.add("type", "all");
+        HighFiveHttpClient.get("ordertypes", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    OrderType tmp = new OrderType("Любой тип", "all", "all");
+                    typeList.add(tmp);
+                    JSONObject contents = response.getJSONObject("response");
+                    JSONArray subjArray = contents.getJSONArray("items");
+                    for (int i = 0; i < contents.getInt("count"); i++) {
+                        JSONObject current = (JSONObject) subjArray.get(i);
+                        typeList.add(new OrderType(current.getString("name"),
+                                current.getString("difficultyLevel"),
+                                current.getString("id")));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                OrderTypeList tmpOrderTypeList = new OrderTypeList(typeList);
+                Cache.getCacheManager().put("orderTypeList", tmpOrderTypeList);
+                orderTypeList = tmpOrderTypeList;
+                adapter.setOrderTypeList(orderTypeList);
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    private void getProfile() {
+        App.getApi()
+                .getUserById(HighFiveHttpClient.getUidCookie().getValue())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Response<Profile>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("TAG", e.getMessage(), e);
+                    }
+
+                    @Override
+                    public void onNext(Response<Profile> orderResponse) {
+                        profile = orderResponse.getResponse();
+                        Cache.getCacheManager().put("profile", profile);
+
                     }
                 });
     }

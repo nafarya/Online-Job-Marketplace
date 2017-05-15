@@ -31,7 +31,6 @@
                 android:padding="1dp"
                 android:background="@color/colorPrimary"
                 android:clickable="true"
-                android:onClick="uploadAvatar"
                 android:src="@drawable/com_facebook_profile_picture_blank_square"
                 />
 

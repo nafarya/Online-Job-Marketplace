@@ -14,6 +14,8 @@ public class NameValuePairs {
     private String time;
     private String order;
 
+    private File file;
+
     public String getId() {
         return id;
     }
@@ -32,5 +34,13 @@ public class NameValuePairs {
 
     public String getOrder() {
         return order;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

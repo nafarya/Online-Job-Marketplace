@@ -23,7 +23,7 @@ public interface Navigator {
 
     void navigateToBidsList(ArrayList<Bid> bids, String orderId);
 
-    void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId);
+    void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId, String bidId);
 
     void navigateToAddOrder();
 
@@ -35,5 +35,7 @@ public interface Navigator {
 
     void navigateToChat(Order order);
 
+    void pickPhoto();
 
+    void pickDocs();
 }

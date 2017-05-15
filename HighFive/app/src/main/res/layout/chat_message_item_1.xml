@@ -38,8 +38,18 @@
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="kokoko"
+                android:maxWidth="160dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+            <TextView
+                android:id="@+id/tv_file_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:maxLines="2"
+                android:maxWidth="160dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 
             <TextView
                 android:id="@+id/tv_time"
