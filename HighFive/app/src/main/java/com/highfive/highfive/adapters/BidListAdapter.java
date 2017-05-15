@@ -40,11 +40,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
     private OnItemClickListener listener;
     private List<Profile> profileList;
     private Context context;
+    private String bidStatus;
 
-    public BidListAdapter(List<Bid> bidList, OnItemClickListener listener, Context context) {
+    public BidListAdapter(List<Bid> bidList, OnItemClickListener listener, Context context, String bidStatus) {
         this.bidList = bidList;
         this.listener = listener;
         this.context = context;
+        this.bidStatus = bidStatus;
     }
 
     public void setProfileList(List<Profile> list) {
@@ -66,6 +68,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
             holder.username.setText(bidList.get(position).getBidCreatorId());
         }
         holder.offer.setText((String.valueOf((int)bidList.get(position).getOffer())) + " Р");
+        if (!bidStatus.equals("В аукционе")) {
+            holder.button.setVisibility(View.GONE);
+        }
 
         int numOfComments = bidList.get(position).getBidComments().size();
         String comments = " ";
@@ -108,11 +113,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
 
             button = (Button) itemView.findViewById(R.id.bidlist_item_button);
             button.setOnClickListener(this);
-            Type profileType = new TypeToken<Profile>(){}.getType();
-            Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
-            if (profile.getType().equals("teacher")) {
-                button.setVisibility(View.GONE);
-            }
 
             ratingBar = (RatingBar) itemView.findViewById(R.id.bidlist_item_rating_bar);
             LayerDrawable drawable = (LayerDrawable) ratingBar.getProgressDrawable();

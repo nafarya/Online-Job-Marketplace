@@ -60,6 +60,7 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
     private Profile profile;
     private OrderTypeList orderTypeList;
     private ArrayList<OrderType> orderTypes = new ArrayList<>();
+    private List<Order> tmp = new ArrayList<>();
 
     @Nullable
     @Override
@@ -69,7 +70,7 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
 
         adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, "chat", profile);
         chatRv.setAdapter(adapter);
-        getUsersOrders("in work");
+        getUsersOrders("in work", 0);
 
 
         return v;
@@ -92,9 +93,10 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
     }
 
 
-    private void getUsersOrders(String status) {
+    private void getUsersOrders(String status, int offset) {
+        int limit = offset + 50;
         App.getApi()
-                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status)
+                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status, offset, limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Response<Items<Order>>>() {
@@ -110,10 +112,14 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
 
                     @Override
                     public void onNext(Response<Items<Order>> orderResponse) {
-                        orderList = orderResponse.getResponse().items();
+                        tmp = orderResponse.getResponse().items();
+                        if (offset == 0) {
+                            orderList = tmp;
+                        } else {
+                            orderList.addAll(tmp);
+                        }
                         if (orderList.size() != 0) {
-                            noOrders.setVisibility(View.GONE
-                            );
+                            noOrders.setVisibility(View.GONE);
                         }
                         adapter.setOrderList(orderList);
                         adapter.notifyDataSetChanged();

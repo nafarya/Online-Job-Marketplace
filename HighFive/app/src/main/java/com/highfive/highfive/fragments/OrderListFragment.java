@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.listeners.EndlessRecyclerOnScrollListener;
 import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
@@ -68,6 +70,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     private ArrayList<OrderType> orderTypes = new ArrayList<>();
 
     private String curTab;
+    private List<Order> tmp = new ArrayList<>();
 
 
     @InjectView(R.id.order_list_rv_id)              RecyclerView orderListrv;
@@ -85,9 +88,17 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
         adapter = new OrderListAdapter(orderList, this, subList, orderTypeList, curTab, profile);
         orderListrv.setAdapter(adapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        orderListrv.setLayoutManager(linearLayoutManager);
+        orderListrv.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                getUsersOrders(curTab, current_page * 50);
+            }
+        });
 
         if (profile != null) {
-            getUsersOrders(curTab);
+            getUsersOrders(curTab, 0);
         }
         cardSubj.setVisibility(View.GONE);
         cardOrderTypes.setVisibility(View.GONE);
@@ -197,7 +208,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                         call.enqueue(new Callback<Response>() {
                             @Override
                             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                getUsersOrders(curTab);
+                                getUsersOrders(curTab, 0);
                             }
 
                             @Override
@@ -245,9 +256,10 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
         return names;
     }
 
-    private void getUsersOrders(String status) {
+    private void getUsersOrders(String status, int offset) {
+        int limit = offset + 50;
         App.getApi()
-                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status)
+                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status, offset, limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Response<Items<Order>>>() {
@@ -263,7 +275,12 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
                     @Override
                     public void onNext(Response<Items<Order>> orderResponse) {
-                        orderList = orderResponse.getResponse().items();
+                        tmp = orderResponse.getResponse().items();
+                        if (offset == 0) {
+                            orderList = tmp;
+                        } else {
+                            orderList.addAll(tmp);
+                        }
                         if (orderList.size() != 0) {
                             noOrders.setVisibility(View.GONE);
                         }

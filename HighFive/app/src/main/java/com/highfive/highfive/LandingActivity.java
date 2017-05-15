@@ -285,11 +285,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void navigateToBidsList(ArrayList<Bid> bids, String orderId) {
+    public void navigateToBidsList(ArrayList<Bid> bids, String orderId, String bidStatus) {
         BidListFragment fragment = new BidListFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("bidList", bids);
         bundle.putString("orderId", orderId);
+        bundle.putString("bidStatus", bidStatus);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.flContent, fragment).addToBackStack(null).commit();
 

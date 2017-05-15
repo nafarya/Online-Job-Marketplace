@@ -48,6 +48,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     private Navigator navigator;
     private BidListAdapter adapter;
     private String orderId;
+    private String bidStatus;
 
     @InjectView(R.id.fragment_bid_list_rv)      RecyclerView bidListRv;
     @InjectView(R.id.bid_list_no_bids_text)     TextView nobids;
@@ -60,10 +61,11 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
         bidList = new ArrayList<>();
         bidList = bundle.getParcelableArrayList("bidList");
         orderId = bundle.getString("orderId");
+        bidStatus = bundle.getString("bidStatus");
         ButterKnife.inject(this, v);
         if (bidList.size() != 0) {
             nobids.setVisibility(View.GONE);
-            adapter = new BidListAdapter(bidList, this, getContext());
+            adapter = new BidListAdapter(bidList, this, getContext(), bidStatus);
             bidListRv.setAdapter(adapter);
             parseBidsProfileInfo();
 
@@ -104,9 +106,8 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
                         call.enqueue(new Callback<Response>() {
                             @Override
                             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                int x = 0;
                                 if (response.code() == 200) {
-                                    Toast.makeText(getContext(), "Исполнитель выбран", Toast.LENGTH_SHORT);
+                                    Toast.makeText(getContext(), "Исполнитель выбран", Toast.LENGTH_SHORT).show();
                                     navigator.navigateToChooseOrder();
                                 }
                             }

@@ -32,7 +32,10 @@ public interface YaReshuApi {
     @GET("users/{id}/orders")
     Observable<Response<Items<Order>>> getUsersOrders(@Header("api-token") String apiToken,
                                                       @Path("id") String id,
-                                                      @Query("status") String status);
+                                                      @Query("status") String status,
+                                                      @Query("offset") int offset,
+                                                      @Query("limit") int limit
+                                                      );
     @GET("users/{id}")
     Observable<Response<Profile>> getUserById(@Path("id") String id);
 

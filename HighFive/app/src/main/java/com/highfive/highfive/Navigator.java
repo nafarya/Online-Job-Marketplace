@@ -21,7 +21,7 @@ public interface Navigator {
 
     void navigateToOrderDetail(Order order);
 
-    void navigateToBidsList(ArrayList<Bid> bids, String orderId);
+    void navigateToBidsList(ArrayList<Bid> bids, String orderId, String bidStatus);
 
     void navigateToBidListComments(ArrayList<BidComment> bidComments, String creatorId, String bidId);
 
