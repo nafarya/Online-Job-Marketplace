@@ -41,12 +41,14 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
     private List<Profile> profileList;
     private Context context;
     private String bidStatus;
+    private String userType;
 
-    public BidListAdapter(List<Bid> bidList, OnItemClickListener listener, Context context, String bidStatus) {
+    public BidListAdapter(List<Bid> bidList, OnItemClickListener listener, Context context, String bidStatus, String userType) {
         this.bidList = bidList;
         this.listener = listener;
         this.context = context;
         this.bidStatus = bidStatus;
+        this.userType = userType;
     }
 
     public void setProfileList(List<Profile> list) {
@@ -69,6 +71,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.ViewHold
         }
         holder.offer.setText((String.valueOf((int)bidList.get(position).getOffer())) + " Р");
         if (!bidStatus.equals("В аукционе")) {
+            holder.button.setVisibility(View.GONE);
+        }
+        if (userType.equals("teacher")) {
             holder.button.setVisibility(View.GONE);
         }
 

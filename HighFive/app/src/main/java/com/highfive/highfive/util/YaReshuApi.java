@@ -36,6 +36,15 @@ public interface YaReshuApi {
                                                       @Query("offset") int offset,
                                                       @Query("limit") int limit
                                                       );
+
+    @GET("users/{id}/waitingOrders")
+    Observable<Response<Items<Order>>> getWaitingTeacherOrders(
+                                                      @Header("api-token") String apiToken,
+                                                      @Path("id") String id,
+                                                      @Query("offset") int offset,
+                                                      @Query("limit") int limit);
+
+
     @GET("users/{id}")
     Observable<Response<Profile>> getUserById(@Path("id") String id);
 
@@ -48,6 +57,12 @@ public interface YaReshuApi {
     Call<Response> changeOrderStatus(@Header("api-token") String apiToken,
                                      @Path("id") String id,
                                      @Path("status") String status);
+
+    @FormUrlEncoded
+    @POST("orders/{id}/submit")
+    Call<Response> teacherSubmitOrder(@Header("api-token") String apiToken,
+                                     @Path("id") String id,
+                                     @Field("action") String action);
 
     @FormUrlEncoded
     @POST("bids/{id}/comments")

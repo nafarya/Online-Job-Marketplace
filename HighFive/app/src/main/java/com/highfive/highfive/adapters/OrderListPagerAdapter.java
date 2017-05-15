@@ -18,10 +18,16 @@ import java.util.List;
 public class OrderListPagerAdapter extends FragmentStatePagerAdapter {
     private int numOfTabs;
     private ArrayList<Order> orderList;
+    private String userType;
 
     public OrderListPagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
         this.numOfTabs = NumOfTabs;
+        this.userType = userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 
     @Override
@@ -44,7 +50,11 @@ public class OrderListPagerAdapter extends FragmentStatePagerAdapter {
                 return tab1;
             case 2:
                 bundle = new Bundle();
-                bundle.putString("key", "waiting for author");
+                if (userType.equals("teacher")) {
+                    bundle.putString("key", "waitingOrders");
+                } else {
+                    bundle.putString("key", "waiting for author");
+                }
                 bundle.putParcelableArrayList("orderList", orderList);
                 OrderListFragment tab2 = new OrderListFragment();
                 tab2.setArguments(bundle);

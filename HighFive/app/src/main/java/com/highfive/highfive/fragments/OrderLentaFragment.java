@@ -192,6 +192,11 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
                 .setNegativeButton("Нет", dialogClickListener).show();
     }
 
+    @Override
+    public void teacherSubmitOrder(int item, String action) {
+
+    }
+
     private List<String> getSubjectNames() {
         if (profile.getType().equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();

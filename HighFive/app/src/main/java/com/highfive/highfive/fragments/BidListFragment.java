@@ -49,6 +49,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
     private BidListAdapter adapter;
     private String orderId;
     private String bidStatus;
+    private Profile profile;
 
     @InjectView(R.id.fragment_bid_list_rv)      RecyclerView bidListRv;
     @InjectView(R.id.bid_list_no_bids_text)     TextView nobids;
@@ -65,7 +66,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
         ButterKnife.inject(this, v);
         if (bidList.size() != 0) {
             nobids.setVisibility(View.GONE);
-            adapter = new BidListAdapter(bidList, this, getContext(), bidStatus);
+            adapter = new BidListAdapter(bidList, this, getContext(), bidStatus, profile.getType());
             bidListRv.setAdapter(adapter);
             parseBidsProfileInfo();
 
@@ -73,12 +74,18 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
             bidListRv.setVisibility(View.GONE);
         }
 
-        Type profileType = new TypeToken<Profile>(){}.getType();
-        Profile profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+
 
 
 
         return v;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
     }
 
     @Override

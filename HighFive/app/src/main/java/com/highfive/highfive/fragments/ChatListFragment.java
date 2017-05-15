@@ -167,4 +167,9 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
                 .setNegativeButton("Нет", dialogClickListener).show();
 
     }
+
+    @Override
+    public void teacherSubmitOrder(int item, String action) {
+
+    }
 }

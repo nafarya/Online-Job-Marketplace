@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -231,6 +232,41 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
     }
 
+    @Override
+    public void teacherSubmitOrder(int item, String action) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Call<Response> call = App.getApi().teacherSubmitOrder(HighFiveHttpClient.getTokenCookie().getValue(),
+                                orderList.get(item).getId(),
+                                action);
+                        call.enqueue(new Callback<Response>() {
+                            @Override
+                            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                getUsersOrders(curTab, 0);
+                            }
+
+                            @Override
+                            public void onFailure(Call<Response> call, Throwable t) {
+                                int x = 0;
+                            }
+                        });
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Вы уверены?").setPositiveButton("Да", dialogClickListener)
+                .setNegativeButton("Нет", dialogClickListener).show();
+    }
+
     private List<String> getSubjectNames() {
         if (profile.getType().equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
@@ -258,37 +294,76 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
 
     private void getUsersOrders(String status, int offset) {
         int limit = offset + 50;
-        App.getApi()
-                .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status, offset, limit)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Response<Items<Order>>>() {
-                    @Override
-                    public void onCompleted() {
+        if (curTab.equals("waitingOrders")) {
+            App.getApi()
+                    .getWaitingTeacherOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), offset, limit)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Response<Items<Order>>>() {
+                        @Override
+                        public void onCompleted() {
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("TAG", e.getMessage(), e);
-                    }
-
-                    @Override
-                    public void onNext(Response<Items<Order>> orderResponse) {
-                        tmp = orderResponse.getResponse().items();
-                        if (offset == 0) {
-                            orderList = tmp;
-                        } else {
-                            orderList.addAll(tmp);
                         }
-                        if (orderList.size() != 0) {
-                            noOrders.setVisibility(View.GONE);
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e("TAG", e.getMessage(), e);
                         }
-                        adapter.setOrderList(orderList);
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+
+                        @Override
+                        public void onNext(Response<Items<Order>> orderResponse) {
+                            tmp = orderResponse.getResponse().items();
+                            if (offset == 0) {
+                                orderList = tmp;
+                            } else {
+                                orderList.addAll(tmp);
+                            }
+                            if (orderList.size() != 0) {
+                                noOrders.setVisibility(View.GONE);
+                            }
+                            List<Order> rev = orderList;
+                            Collections.reverse(rev);
+                            adapter.setOrderList(rev);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+        } else {
+            App.getApi()
+                    .getUsersOrders(HighFiveHttpClient.getTokenCookie().getValue(), profile.getUid(), status, offset, limit)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Response<Items<Order>>>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e("TAG", e.getMessage(), e);
+                        }
+
+                        @Override
+                        public void onNext(Response<Items<Order>> orderResponse) {
+                            tmp = orderResponse.getResponse().items();
+                            if (offset == 0) {
+                                orderList = tmp;
+                            } else {
+                                orderList.addAll(tmp);
+                            }
+                            if (orderList.size() != 0) {
+                                noOrders.setVisibility(View.GONE);
+                            }
+                            List<Order> rev = orderList;
+                            Collections.reverse(rev);
+                            adapter.setOrderList(rev);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+        }
     }
+
+
 
     private void getSubjects() {
         String userType = "all";

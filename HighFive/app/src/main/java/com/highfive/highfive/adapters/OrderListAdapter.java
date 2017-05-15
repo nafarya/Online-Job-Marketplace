@@ -28,6 +28,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     public interface OnItemClickListener {
         void onItemClick(int item);
         void changeStatusButton(int item, String newStatus);
+        void teacherSubmitOrder(int item, String action);
     }
 
     private List<Order> orderList;
@@ -91,6 +92,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                 break;
             case "waiting for author":
                 holder.changeStatusBtn.setText("Отменить");
+                break;
+            case "waitingOrders":
+                holder.changeStatusBtn.setText("Подтвердить");
                 break;
             case "cancelled":
                 holder.changeStatusBtn.setVisibility(View.GONE);
@@ -157,6 +161,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                         break;
                     case "waiting for author":
                         listener.changeStatusButton(getAdapterPosition(), "cancel");
+                        break;
+                    case "waitingOrders":
+                        listener.teacherSubmitOrder(getAdapterPosition(), "accept");
                         break;
                     case "in rework":
                         listener.changeStatusButton(getAdapterPosition(), "cancel");

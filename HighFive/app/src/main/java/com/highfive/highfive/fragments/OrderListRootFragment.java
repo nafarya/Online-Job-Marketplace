@@ -9,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListPagerAdapter;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.Profile;
+import com.highfive.highfive.util.Cache;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,7 @@ import java.util.List;
 public class OrderListRootFragment extends Fragment {
 
     private OrderListPagerAdapter adapter;
+    private Profile profile;
 
     @Nullable
     @Override
@@ -43,6 +47,7 @@ public class OrderListRootFragment extends Fragment {
         final ViewPager viewPager = (ViewPager) v.findViewById(R.id.pager);
         adapter = new OrderListPagerAdapter
                 (getFragmentManager(), tabLayout.getTabCount());
+        adapter.setUserType(profile.getType());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -65,5 +70,11 @@ public class OrderListRootFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Type profileType = new TypeToken<Profile>(){}.getType();
+        profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
+    }
 }
 
