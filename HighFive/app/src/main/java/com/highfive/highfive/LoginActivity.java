@@ -307,6 +307,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onNext(Response<Profile> orderResponse) {
                         profile = orderResponse.getResponse();
+                        LandingActivity.userType = profile.getType();
                         Cache.getCacheManager().put("profile", profile);
 
                         profileFlag = true;

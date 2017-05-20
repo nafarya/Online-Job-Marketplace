@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ProfileCommentsAdapter;
@@ -87,7 +88,12 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         filePaths = new ArrayList<>();
         ButterKnife.inject(this, v);
-        avatar.setOnClickListener(view -> navigator.pickPhoto());
+
+        avatar.setOnClickListener(view -> {
+            LandingActivity.FILE_CODE = 1;
+            navigator.pickPhoto();
+
+        });
         fillProfileData();
         return v;
     }

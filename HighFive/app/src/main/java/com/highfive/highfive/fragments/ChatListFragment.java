@@ -145,7 +145,7 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
                         call.enqueue(new Callback<Response>() {
                             @Override
                             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                int x = 0;
+                                getUsersOrders("in work", 0);
                             }
 
                             @Override

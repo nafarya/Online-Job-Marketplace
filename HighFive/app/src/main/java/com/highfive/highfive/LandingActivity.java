@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.AddOrderFragment;
 import com.highfive.highfive.fragments.BidListCommentFragment;
@@ -49,7 +52,10 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,18 +65,28 @@ import butterknife.InjectView;
 import cz.msebera.android.httpclient.Header;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
+import io.socket.client.Socket;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Navigator {
-    private static final String TAG = "LandingActivity";
-    public static final int FILE_CODE = 11;
+    /*
+    * avatar                        = 1
+    * chatFile                      = 2
+    * add file to order when create = 3
+    */
+    public static int FILE_CODE = 0;
+    public static String userType = null;
 
     private Profile profile;
     private ArrayList<String> filePaths;
     private List<String> photoPaths;
     private List<String> docPaths;
+    private Socket socket;
+
 
     @InjectView(R.id.toolbar)           Toolbar toolbar;
     @InjectView(R.id.drawer_layout)     DrawerLayout drawer;
@@ -348,50 +364,81 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
     @Override
-    public void pickDocs() {
+    public void pickDocsForChat(Socket socket) {
         filePaths = new ArrayList<>();
+        this.socket = socket;
         FilePickerBuilder.getInstance().setMaxCount(5)
                 .setSelectedFiles(filePaths)
                 .setActivityTheme(R.style.FilePicker)
                 .pickFile(this);
+
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode== Activity.RESULT_OK && data!=null) {
+            if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO && FILE_CODE == 1) {
+                uploadAvatar(data);
+            }
+            if (requestCode == FilePickerConst.REQUEST_CODE_DOC && FILE_CODE == 2) {
+
+                docPaths = new ArrayList<>();
+                docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+
+                File file = new File(docPaths.get(0));
+                if (file.exists()) {
+                    Gson gson = new Gson();
+
+// 1. Java object to JSON, and save into a file
+                    try {
+                        gson.toJson(file, new FileWriter(file.getPath()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+// 2. Java object to JSON, and assign to a String
+                    String jsonInString = gson.toJson(file);
+                    socket.emit("file", file);
+                }
+//                    try {
+//                        FileInputStream fis = new FileInputStream(file);
+//                        byte imgByte[] = new byte[(int) file.length()];
+//                        fis.read(imgByte);
+//
+//                        //convert byte array to base64 string
+////                        String img64 = Base64.encodeBase64URLSafeString(imgByte);
+//                        //send img64 to socket.io servr
+//                    } catch (Exception e) {
+//                        //
+//                    }
+//
+
+//                RequestBody reqFile = RequestBody.create(MediaType.parse("file/*"), file);
+//                MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), reqFile);
+//
+//                Call<Response> call = App.getApi().uploadAvatar(HighFiveHttpClient.getTokenCookie().getValue(),
+//                        profile.getUid(), body);
+//                call.enqueue(new Callback<Response>() {
+//                    @Override
+//                    public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//                        if (response.code() == 200) {
+//                            Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Response> call, Throwable t) {
+//                    }
+//                });
+            }
+        }
+
+        FILE_CODE = 0;
+
         switch (requestCode)
         {
-            case FilePickerConst.REQUEST_CODE_PHOTO:
-                if(resultCode== Activity.RESULT_OK && data!=null)
-                {
-                    photoPaths = new ArrayList<>();
-                    photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
-                    if (photoPaths.size() != 0) {
-                        File imgFile = new File(photoPaths.get(0));
-                        if (imgFile.exists()) {
-                            ImageView myImage = (ImageView) findViewById(R.id.avatar);
-                            myImage.setImageURI(Uri.fromFile(imgFile));
-
-//                            Call<Response> call = App.getApi().uploadAvatar(HighFiveHttpClient.getTokenCookie().getValue(),
-//                                    profile.getUid(), );
-//                            call.enqueue(new Callback<Response>() {
-//                                @Override
-//                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-//                                    int x = 0;
-//                                    if (response.code() == 200) {
-//                                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
-//
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onFailure(Call<Response> call, Throwable t) {
-//                                    int x = 0;
-//                                }
-//                            });
-                        }
-                    }
-                }
-                break;
             case FilePickerConst.REQUEST_CODE_DOC:
                 if(resultCode== Activity.RESULT_OK && data!=null)
                 {
@@ -404,7 +451,44 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     }
 
 
+    private void uploadAvatar(Intent data) {
+        photoPaths = new ArrayList<>();
+        photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+        if (photoPaths.size() != 0) {
+            File imgFile = new File(photoPaths.get(0));
+            if (imgFile.exists()) {
+                ImageView myImage = (ImageView) findViewById(R.id.avatar);
+                myImage.setImageURI(Uri.fromFile(imgFile));
+                View headerView = navigationView.getHeaderView(0);
+                profile.setAvatar(photoPaths.get(0));
+                Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
+                        into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
 
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imgFile);
+                MultipartBody.Part body = MultipartBody.Part.createFormData("file", imgFile.getName(), reqFile);
+
+                Call<Response> call = App.getApi().uploadAvatar(HighFiveHttpClient.getTokenCookie().getValue(),
+                        profile.getUid(), body);
+                call.enqueue(new Callback<Response>() {
+                    @Override
+                    public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                        if (response.code() == 200) {
+                            Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Response> call, Throwable t) {
+                    }
+                });
+            }
+        }
+    }
+
+    private void uploadChatFile() {
+
+    }
 
 
 }

@@ -16,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ChatMessageAdapter;
@@ -71,7 +72,8 @@ public class ChatFragment extends Fragment {
         attachFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigator.pickDocs();
+//                LandingActivity.FILE_CODE = 2;
+//                navigator.pickDocsForChat(socket);
             }
         });
         chatRv.setAdapter(adapter);
@@ -95,61 +97,52 @@ public class ChatFragment extends Fragment {
             e.printStackTrace();
         }
 
-        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                socket.emit("history", 0);
-                //socket.disconnect();
+        socket.on(Socket.EVENT_CONNECT, args -> {
+            socket.emit("history", 0);
+            //socket.disconnect();
+        }).on("message", args -> {
+            String s = gson.toJson(args[0]);
+            JSONObject json = new JSONObject();
+            try {
+                json = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-        }).on("message", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                String s = gson.toJson(args[0]);
-                JSONObject json = new JSONObject();
+            JsonObject file = new JsonParser().parse(s).getAsJsonObject();
+            Message msg = new Message();
+            Type objType = new TypeToken<Obj>(){}.getType();
+            Obj obj = gson.fromJson(s, objType);
+            NameValuePairs tmp = obj.getNameValuePairs();
+            if (tmp.getFile() != null) {
                 try {
-                    json = new JSONObject(s);
+                    JSONObject wtf1 = (JSONObject) json.get("nameValuePairs");
+                    JSONObject wtf2 = (JSONObject) wtf1.get("file");
+                    JSONObject wtf3 = (JSONObject) wtf2.get("nameValuePairs");
+                    File wtf4 = new File();
+                    wtf4.setId(wtf3.getString("id"));
+                    wtf4.setName(wtf3.getString("name"));
+                    wtf4.setPath(wtf3.getString("path"));
+                    msg.setFile(wtf4);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                JsonObject file = new JsonParser().parse(s).getAsJsonObject();
-                Message msg = new Message();
-                Type objType = new TypeToken<Obj>(){}.getType();
-                Obj obj = gson.fromJson(s, objType);
-                NameValuePairs tmp = obj.getNameValuePairs();
-                if (tmp.getFile() != null) {
-                    try {
-                        JSONObject wtf1 = (JSONObject) json.get("nameValuePairs");
-                        JSONObject wtf2 = (JSONObject) wtf1.get("file");
-                        JSONObject wtf3 = (JSONObject) wtf2.get("nameValuePairs");
-                        File wtf4 = new File();
-                        wtf4.setId(wtf3.getString("id"));
-                        wtf4.setName(wtf3.getString("name"));
-                        wtf4.setPath(wtf3.getString("path"));
-                        msg.setFile(wtf4);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                msg.setId(tmp.getId());
-                msg.setUser(tmp.getUser());
-                msg.setText(tmp.getText());
-                msg.setTime(tmp.getTime());
-                msg.setUser(tmp.getUser());
-                messages.add(msg);
-                adapter.setMessages(messages);
-                FragmentActivity act = getActivity();
-                if (act != null) {
-                    act.runOnUiThread(() -> {
-                                adapter.notifyDataSetChanged();
-                                chatRv.scrollToPosition(messages.size() - 1);
-                    });
-
-                }
+            }
+            msg.setId(tmp.getId());
+            msg.setUser(tmp.getUser());
+            msg.setText(tmp.getText());
+            msg.setTime(tmp.getTime());
+            msg.setUser(tmp.getUser());
+            messages.add(msg);
+            adapter.setMessages(messages);
+            FragmentActivity act = getActivity();
+            if (act != null) {
+                act.runOnUiThread(() -> {
+                            adapter.notifyDataSetChanged();
+                            chatRv.scrollToPosition(messages.size() - 1);
+                });
 
             }
+
         }).on("history", args -> {
             String s = gson.toJson(args[1]);
             Type collectionType = new TypeToken<Values<Collection<Obj>>>(){}.getType();
@@ -199,12 +192,9 @@ public class ChatFragment extends Fragment {
         });
         socket.connect();
 
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                socket.emit("message", messageText.getText());
-                messageText.setText("");
-            }
+        sendMessage.setOnClickListener(view -> {
+            socket.emit("message", messageText.getText());
+            messageText.setText("");
         });
 
         return v;
@@ -213,7 +203,9 @@ public class ChatFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        socket.disconnect();
+        if (socket != null) {
+            socket.disconnect();
+        }
     }
 
     @Override

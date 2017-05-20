@@ -7,6 +7,8 @@ import com.highfive.highfive.model.Order;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.Socket;
+
 /**
  * Created by dan on 23.01.17.
  */
@@ -37,5 +39,5 @@ public interface Navigator {
 
     void pickPhoto();
 
-    void pickDocs();
+    void pickDocsForChat(Socket socket);
 }

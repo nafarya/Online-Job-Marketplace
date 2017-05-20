@@ -16,6 +16,8 @@ import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
 
 public class HighFiveHttpClient {
 
+    ///transfer cookie to interface YaReshuApi and delete that class
+
     private static final String BASE_URL = "https://yareshu.ru/api/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
