@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.OrderListPagerAdapter;
 import com.highfive.highfive.model.Order;
@@ -47,7 +48,7 @@ public class OrderListRootFragment extends Fragment {
         final ViewPager viewPager = (ViewPager) v.findViewById(R.id.pager);
         adapter = new OrderListPagerAdapter
                 (getFragmentManager(), tabLayout.getTabCount());
-        adapter.setUserType(profile.getType());
+        adapter.setUserType(LandingActivity.userType);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

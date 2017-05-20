@@ -13,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.OrderType;
@@ -141,7 +142,7 @@ public class AddOrderFragment extends DialogFragment {
     }
 
     private List<String> getSubjectNames() {
-        if (profile.getType().equals("teacher") && subList != null) {
+        if (LandingActivity.userType.equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
         } else {
             if (subList != null) {

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.listeners.EndlessRecyclerOnScrollListener;
 import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.Navigator;
@@ -268,7 +269,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
     }
 
     private List<String> getSubjectNames() {
-        if (profile.getType().equals("teacher") && subList != null) {
+        if (LandingActivity.userType.equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
         } else {
             if (subList != null) {

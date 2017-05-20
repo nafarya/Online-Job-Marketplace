@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Order;
 import com.highfive.highfive.model.OrderTypeList;
@@ -109,7 +110,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "chat":
-                if (profile.getType().equals("teacher")) {
+                if (LandingActivity.userType.equals("teacher")) {
                     holder.changeStatusBtn.setText("Завершить");
                 } else {
                     holder.changeStatusBtn.setVisibility(View.GONE);

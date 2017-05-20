@@ -118,12 +118,14 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                     into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
             TextView balance = (TextView) headerView.findViewById(R.id.nav_header_balance);
             balance.setText("Баланс: " + profile.getBalance() + " Руб");
-            Menu menu = navigationView.getMenu();
-            if (!profile.getType().equals("teacher")) {
-                menu.findItem(R.id.nav_teacher_lenta).setVisible(false);
-            } else {
-                menu.findItem(R.id.nav_add_order).setVisible(false);
-            }
+
+        }
+
+        Menu menu = navigationView.getMenu();
+        if (!LandingActivity.userType.equals("teacher")) {
+            menu.findItem(R.id.nav_teacher_lenta).setVisible(false);
+        } else {
+            menu.findItem(R.id.nav_add_order).setVisible(false);
         }
 
         ImageButton addBalanceBtn = (ImageButton) headerView.findViewById(R.id.add_balance_button);
@@ -132,11 +134,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             toolbar.setTitle("Пополнение баланса");
             drawer.closeDrawer(Gravity.LEFT);
         });
-
-
-
-
-
+        
         navigateToChooseOrder();
 
     }

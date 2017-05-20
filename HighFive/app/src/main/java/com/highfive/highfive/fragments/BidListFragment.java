@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.BidListAdapter;
@@ -66,7 +67,7 @@ public class BidListFragment extends Fragment implements BidListAdapter.OnItemCl
         ButterKnife.inject(this, v);
         if (bidList.size() != 0) {
             nobids.setVisibility(View.GONE);
-            adapter = new BidListAdapter(bidList, this, getContext(), bidStatus, profile.getType());
+            adapter = new BidListAdapter(bidList, this, getContext(), bidStatus, LandingActivity.userType);
             bidListRv.setAdapter(adapter);
             parseBidsProfileInfo();
 

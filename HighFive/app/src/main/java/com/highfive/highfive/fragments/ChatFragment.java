@@ -72,8 +72,8 @@ public class ChatFragment extends Fragment {
         attachFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                LandingActivity.FILE_CODE = 2;
-//                navigator.pickDocsForChat(socket);
+                LandingActivity.FILE_CODE = 2;
+                navigator.pickDocsForChat(socket);
             }
         });
         chatRv.setAdapter(adapter);
@@ -89,8 +89,7 @@ public class ChatFragment extends Fragment {
         opts.forceNew = true;
         opts.path = "/api/socket.io";
         opts.query = "key=" + authToken + ":" + chatToken;
-
-
+        
         try {
             socket = IO.socket("https://yareshu.ru", opts);
         } catch (URISyntaxException e) {

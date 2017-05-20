@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
+import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.FilesAdapter;
@@ -104,7 +105,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
         orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
 
 
-        if (!profile.getType().equals("teacher")) {
+        if (!LandingActivity.userType.equals("teacher")) {
             bidCard.setVisibility(View.GONE);
             subjectList = subList.getStudentSubjectList();
         } else {
