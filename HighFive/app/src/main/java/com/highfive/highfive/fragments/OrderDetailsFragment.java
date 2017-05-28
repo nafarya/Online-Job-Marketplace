@@ -23,7 +23,7 @@ import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.FilesAdapter;
-import com.highfive.highfive.model.File;
+import com.highfive.highfive.model.MyFile;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Bid;
 import com.highfive.highfive.model.BidComment;
@@ -81,7 +81,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
     private Navigator navigator;
     private Profile profile;
     private SubjectList subList;
-    private List<File> fileList;
+    private List<MyFile> myFileList;
     private Order order;
     private FilesAdapter filesAdapter;
 
@@ -116,7 +116,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
         addBid.setOnClickListener(v1 -> postBid());
         bidsNumber.setOnClickListener(view -> navigator.navigateToBidsList(bidlist, order.getId(), order.getStatus()));
 
-        filesAdapter = new FilesAdapter(fileList, this);
+        filesAdapter = new FilesAdapter(myFileList, this);
         fileRecyclerView.setAdapter(filesAdapter);
         getOrderDetails();
         getBids();
@@ -149,7 +149,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
 
         Bundle args = this.getArguments();
         orderId = args.getString("orderId");
-        fileList = new ArrayList<>();
+        myFileList = new ArrayList<>();
         bidlist = new ArrayList<>();
 
     }
@@ -278,19 +278,19 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
     }
 
     private void parseFiles(List<String> fileIds) {
-        List<Observable<Response<File>>> observables = new ArrayList<>();
+        List<Observable<Response<MyFile>>> observables = new ArrayList<>();
         for (String fileId : fileIds) {
             observables.add(App.getApi().getFileById(fileId).subscribeOn(Schedulers.io()).retry(5).onErrorReturn(t -> null));
         }
         Observable.zip(observables, orderResponseObjects -> {
-            List<File> fileList = new ArrayList<>();
+            List<MyFile> myFileList = new ArrayList<>();
             for (Object obj : orderResponseObjects) {
                 if (obj != null) {
-                    fileList.add(((Response<File>) obj).getResponse());
+                    myFileList.add(((Response<MyFile>) obj).getResponse());
                 }
             }
-            return fileList;
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<File>>() {
+            return myFileList;
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<MyFile>>() {
             @Override
             public void onCompleted() {
 
@@ -302,9 +302,9 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
             }
 
             @Override
-            public void onNext(List<File> tmpFileList) {
-                fileList = tmpFileList;
-                filesAdapter.setFiles(fileList);
+            public void onNext(List<MyFile> tmpMyFileList) {
+                myFileList = tmpMyFileList;
+                filesAdapter.setMyFiles(myFileList);
                 filesAdapter.notifyDataSetChanged();
             }
         });
@@ -314,7 +314,7 @@ public class OrderDetailsFragment extends Fragment implements FilesAdapter.OnIte
     public void onItemClick(int item) {
         Intent browserIntent = new Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://yareshu.ru/uploads/" + fileList.get(item).getPath()));
+                Uri.parse("https://yareshu.ru/uploads/" + myFileList.get(item).getPath()));
         startActivity(browserIntent);
     }
 }

@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.highfive.highfive.R;
-import com.highfive.highfive.model.File;
+import com.highfive.highfive.model.MyFile;
 
 import java.util.List;
 
@@ -19,19 +19,19 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
 
     private OnItemClickListener listener;
-    private List<File> files;
+    private List<MyFile> myFiles;
 
-    public void setFiles(List<File> files) {
-        this.files = files;
+    public void setMyFiles(List<MyFile> myFiles) {
+        this.myFiles = myFiles;
     }
 
     public interface OnItemClickListener {
         void onItemClick(int item);
     }
 
-    public FilesAdapter(List<File> files, OnItemClickListener listener) {
+    public FilesAdapter(List<MyFile> myFiles, OnItemClickListener listener) {
         this.listener = listener;
-        this.files = files;
+        this.myFiles = myFiles;
     }
 
     @Override
@@ -42,12 +42,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.name.setText(files.get(position).getName());
+        holder.name.setText(myFiles.get(position).getName());
     }
 
     @Override
     public int getItemCount() {
-        return files.size();
+        return myFiles.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

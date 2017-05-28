@@ -311,8 +311,8 @@ public class LoginActivity extends AppCompatActivity {
                         LandingActivity.userType = profile.getType();
                         SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
                         SharedPreferences.Editor e = myPrefs.edit();
-                        e.putString("userType", profile.getType()); // add or overwrite someValue
-                        e.commit(); // this saves to disk and notifies observers
+                        e.putString("userType", profile.getType());
+                        e.commit();
 
                         Cache.getCacheManager().put("profile", profile);
 

@@ -95,6 +95,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStart() {
+        super.onStart();
         SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         userType = myPrefs.getString("userType", "teacher"); // return 0 if someValue doesn't exist
     }
@@ -227,7 +228,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 //                        (mimeType.endsWith("jpeg") || mimeType.endsWith("png") || mimeType.endsWith("gif"))) {
 //                    RequestParams params = new RequestParams();
 //                    try {
-//                        params.put("file", new File(uri.getPath()));
+//                        params.put("file", new MyFile(uri.getPath()));
 //                        HighFiveHttpClient.post("users/" + HighFiveHttpClient.getUidCookie().getValue() + "/avatar",
 //                                params, new JsonHttpResponseHandler() {
 //                                    @Override
@@ -377,7 +378,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     public void pickDocsForChat(Socket socket) {
         filePaths = new ArrayList<>();
         this.socket = socket;
-        FilePickerBuilder.getInstance().setMaxCount(5)
+        FilePickerBuilder.getInstance().setMaxCount(1)
                 .setSelectedFiles(filePaths)
                 .setActivityTheme(R.style.FilePicker)
                 .pickFile(this);
@@ -395,22 +396,22 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
                 docPaths = new ArrayList<>();
                 docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
-
-                File file = new File(docPaths.get(0));
-                if (file.exists()) {
-                    Gson gson = new Gson();
-
-// 1. Java object to JSON, and save into a file
-                    try {
-                        gson.toJson(file, new FileWriter(file.getPath()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-// 2. Java object to JSON, and assign to a String
-                    String jsonInString = gson.toJson(file);
-                    socket.emit("file", file);
-                }
+                ChatFragment.uploadFile(docPaths.get(0));
+//                MyFile file = new MyFile(docPaths.get(0));
+//                if (file.exists()) {
+//                    Gson gson = new Gson();
+//
+//// 1. Java object to JSON, and save into a file
+//                    try {
+//                        gson.toJson(file, new FileWriter(file.getPath()));
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//// 2. Java object to JSON, and assign to a String
+//                    String jsonInString = gson.toJson(file);
+//                    socket.emit("file", file);
+//                }
 //                    try {
 //                        FileInputStream fis = new FileInputStream(file);
 //                        byte imgByte[] = new byte[(int) file.length()];

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by dan on 18.04.17.
  */
 
-public class File {
+public class MyFile {
     @SerializedName("name")
     @Expose
     private String name;

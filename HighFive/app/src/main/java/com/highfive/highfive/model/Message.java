@@ -10,7 +10,7 @@ public class Message {
     private String user;
     private String time;
     private String order;
-    private File file;
+    private MyFile myFile;
 
     public String getId() {
         return id;
@@ -53,11 +53,11 @@ public class Message {
         this.order = order;
     }
 
-    public File getFile() {
-        return file;
+    public MyFile getMyFile() {
+        return myFile;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setMyFile(MyFile myFile) {
+        this.myFile = myFile;
     }
 }

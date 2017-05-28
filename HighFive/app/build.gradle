@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.highfive.highfive"
         minSdkVersion 16
-        targetSdkVersion 24
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -59,6 +59,7 @@ dependencies {
 
     compile 'me.himanshusoni.chatmessageview:chat-message-view:1.0.7'
     compile 'com.droidninja:filepicker:2.0.3'
+    compile 'org.apache.commons:commons-lang3:3.5'
 
     compile ('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android

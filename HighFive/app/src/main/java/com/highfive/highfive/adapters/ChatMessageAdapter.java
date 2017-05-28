@@ -2,8 +2,6 @@ package com.highfive.highfive.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 import com.highfive.highfive.R;
 import com.highfive.highfive.model.Message;
 import com.highfive.highfive.model.Profile;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -77,7 +74,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         holder.tvTime.setText(messages.get(position).getTime());
 
 
-        if (messages.get(position).getFile() == null) {
+        if (messages.get(position).getMyFile() == null) {
             holder.filename.setVisibility(View.GONE);
         } else {
             holder.filename.setVisibility(View.VISIBLE);
@@ -85,9 +82,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
         if (messages.get(position).getText().equals("")) {
             //holder.filename.setText("https://yareshu.ru");
-            if (messages.get(position).getFile() != null) {
-                holder.tvMessage.setText(messages.get(position).getFile().getName());
-                holder.filename.setText("https://yareshu.ru/uploads/" + messages.get(position).getFile().getPath());
+            if (messages.get(position).getMyFile() != null) {
+                holder.tvMessage.setText(messages.get(position).getMyFile().getName());
+                holder.filename.setText("https://yareshu.ru/uploads/" + messages.get(position).getMyFile().getPath());
                 holder.filename.setMaxLines(2);
             }
         }
