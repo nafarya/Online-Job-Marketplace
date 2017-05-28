@@ -1,8 +1,11 @@
 package com.highfive.highfive.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +23,11 @@ import com.highfive.highfive.App;
 import com.highfive.highfive.LandingActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
+import com.highfive.highfive.adapters.FilesAdapter;
 import com.highfive.highfive.model.AddFileObj;
 import com.highfive.highfive.model.AddFileParams;
 import com.highfive.highfive.model.ChatFileObj;
+import com.highfive.highfive.model.MyFile;
 import com.highfive.highfive.model.OrderType;
 import com.highfive.highfive.model.OrderTypeList;
 import com.highfive.highfive.model.Profile;
@@ -59,7 +64,7 @@ import retrofit2.Callback;
  * Created by dan on 08.12.16.
  */
 
-public class AddOrderFragment extends DialogFragment {
+public class AddOrderFragment extends DialogFragment implements FilesAdapter.OnItemClickListener{
 
     @InjectView(R.id.subject_spinner)           SearchableSpinner subjectSpinner;
     @InjectView(R.id.job_type_spinner)          SearchableSpinner orderTypeSpinner;
@@ -69,6 +74,7 @@ public class AddOrderFragment extends DialogFragment {
     @InjectView(R.id.add_order_offer)           EditText addOrderOffer;
     @InjectView(R.id.add_order_button_id)       Button addOrderButton;
     @InjectView(R.id.add_order_attach_file)     TextView attachFile;
+    @InjectView(R.id.add_order_files_rv)        RecyclerView attachFilesrv;
 
     private Profile profile;
     private SubjectList subList;
@@ -81,6 +87,8 @@ public class AddOrderFragment extends DialogFragment {
     private static AddFileObj obj1;
 
     private static List<AddFileObj> fileList = new ArrayList<>();
+    private static List<MyFile> filesToShow = new ArrayList<>();
+    private static FilesAdapter filesAdapter;
 
 
     @Override
@@ -96,7 +104,6 @@ public class AddOrderFragment extends DialogFragment {
         Type orderTypeListType = new TypeToken<OrderTypeList>(){}.getType();
         orderTypeList = (OrderTypeList) Cache.getCacheManager().get("orderTypeList", OrderTypeList.class, orderTypeListType);
 
-
     }
 
     @Nullable
@@ -104,6 +111,9 @@ public class AddOrderFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_add_order, container, false);
         ButterKnife.inject(this, v);
+
+        filesAdapter = new FilesAdapter(filesToShow, this);
+        attachFilesrv.setAdapter(filesAdapter);
 
         ArrayAdapter<String> subjectAdapter = new ArrayAdapter<String>
                 (getActivity(), android.R.layout.simple_spinner_item, getSubjectNames());
@@ -195,17 +205,23 @@ public class AddOrderFragment extends DialogFragment {
                 call.enqueue(new Callback<Response>() {
                     @Override
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                        int x = 1;
+                        Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
+                        navigator.navigateToChooseOrder();
                     }
 
                     @Override
                     public void onFailure(Call<Response> call, Throwable t) {
-                        int x = 1;
+                        Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
                     }
                 });
 
             }
         });
+
+        fileList = new ArrayList<>();
+        filesToShow = new ArrayList<>();
+        filesAdapter = new FilesAdapter(filesToShow, this);
+        attachFilesrv.setAdapter(filesAdapter);
         return v;
     }
 
@@ -258,6 +274,15 @@ public class AddOrderFragment extends DialogFragment {
                         AddFileObj obj = new AddFileObj(mp.get("name"), mp.get("path"));
                         fileList.add(obj);
 
+                        MyFile mf = new MyFile();
+                        mf.setId(mp.get("id"));
+                        mf.setName(mp.get("name"));
+                        mf.setPath(mp.get("path"));
+                        filesToShow.add(mf);
+                        filesAdapter.setMyFiles(filesToShow);
+                        filesAdapter.notifyDataSetChanged();
+
+
                         obj1 = obj;
                         Gson gson = new Gson();
                         try {
@@ -279,5 +304,13 @@ public class AddOrderFragment extends DialogFragment {
             });
         }
 
+    }
+
+    @Override
+    public void onItemClick(int item) {
+        filesToShow.remove(item);
+        fileList.remove(item);
+        filesAdapter.setMyFiles(filesToShow);
+        filesAdapter.notifyDataSetChanged();
     }
 }

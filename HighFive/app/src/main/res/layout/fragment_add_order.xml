@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -157,20 +158,30 @@
             android:layout_marginLeft="16dp"
             android:text="Прикрепленные файлы"/>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:id="@+id/add_order_button_id"
-            android:textAllCaps="false"
-            android:text="Добавить заказ"
-            android:textColor="@color/tw__solid_white"
-            android:background="@color/colorPrimary" />
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="112dp"
+                android:id="@+id/add_order_files_rv"
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="60dp"
+                app:layoutManager="LinearLayoutManager">
 
-
-
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 
     </ScrollView>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:id="@+id/add_order_button_id"
+        android:layout_alignParentBottom="true"
+        android:textAllCaps="false"
+        android:text="Добавить заказ"
+        android:textColor="@color/tw__solid_white"
+        android:background="@color/colorPrimary" />
 
 </RelativeLayout>
