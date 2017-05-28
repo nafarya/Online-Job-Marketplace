@@ -40,4 +40,6 @@ public interface Navigator {
     void pickPhoto();
 
     void pickDocsForChat(Socket socket);
+
+    void pickDocs();
 }

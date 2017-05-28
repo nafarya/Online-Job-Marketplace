@@ -72,6 +72,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.http.Part;
 
 public class LandingActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Navigator {
     /*
@@ -385,6 +386,15 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
     }
 
+    @Override
+    public void pickDocs() {
+        filePaths = new ArrayList<>();
+        FilePickerBuilder.getInstance().setMaxCount(1)
+                .setSelectedFiles(filePaths)
+                .setActivityTheme(R.style.FilePicker)
+                .pickFile(this);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -392,11 +402,17 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
             if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO && FILE_CODE == 1) {
                 uploadAvatar(data);
             }
-            if (requestCode == FilePickerConst.REQUEST_CODE_DOC && FILE_CODE == 2) {
+            if (requestCode == FilePickerConst.REQUEST_CODE_DOC) {
 
                 docPaths = new ArrayList<>();
                 docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
-                ChatFragment.uploadFile(docPaths.get(0));
+                if (FILE_CODE == 2) {
+                    ChatFragment.uploadFile(docPaths.get(0));
+                }
+                if (FILE_CODE == 3) {
+                    AddOrderFragment.uploadFile(docPaths.get(0));
+                }
+
 //                MyFile file = new MyFile(docPaths.get(0));
 //                if (file.exists()) {
 //                    Gson gson = new Gson();

@@ -1,13 +1,18 @@
 package com.highfive.highfive.util;
 
+import com.highfive.highfive.model.AddFileObj;
+import com.highfive.highfive.model.AddFileParams;
 import com.highfive.highfive.model.MyFile;
 import com.highfive.highfive.model.Profile;
 import com.highfive.highfive.responseModels.Items;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.model.Order;
 
+import org.json.JSONArray;
+
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -86,6 +91,10 @@ public interface YaReshuApi {
     @POST("files/upload")
     Call<Response> uploadFile(@Header("api-token") String apiToken,
                                 @Part MultipartBody.Part file);
+
+    @POST("orders/")
+    Call<Response> addOrder(@Header("api-token") String apiToken,
+                            @Body AddFileParams file);
 
 
 }

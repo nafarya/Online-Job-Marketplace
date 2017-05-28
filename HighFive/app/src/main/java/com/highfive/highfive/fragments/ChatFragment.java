@@ -225,7 +225,7 @@ public class ChatFragment extends Fragment {
             call.enqueue(new Callback<Response>() {
                 @Override
                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                    int x = 1;
+
                     if (response.code() == 200) {
                         LinkedTreeMap<String, String> mp = new LinkedTreeMap<String, String>();
                         LinkedTreeMap<String, String> send = new LinkedTreeMap<String, String>();
@@ -248,7 +248,7 @@ public class ChatFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<Response> call, Throwable t) {
-                    int x = 1;
+
                 }
             });
         }
