@@ -2,6 +2,7 @@ package com.highfive.highfive;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -308,6 +309,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onNext(Response<Profile> orderResponse) {
                         profile = orderResponse.getResponse();
                         LandingActivity.userType = profile.getType();
+                        SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor e = myPrefs.edit();
+                        e.putString("userType", profile.getType()); // add or overwrite someValue
+                        e.commit(); // this saves to disk and notifies observers
+
                         Cache.getCacheManager().put("profile", profile);
 
                         profileFlag = true;

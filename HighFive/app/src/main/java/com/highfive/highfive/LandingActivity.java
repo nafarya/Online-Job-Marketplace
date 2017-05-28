@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -93,6 +94,12 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     @InjectView(R.id.nvView)            NavigationView navigationView;
 
     @Override
+    protected void onStart() {
+        SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+        userType = myPrefs.getString("userType", "teacher"); // return 0 if someValue doesn't exist
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
@@ -111,6 +118,10 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         Type profileType = new TypeToken<Profile>(){}.getType();
         profile = (Profile) Cache.getCacheManager().get("profile", Profile.class, profileType);
 
+        if (profile == null && userType == null) {
+            SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+            userType = myPrefs.getString("userType", "teacher"); // return 0 if someValue doesn't exist
+        }
 
         View headerView = navigationView.getHeaderView(0);
         if (profile != null) {
@@ -118,6 +129,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                     into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
             TextView balance = (TextView) headerView.findViewById(R.id.nav_header_balance);
             balance.setText("Баланс: " + profile.getBalance() + " Руб");
+            userType = profile.getType();
 
         }
 
