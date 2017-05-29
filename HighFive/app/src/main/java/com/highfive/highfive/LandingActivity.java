@@ -98,7 +98,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
     protected void onStart() {
         super.onStart();
         SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        userType = myPrefs.getString("userType", "teacher"); // return 0 if someValue doesn't exist
+        userType = myPrefs.getString("userType", "teacher"); // return teacher if userType doesn't exist
     }
 
     @Override

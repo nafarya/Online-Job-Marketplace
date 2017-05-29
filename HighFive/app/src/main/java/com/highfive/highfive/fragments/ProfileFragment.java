@@ -59,8 +59,8 @@ public class ProfileFragment extends Fragment {
 
     private ProfileCommentsAdapter adapter;
     private Profile profile;
-    private List<ProfileComment> comments;
-    private List<Profile> commentAuthors;
+    private List<ProfileComment> comments = new ArrayList<>();
+    private List<Profile> commentAuthors = new ArrayList<>();
     private Navigator navigator;
     private List<String> photoPaths;
     private ArrayList<String> filePaths;
@@ -99,7 +99,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void fillProfileData() {
+        if (comments == null) {
+            comments = new ArrayList<>();
+        }
         Collections.reverse(comments);
+
         adapter = new ProfileCommentsAdapter(comments, getContext());
         rv.setAdapter(adapter);
         rv.setNestedScrollingEnabled(false);
