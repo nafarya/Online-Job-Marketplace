@@ -109,6 +109,7 @@ public class ProfileFragment extends Fragment {
         rv.setNestedScrollingEnabled(false);
         parseCommentsAuthorsInfo();
 
+        inprogressOrders.setText(String.valueOf(profile.getActiveOrders()));
         Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
 
         float rating = (float)profile.getProfileRating();

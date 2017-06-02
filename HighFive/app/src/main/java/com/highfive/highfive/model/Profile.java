@@ -59,6 +59,8 @@ public class Profile {
     @Expose
     private ArrayList<ProfileComment> comments;
 
+    private int activeOrders;
+
     public Profile(){
         studentOrderIdList = new ArrayList<>();
         comments = new ArrayList<>();
@@ -172,5 +174,13 @@ public class Profile {
 
     public Rating getRating() {
         return rating;
+    }
+
+    public int getActiveOrders() {
+        return activeOrders;
+    }
+
+    public void setActiveOrders(int activeOrders) {
+        this.activeOrders = activeOrders;
     }
 }

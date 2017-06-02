@@ -132,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textSize="8sp"
-                    android:text="Заказов\nвыполнено"
+                    android:text="Статистика"
                     android:maxLines="2"
                     android:layout_weight="1"
                     />
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textSize="8sp"
-                    android:text="Заказов\nв работе"
+                    android:text="Активных\nзаказов"
                     android:layout_weight="1"
                     />
                 <TextView
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textSize="8sp"
-                    android:text="Заказов\nвыполнено"
+                    android:text="Статистика"
                     android:layout_weight="1"
                     />
 

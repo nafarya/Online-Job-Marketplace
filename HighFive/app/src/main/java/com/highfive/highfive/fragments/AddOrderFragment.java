@@ -1,6 +1,7 @@
 package com.highfive.highfive.fragments;
 
 import android.content.Intent;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -48,8 +49,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -148,7 +152,23 @@ public class AddOrderFragment extends DialogFragment implements FilesAdapter.OnI
                 params.add("subject", subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
                 params.add("type", orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
                 params.add("offer", addOrderOffer.getText().toString());
-                params.add("deadline", new DateTime(Instant.now().plus(1_000_000L)).toString()); //TODO: proper reading of date
+                String dateString = addOrderDate.getText().toString();
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date convertedDate = new Date();
+                try {
+                    convertedDate = dateFormat.parse(dateString);
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (java.text.ParseException e) {
+                    e.printStackTrace();
+                }
+                DateTime dt1 = new DateTime(convertedDate);
+
+//                dt1.plusHours(3);
+                params.add("deadline", new DateTime(dt1).toString());
 
 
                 Gson gson = new Gson();
@@ -162,58 +182,67 @@ public class AddOrderFragment extends DialogFragment implements FilesAdapter.OnI
                     }
 
                 }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                HighFiveHttpClient.post("orders", params, new JsonHttpResponseHandler() {
-//                    @Override
-//                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                        try {
-//                            JSONObject contents = response.getJSONObject("response"); //TODO: do something with response
-//                            Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
-//                            navigator.navigateToChooseOrder();
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                        super.onFailure(statusCode, headers, throwable, errorResponse);
-//                        Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                        super.onFailure(statusCode, headers, responseString, throwable);
-//                        Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
-                AddFileParams paramObj = new AddFileParams();
-                paramObj.setDeadline(new DateTime(Instant.now().plus(1_000_000L)).toString());
-                paramObj.setDescription(addOrderDescription.getText().toString());
-                paramObj.setTitle(addOrderTitle.getText().toString());
-                paramObj.setOffer(addOrderOffer.getText().toString());
-                paramObj.setSubject(subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
-                paramObj.setType(orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
-                paramObj.setFile(fileList);
+                if (fileList.size() > 0) {
+                    AddFileParams paramObj = new AddFileParams();
+                    paramObj.setDeadline(new DateTime(dt1).toString());
+                    paramObj.setDescription(addOrderDescription.getText().toString());
+                    paramObj.setTitle(addOrderTitle.getText().toString());
+                    paramObj.setOffer(addOrderOffer.getText().toString());
+                    paramObj.setSubject(subjects.get(subjectSpinner.getSelectedItemPosition()).getId());
+                    paramObj.setType(orderTypes.get(orderTypeSpinner.getSelectedItemPosition()).getId());
+                    paramObj.setFile(fileList);
 
 
-                Call<Response> call = App.getApi().addOrder(HighFiveHttpClient.getTokenCookie().getValue(),
-                        paramObj);
-                call.enqueue(new Callback<Response>() {
+                    Call<Response> call = App.getApi().addOrder(HighFiveHttpClient.getTokenCookie().getValue(),
+                            paramObj);
+                    call.enqueue(new Callback<Response>() {
+                        @Override
+                        public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                            if (response.code() == 200) {
+                                Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
+                                navigator.navigateToChooseOrder();
+                            } else {
+                                Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Response> call, Throwable t) {
+                            Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } else {
+                    HighFiveHttpClient.post("orders", params, new JsonHttpResponseHandler() {
                     @Override
-                    public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                        Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
-                        navigator.navigateToChooseOrder();
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            JSONObject contents = response.getJSONObject("response"); //TODO: do something with response
+                            Toast.makeText(getContext(), "Заказ добавлен", Toast.LENGTH_SHORT).show();
+                            navigator.navigateToChooseOrder();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<Response> call, Throwable t) {
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        super.onFailure(statusCode, headers, throwable, errorResponse);
+                        Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
                         Toast.makeText(getContext(), "Ошибка добавления заказа", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
 
             }
         });

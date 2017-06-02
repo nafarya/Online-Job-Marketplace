@@ -268,6 +268,11 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                 .setNegativeButton("Нет", dialogClickListener).show();
     }
 
+    @Override
+    public void addReview(int item) {
+        navigator.navigateToAddReview(orderList.get(item).getId());
+    }
+
     private List<String> getSubjectNames() {
         if (LandingActivity.userType.equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
@@ -359,6 +364,11 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                             Collections.reverse(rev);
                             adapter.setOrderList(rev);
                             adapter.notifyDataSetChanged();
+
+                            if (curTab.equals("active")) {
+                                profile.setActiveOrders(orderList.size());
+                                Cache.getCacheManager().put("profile", profile);
+                            }
                         }
                     });
         }

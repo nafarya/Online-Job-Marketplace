@@ -27,8 +27,10 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.fragments.AddOrderFragment;
+import com.highfive.highfive.fragments.AddReview;
 import com.highfive.highfive.fragments.BidListCommentFragment;
 import com.highfive.highfive.fragments.BidListFragment;
 import com.highfive.highfive.fragments.ChatFragment;
@@ -59,6 +61,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -122,7 +125,11 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
         if (profile == null && userType == null) {
             SharedPreferences myPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-            userType = myPrefs.getString("userType", "teacher"); // return 0 if someValue doesn't exist
+            userType = myPrefs.getString("userType", "wtf");
+        }
+
+        if (profile == null || userType.equals("wtf")) {
+            deauth();
         }
 
         View headerView = navigationView.getHeaderView(0);
@@ -177,26 +184,7 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 navigateToChatList();
                 break;
             case R.id.nav_to_exit:
-                HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        HighFiveHttpClient.clearCookies();
-                        Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(getBaseContext(), "Ошибка выхода", Toast.LENGTH_LONG).show();
-                        //clearing credentials anyway since this token is invalid
-                        HighFiveHttpClient.clearCookies();
-                        Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-                return true;
+                deauth();
             default:
                 return true;
         }
@@ -209,6 +197,28 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
 
 
         return true;
+    }
+
+    public void deauth() {
+        HighFiveHttpClient.delete("auth/" +  HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                HighFiveHttpClient.clearCookies();
+                Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getBaseContext(), "Ошибка выхода", Toast.LENGTH_LONG).show();
+                //clearing credentials anyway since this token is invalid
+                HighFiveHttpClient.clearCookies();
+                Intent intent = new Intent(LandingActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
 //    @Override
@@ -395,6 +405,15 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                 .pickFile(this);
     }
 
+    @Override
+    public void navigateToAddReview(String id) {
+        AddReview fragment = new AddReview();
+        Bundle bundle = new Bundle();
+        bundle.putString("id", id);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -484,12 +503,8 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         if (photoPaths.size() != 0) {
             File imgFile = new File(photoPaths.get(0));
             if (imgFile.exists()) {
-                ImageView myImage = (ImageView) findViewById(R.id.avatar);
-                myImage.setImageURI(Uri.fromFile(imgFile));
-                View headerView = navigationView.getHeaderView(0);
-                profile.setAvatar(photoPaths.get(0));
-                Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
-                        into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+
+
 
                 RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imgFile);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("file", imgFile.getName(), reqFile);
@@ -500,8 +515,20 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
                     @Override
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                         if (response.code() == 200) {
-                            Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT);
+                            Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
 
+                            LinkedTreeMap<String, String> mp = (LinkedTreeMap) response.body().getResponse();
+                            String ava = mp.get("avatar");
+
+                            ImageView myImage = (ImageView) findViewById(R.id.avatar);
+                            myImage.setImageURI(Uri.fromFile(imgFile));
+                            View headerView = navigationView.getHeaderView(0);
+                            profile.setAvatar(ava);
+                            Cache.getCacheManager().put("profile", profile);
+                            Picasso.with(getApplicationContext()).load("https://yareshu.ru/" + profile.getAvatar()).
+                                    into((ImageView) headerView.findViewById(R.id.nav_header_avatar));
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Попробуйте другую фотографию", Toast.LENGTH_SHORT).show();
                         }
                     }
 

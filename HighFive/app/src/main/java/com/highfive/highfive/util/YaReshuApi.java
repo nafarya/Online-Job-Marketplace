@@ -96,5 +96,11 @@ public interface YaReshuApi {
     Call<Response> addOrder(@Header("api-token") String apiToken,
                             @Body AddFileParams file);
 
+    @FormUrlEncoded
+    @POST("orders/{id}/review")
+    Call<Response> addReview(@Header("api-token") String apiToken,
+                             @Path("id") String id,
+                             @Field("type") String type,
+                             @Field("text") String text);
 
 }

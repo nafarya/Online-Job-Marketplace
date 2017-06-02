@@ -172,4 +172,9 @@ public class ChatListFragment extends Fragment implements OrderListAdapter.OnIte
     public void teacherSubmitOrder(int item, String action) {
 
     }
+
+    @Override
+    public void addReview(int item) {
+
+    }
 }

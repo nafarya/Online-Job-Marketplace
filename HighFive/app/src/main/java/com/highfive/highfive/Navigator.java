@@ -42,4 +42,6 @@ public interface Navigator {
     void pickDocsForChat(Socket socket);
 
     void pickDocs();
+
+    void navigateToAddReview(String id);
 }

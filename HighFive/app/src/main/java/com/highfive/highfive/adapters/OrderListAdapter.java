@@ -30,6 +30,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         void onItemClick(int item);
         void changeStatusButton(int item, String newStatus);
         void teacherSubmitOrder(int item, String action);
+        void addReview(int item);
+
     }
 
     private List<Order> orderList;
@@ -107,7 +109,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                 holder.changeStatusBtn.setVisibility(View.GONE);
                 break;
             case "closed":
-                holder.changeStatusBtn.setVisibility(View.GONE);
+                holder.changeStatusBtn.setText("Оставить отзыв");
                 break;
             case "chat":
                 if (LandingActivity.userType.equals("teacher")) {
@@ -171,6 +173,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                         break;
                     case "chat":
                         listener.changeStatusButton(getAdapterPosition(), "complete");
+                        break;
+                    case "closed":
+                        listener.addReview(getAdapterPosition());
                         break;
                 }
             } else {

@@ -198,6 +198,11 @@ public class OrderLentaFragment extends Fragment implements OrderListAdapter.OnI
 
     }
 
+    @Override
+    public void addReview(int item) {
+
+    }
+
     private List<String> getSubjectNames() {
         if (LandingActivity.userType.equals("teacher") && subList != null) {
             subjects = subList.getSubjectList();
