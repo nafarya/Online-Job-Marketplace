@@ -1,5 +1,6 @@
 package com.highfive.highfive.fragments;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -15,11 +16,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.gson.reflect.TypeToken;
 import com.highfive.highfive.App;
 import com.highfive.highfive.LandingActivity;
+import com.highfive.highfive.LoginActivity;
 import com.highfive.highfive.Navigator;
 import com.highfive.highfive.R;
 import com.highfive.highfive.adapters.ProfileCommentsAdapter;
@@ -28,7 +31,10 @@ import com.highfive.highfive.model.ProfileComment;
 import com.highfive.highfive.responseModels.Response;
 import com.highfive.highfive.util.Cache;
 import com.highfive.highfive.util.HighFiveHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -37,6 +43,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cz.msebera.android.httpclient.Header;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -94,7 +101,30 @@ public class ProfileFragment extends Fragment {
             navigator.pickPhoto();
 
         });
-        fillProfileData();
+        if (profile != null) {
+            fillProfileData();
+        } else {
+            if (getActivity() != null) {
+                HighFiveHttpClient.delete("auth/" + HighFiveHttpClient.getUidCookie().getValue(), null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        HighFiveHttpClient.clearCookies();
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        //clearing credentials anyway since this token is invalid
+                        HighFiveHttpClient.clearCookies();
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                });
+            }
+        }
         return v;
     }
 
@@ -108,7 +138,6 @@ public class ProfileFragment extends Fragment {
         rv.setAdapter(adapter);
         rv.setNestedScrollingEnabled(false);
         parseCommentsAuthorsInfo();
-
         inprogressOrders.setText(String.valueOf(profile.getActiveOrders()));
         Picasso.with(getContext()).load("https://yareshu.ru/" + profile.getAvatar()).into(avatar);
 
@@ -181,6 +210,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
 
 

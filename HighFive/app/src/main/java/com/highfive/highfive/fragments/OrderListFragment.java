@@ -365,7 +365,7 @@ public class OrderListFragment extends Fragment implements OrderListAdapter.OnIt
                             adapter.setOrderList(rev);
                             adapter.notifyDataSetChanged();
 
-                            if (curTab.equals("active")) {
+                            if (curTab.equals("in work")) {
                                 profile.setActiveOrders(orderList.size());
                                 Cache.getCacheManager().put("profile", profile);
                             }

@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textSize="8sp"
-                    android:text="Активных\nзаказов"
+                    android:text="Заказов\nв работе"
                     android:layout_weight="1"
                     />
                 <TextView

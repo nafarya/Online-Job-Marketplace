@@ -540,9 +540,4 @@ public class LandingActivity extends AppCompatActivity implements NavigationView
         }
     }
 
-    private void uploadChatFile() {
-
-    }
-
-
 }
